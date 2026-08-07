@@ -1,0 +1,192 @@
+@model WEBBANQUANAO.Models.Entities.User
+@{
+    ViewData["Title"] = $"Chi Tiết Tài Khoản - {Model.FullName}";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    decimal totalSpend = ViewBag.TotalSpend ?? 0m;
+    var tierInfo = WEBBANQUANAO.Services.MembershipTierHelper.CalculateTier(totalSpend);
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-pill mb-2"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách người dùng</a>
+    <h2 class="fw-bold font-heading m-0 text-dark">HỒ SƠ KHÁCH HÀNG: @Model.FullName</h2>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Thẻ Phân Hạng Thành Viên -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 text-white p-4 h-100 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill font-monospace">
+                    <i class="bi bi-award-fill me-1"></i> HẠNG @tierInfo.TierName.ToUpper()
+                </span>
+                <span class="fs-4 text-warning"><i class="bi bi-star-fill"></i></span>
+            </div>
+            <h3 class="fw-bold text-white mb-1">@Model.FullName</h3>
+            <p class="text-white-50 small mb-3">@@@Model.Username</p>
+            <div class="mt-auto">
+                <div class="d-flex justify-content-between small text-white-50 mb-1">
+                    <span>Tổng chi tiêu tích lũy:</span>
+                    <strong class="text-warning">@totalSpend.ToString("N0")đ</strong>
+                </div>
+                <div class="progress bg-white bg-opacity-20" style="height: 8px;">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @Math.Min(100, (totalSpend / 10000000m) * 100)%;"></div>
+                </div>
+                <small class="text-white-50 mt-2 d-block fs-8">Ưu đãi giảm giá tự động: <strong class="text-white">@tierInfo.DiscountPercent%</strong> cho mọi đơn hàng.</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông tin liên hệ -->
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body p-4">
+                <h5 class="fw-bold font-heading border-bottom pb-2 mb-3">THÔNG TIN TÀI KHOẢN & LIÊN HỆ</h5>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Họ và Tên</label>
+                        <strong class="fs-6">@Model.FullName</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Tên đăng nhập (Username)</label>
+                        <strong class="fs-6">@@@Model.Username</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Email</label>
+                        <strong class="fs-6">@Model.Email</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Số điện thoại</label>
+                        <strong class="fs-6">@(Model.Phone ?? "Chưa cập nhật")</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Vai trò tài khoản</label>
+                        <span class="badge bg-primary">@Model.Role?.RoleName</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="text-muted small d-block">Ngày tạo tài khoản</label>
+                        <strong class="fs-6">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lịch Sử Đơn Hàng Của Khách -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-white p-4 border-bottom">
+        <h5 class="fw-bold font-heading m-0">LỊCH SỬ ĐƠN HÀNG ĐÃ ĐẶT (@(Model.Orders?.Count ?? 0) đơn)</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Orders != null && Model.Orders.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Mã Đơn Hàng</th>
+                            <th>Ngày Đặt</th>
+                            <th>Trạng Thái</th>
+                            <th>Phương Thức Thanh Toán</th>
+                            <th>Tổng Tiền</th>
+                            <th class="text-end pe-4">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ord in Model.Orders.OrderByDescending(o => o.OrderDate))
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold font-monospace">#@ord.OrderNumber</td>
+                                <td>@ord.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @switch (ord.Status)
+                                    {
+                                        case WEBBANQUANAO.Models.Entities.OrderStatus.Pending:
+                                            <span class="badge bg-warning text-dark">Chờ Xử Lý</span>
+                                            break;
+                                        case WEBBANQUANAO.Models.Entities.OrderStatus.Shipping:
+                                            <span class="badge bg-info">Đang Giao</span>
+                                            break;
+                                        case WEBBANQUANAO.Models.Entities.OrderStatus.Completed:
+                                            <span class="badge bg-success">Đã Hoàn Thành</span>
+                                            break;
+                                        case WEBBANQUANAO.Models.Entities.OrderStatus.Cancelled:
+                                            <span class="badge bg-danger">Đã Hủy</span>
+                                            break;
+                                    }
+                                </td>
+                                <td><span class="badge bg-light text-dark border">@(ord.Payment != null ? "Chuyển Khoản QR" : "COD (Tiền Mặt)")</span></td>
+                                <td class="fw-bold text-success">@ord.TotalAmount.ToString("N0")đ</td>
+                                <td class="text-end pe-4">
+                                    <a asp-controller="OrderManagement" asp-action="Details" asp-route-id="@ord.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        Xem Đơn
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center text-muted">Khách hàng chưa thực hiện đơn hàng nào.</div>
+        }
+    </div>
+</div>
+
+<!-- Lịch Sử Bình Luận & Đánh Giá Của Người Dùng -->
+@{
+    var userReviews = ViewBag.UserReviews as List<WEBBANQUANAO.Models.Entities.Review> ?? new List<WEBBANQUANAO.Models.Entities.Review>();
+}
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-header bg-white p-4 border-bottom">
+        <h5 class="fw-bold font-heading m-0"><i class="bi bi-chat-square-text-fill text-primary me-2"></i> BÌNH LUẬN & ĐÁNH GIÁ SẢN PHẨM (@userReviews.Count bài)</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (userReviews.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Sản Phẩm</th>
+                            <th>Đánh Giá</th>
+                            <th>Nội Dung Bình Luận</th>
+                            <th>Thời Gian</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rev in userReviews)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">
+                                    <a href="/Product/Details/@rev.ProductId" target="_blank" class="text-decoration-none text-dark">
+                                        @(rev.Product?.ProductName ?? $"Sản phẩm #{rev.ProductId}")
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="text-warning">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= rev.Rating) { <i class="bi bi-star-fill"></i> }
+                                            else { <i class="bi bi-star"></i> }
+                                        }
+                                        <span class="ms-1 fw-bold text-dark font-monospace">@rev.Rating/5</span>
+                                    </div>
+                                </td>
+                                <td><span class="text-secondary">@(rev.Comment ?? "Không có nội dung")</span></td>
+                                <td class="small text-muted">@rev.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-4 text-center text-muted"><i class="bi bi-chat-left-dots me-2"></i> Người dùng này chưa gửi bình luận hoặc đánh giá nào.</div>
+        }
+    </div>
+</div>
+

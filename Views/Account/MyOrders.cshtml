@@ -1,0 +1,87 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "Lịch Sử Đơn Hàng";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold font-heading mb-4"><i class="bi bi-box-seam text-primary me-2"></i> LỊCH SỬ ĐƠN HÀNG CỦA TÔI</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <i class="bi bi-inbox fs-1 text-muted"></i>
+            <h4 class="fw-bold mt-3">Bạn chưa có đơn hàng nào</h4>
+            <p class="text-muted">Hãy đặt hàng ngay hôm nay để nhận thêm nhiều phần quà hấp dẫn!</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary-gradient mt-2">Mua Sắm Ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var o in Model)
+            {
+                <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                        <div>
+                            <span class="fw-bold font-heading fs-5">Đơn hàng #@o.OrderId</span>
+                            <span class="text-muted small ms-2">Ngày đặt: @o.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div>
+                            @{
+                                string badgeClass = o.Status switch
+                                {
+                                    OrderStatus.Pending => "bg-warning text-dark",
+                                    OrderStatus.Shipping => "bg-info text-white",
+                                    OrderStatus.Completed => "bg-success text-white",
+                                    OrderStatus.Cancelled => "bg-danger text-white",
+                                    _ => "bg-secondary"
+                                };
+                                string statusName = o.Status switch
+                                {
+                                    OrderStatus.Pending => "Chờ xử lý",
+                                    OrderStatus.Shipping => "Đang giao hàng",
+                                    OrderStatus.Completed => "Đã hoàn thành",
+                                    OrderStatus.Cancelled => "Đã hủy",
+                                    _ => "N/A"
+                                };
+                            }
+                            <span class="badge @badgeClass fs-7 px-3 py-2 rounded-pill">@statusName</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        @foreach (var detail in o.OrderDetails)
+                        {
+                            var img = detail.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@img" alt="product" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark small">@detail.Variant?.Product?.ProductName</div>
+                                    <small class="text-muted">Size: @detail.Variant?.Size | Màu: @detail.Variant?.Color | Số lượng: x@(detail.Quantity)</small>
+                                </div>
+                                <div class="fw-bold text-primary small">@((detail.UnitPrice * detail.Quantity).ToString("N0"))đ</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 pt-3 border-top">
+                        <div>
+                            <span class="text-muted small">Thanh toán:</span>
+                            <span class="fw-bold small ms-1">@(o.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Chờ thanh toán")</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="fw-bold fs-5 text-primary me-2">Tổng: @o.TotalAmount.ToString("N0")đ</div>
+                            @if (o.Status == OrderStatus.Pending)
+                            {
+                                <a asp-controller="Order" asp-action="CancelOrder" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-danger rounded-3 fw-bold">
+                                    <i class="bi bi-x-circle me-1"></i> Hủy Đơn
+                                </a>
+                            }
+                            <a asp-controller="Account" asp-action="OrderDetails" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-custom rounded-3 fw-bold">Chi Tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

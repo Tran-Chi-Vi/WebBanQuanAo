@@ -1,0 +1,83 @@
+@model List<Brand>
+@{
+    ViewData["Title"] = "Quản Lý Thương Hiệu";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold font-heading m-0">QUẢN LÝ THƯƠNG HIỆU</h4>
+    <button type="button" class="btn btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#createBrandModal">
+        + Thêm Thương Hiệu Mới
+    </button>
+</div>
+
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle">
+            <thead>
+                <tr>
+                    <th>Logo</th>
+                    <th>Tên Thương Hiệu</th>
+                    <th>Số Sản Phẩm</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(b.LogoUrl))
+                            {
+                                <img src="@b.LogoUrl" alt="@b.BrandName" class="rounded-3 border" style="width: 50px; height: 50px; object-fit: contain;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light text-muted rounded-3 d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px;">
+                                    @b.BrandName.Substring(0, Math.Min(2, b.BrandName.Length)).ToUpper()
+                                </div>
+                            }
+                        </td>
+                        <td class="fw-bold text-dark">@b.BrandName</td>
+                        <td><span class="badge bg-primary">@b.Products.Count SP</span></td>
+                        <td>
+                            <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="DeleteBrand" method="post" onsubmit="return confirm('Xóa thương hiệu này?')">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@b.BrandId" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Create Brand Modal -->
+<div class="modal fade" id="createBrandModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Thêm Thương Hiệu Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="CreateBrand" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tên Thương Hiệu (*)</label>
+                        <input type="text" name="brandName" class="form-control rounded-3" placeholder="Ví dụ: Nike, Adidas, Zara..." required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Đường Dẫn Logo (URL)</label>
+                        <input type="text" name="logoUrl" class="form-control rounded-3" placeholder="https://example.com/logo.png" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary-gradient">Tạo Thương Hiệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

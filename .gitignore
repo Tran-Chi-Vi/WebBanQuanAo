@@ -1,0 +1,7 @@
+﻿# Build outputs
+bin/
+obj/
+
+# Local configuration
+appsettings*.json
+!appsettings.json

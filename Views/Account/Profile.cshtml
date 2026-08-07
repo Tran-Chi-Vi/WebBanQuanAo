@@ -1,0 +1,191 @@
+@model ProfileViewModel
+@using WEBBANQUANAO.Services
+@{
+    ViewData["Title"] = "Hồ Sơ Cá Nhân";
+    var tierInfo = ViewBag.TierInfo as TierInfo ?? MembershipTierHelper.CalculateTier(0);
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold font-heading mb-4"><i class="bi bi-person-badge text-primary me-2"></i> QUẢN LÝ TÀI KHOẢN CÁ NHÂN</h2>
+
+    <!-- VIP MEMBERSHIP CARD BLOCK -->
+    <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 text-white mb-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b, #311042, #4c1d95);">
+        <div class="position-absolute top-0 end-0 p-4 opacity-10">
+            <i class="bi bi-award-fill display-1"></i>
+        </div>
+
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-md-7">
+                <span class="badge @tierInfo.BadgeClass px-3 py-2 fs-6 rounded-pill fw-bold mb-2">
+                    <i class="bi bi-shield-shaded me-1"></i> @tierInfo.TierName
+                </span>
+                <h3 class="fw-bold font-heading text-white m-0">@Model.FullName</h3>
+                <p class="text-white-50 small mb-3">Tích lũy chi tiêu: <strong class="text-warning fs-5">@tierInfo.TotalSpent.ToString("N0")đ</strong></p>
+
+                <!-- Progress Bar to Next Tier -->
+                @if (tierInfo.AmountNeededForNextTier > 0)
+                {
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between small text-white-50 mb-1">
+                            <span>Tiến trình nâng hạng tiếp theo</span>
+                            <span>Thiếu <strong>@tierInfo.AmountNeededForNextTier.ToString("N0")đ</strong></span>
+                        </div>
+                        <div class="progress rounded-pill bg-dark" style="height: 10px;">
+                            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" style="width: @tierInfo.ProgressPercentage%;" aria-valuenow="@tierInfo.ProgressPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="badge bg-warning text-dark px-3 py-2 fw-bold">
+                        <i class="bi bi-star-fill me-1"></i> BẠN ĐÃ ĐẠT HẠNG CAO NHẤT VỚI ƯU ĐÃI ĐẶC QUYỀN VIP!
+                    </div>
+                }
+            </div>
+
+            <div class="col-md-5 mt-4 mt-md-0 text-md-end border-start-md ps-md-4">
+                <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-10">
+                    <div class="small text-white-50">Ưu đãi giảm giá tự động hiện tại:</div>
+                    <div class="display-5 fw-bold text-warning font-heading">@tierInfo.DiscountPercent%</div>
+                    <small class="text-white-50 d-block">Áp dụng trực tiếp vào mọi đơn hàng đặt mua</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Personal Info Form -->
+        <div class="col-lg-6">
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+                <h5 class="fw-bold font-heading mb-3"><i class="bi bi-info-circle-fill text-primary me-2"></i> THÔNG TIN TÀI KHOẢN</h5>
+
+                <form asp-controller="Account" asp-action="UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tên đăng nhập</label>
+                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Username" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Email</label>
+                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Email" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Họ và tên</label>
+                        <input type="text" asp-for="FullName" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Số điện thoại</label>
+                        <input type="text" asp-for="Phone" class="form-control rounded-3" />
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient py-2">Lưu Thay Đổi</button>
+                </form>
+            </div>
+
+            <!-- Change Password Card -->
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+                <h5 class="fw-bold font-heading mb-3"><i class="bi bi-shield-lock-fill text-warning me-2"></i> ĐỔI MẬT KHẨU</h5>
+
+                <form asp-controller="Account" asp-action="ChangePassword" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Mật khẩu hiện tại</label>
+                        <input type="password" name="CurrentPassword" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Mật khẩu mới</label>
+                        <input type="password" name="NewPassword" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Xác nhận mật khẩu mới</label>
+                        <input type="password" name="ConfirmNewPassword" class="form-control rounded-3" required />
+                    </div>
+                    <button type="submit" class="btn btn-outline-custom py-2">Đổi Mật Khẩu</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Saved Addresses Card & Add New Address -->
+        <div class="col-lg-6">
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold font-heading m-0"><i class="bi bi-geo-alt-fill text-danger me-2"></i> SỔ ĐỊA CHỈ GIAO HÀNG</h5>
+                    <button type="button" class="btn btn-sm btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#addAddrModal">
+                        + Thêm Địa Chỉ Mới
+                    </button>
+                </div>
+
+                @if (!Model.Addresses.Any())
+                {
+                    <p class="text-muted small">Bạn chưa lưu địa chỉ giao hàng nào.</p>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var a in Model.Addresses)
+                        {
+                            <div class="p-3 border rounded-3 bg-light">
+                                <div class="fw-bold">@a.RecipientName - <span class="font-monospace text-primary">@a.Phone</span></div>
+                                <div class="small text-muted">@a.DetailAddress, @a.Ward, @a.District, @a.Province</div>
+                                @if (a.IsDefault)
+                                {
+                                    <span class="badge bg-success mt-2">Mặc định</span>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddrModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Thêm Địa Chỉ Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-controller="Account" asp-action="AddAddress" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Người nhận</label>
+                        <input type="text" name="RecipientName" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Số điện thoại</label>
+                        <input type="text" name="Phone" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Địa chỉ chi tiết (Số nhà, đường)</label>
+                        <input type="text" name="StreetAddress" class="form-control rounded-3" required />
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Tỉnh / Thành</label>
+                            <input type="text" name="City" class="form-control rounded-3" required />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Quận / Huyện</label>
+                            <input type="text" name="District" class="form-control rounded-3" required />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small fw-bold">Phường / Xã</label>
+                            <input type="text" name="Ward" class="form-control rounded-3" required />
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="IsDefault" value="true" class="form-check-input" id="chkDef" />
+                        <label class="form-check-label small" for="chkDef">Đặt làm địa chỉ mặc định</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary-gradient">Thêm Địa Chỉ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

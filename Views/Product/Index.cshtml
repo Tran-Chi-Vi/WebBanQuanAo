@@ -1,0 +1,211 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "Danh Sách Sản Phẩm | Fashion Store";
+}
+
+<div class="container my-4 my-md-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item active fw-semibold text-dark" aria-current="page">Sản phẩm</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white sticky-top" style="top: 90px;z-index:10;">
+                <h5 class="fw-bold font-heading mb-3 text-dark d-flex align-items-center gap-2" style="font-size:1.1rem;">
+                    <i class="bi bi-funnel-fill text-primary"></i> BỘ LỌC TÌM KIẾM
+                </h5>
+                
+                <form asp-controller="Product" asp-action="Index" method="get">
+                    <!-- Search query hidden -->
+                    @if (!string.IsNullOrEmpty(Model.SearchQuery))
+                    {
+                        <input type="hidden" name="searchQuery" value="@Model.SearchQuery" />
+                    }
+
+                    <!-- Category Filter -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Danh Mục</label>
+                        <select name="categoryId" class="form-select rounded-3 font-heading small">
+                            <option value="">-- Tất cả danh mục --</option>
+                            @foreach (var c in Model.Categories.Where(x => x.ParentCategoryId == null))
+                            {
+                                <option value="@c.CategoryId" selected="@(Model.CategoryId == c.CategoryId)">@c.CategoryName</option>
+                                @foreach (var sub in c.SubCategories)
+                                {
+                                    <option value="@sub.CategoryId" selected="@(Model.CategoryId == sub.CategoryId)">&nbsp;&nbsp;-- @sub.CategoryName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Brand Filter -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Thương Hiệu</label>
+                        <select name="brandId" class="form-select rounded-3 font-heading small">
+                            <option value="">-- Tất cả thương hiệu --</option>
+                            @foreach (var b in Model.Brands)
+                            {
+                                <option value="@b.BrandId" selected="@(Model.BrandId == b.BrandId)">@b.BrandName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Gender Filter -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Giới Tính</label>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="" id="g_all" checked="@(Model.Gender == null)" />
+                                <label class="form-check-label small fw-semibold text-dark" for="g_all">Tất cả</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="0" id="g_male" checked="@(Model.Gender == ProductGender.Male)" />
+                                <label class="form-check-label small fw-semibold text-dark" for="g_male">Nam</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="1" id="g_female" checked="@(Model.Gender == ProductGender.Female)" />
+                                <label class="form-check-label small fw-semibold text-dark" for="g_female">Nữ</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender" value="2" id="g_unisex" checked="@(Model.Gender == ProductGender.Unisex)" />
+                                <label class="form-check-label small fw-semibold text-dark" for="g_unisex">Unisex</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Khoảng Giá (VNĐ)</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="minPrice" class="form-control rounded-3 small font-monospace" placeholder="Từ" value="@Model.MinPrice" />
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="maxPrice" class="form-control rounded-3 small font-monospace" placeholder="Đến" value="@Model.MaxPrice" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-gradient w-100 py-2.5 rounded-3 fw-bold shadow-sm" style="font-size:0.9rem;">
+                        <i class="bi bi-funnel me-1"></i> Áp Dụng Lọc
+                    </button>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-link text-muted w-100 text-decoration-none mt-2 small text-center d-block">Xóa tất cả bộ lọc</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Grid & Sort Header -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3.5 rounded-4 shadow-sm border border-light flex-wrap gap-2">
+                <div class="small fw-semibold text-muted">
+                    Hiển thị <span class="text-primary fw-bold font-monospace">@Model.Products.Count</span> / @Model.TotalItems sản phẩm
+                </div>
+
+                <!-- Sort Control -->
+                <form asp-controller="Product" asp-action="Index" method="get" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                    <input type="hidden" name="brandId" value="@Model.BrandId" />
+                    <input type="hidden" name="gender" value="@Model.Gender" />
+                    <input type="hidden" name="minPrice" value="@Model.MinPrice" />
+                    <input type="hidden" name="maxPrice" value="@Model.MaxPrice" />
+                    <input type="hidden" name="searchQuery" value="@Model.SearchQuery" />
+
+                    <label class="small text-muted text-nowrap fw-semibold m-0">Sắp xếp:</label>
+                    <select name="sortBy" class="form-select form-select-sm rounded-3 font-heading fw-semibold" style="min-width:140px;" onchange="this.form.submit()">
+                        <option value="newest" selected="@(Model.SortBy == "newest")">Mới nhất</option>
+                        <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Giá tăng dần</option>
+                        <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Giá giảm dần</option>
+                        <option value="popular" selected="@(Model.SortBy == "popular")">Bán chạy nhất</option>
+                    </select>
+                </form>
+            </div>
+
+            @if (!Model.Products.Any())
+            {
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm border border-light">
+                    <i class="bi bi-search fs-1 text-secondary opacity-50 mb-2 d-block"></i>
+                    <h5 class="fw-bold font-heading text-dark mt-2">Không tìm thấy sản phẩm phù hợp</h5>
+                    <p class="text-muted small">Hãy thử tìm kiếm với từ khóa khác hoặc xóa bớt các điều kiện lọc hiện tại.</p>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary-gradient rounded-pill px-4 py-2 fw-bold mt-2">Xem Tất Cả Sản Phẩm</a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-3 g-md-4">
+                    @{
+                        var catalogFavs = ViewBag.FavoriteProductIds as List<int> ?? new List<int>();
+                    }
+                    @foreach (var p in Model.Products)
+                    {
+                        var firstVar = p.Variants.FirstOrDefault();
+                        var mainImg = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                        var isNew = (DateTime.Now - p.CreatedAt).TotalDays <= 30;
+                        var isFav = catalogFavs.Contains(p.ProductId);
+                        <div class="col-6 col-md-4">
+                            <div class="product-card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white d-flex flex-column" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
+                                <div class="product-card-img-wrapper position-relative overflow-hidden" style="padding-top:125%;background:#f8fafc;">
+                                    @if (isNew)
+                                    {
+                                        <span class="position-absolute top-0 start-0 m-3 badge bg-danger rounded-pill fw-bold" style="font-size:0.72rem;letter-spacing:0.05em;z-index:2;">NEW</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="position-absolute top-0 start-0 m-3 badge bg-dark text-white rounded-pill fw-semibold" style="font-size:0.72rem;z-index:2;">@p.Gender</span>
+                                    }
+                                    <button onclick="toggleFavoriteAjax(@p.ProductId, this)" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center @(isFav ? "active" : "")" style="width:34px;height:34px;z-index:2;" title="Thêm yêu thích">
+                                        <i class="bi @(isFav ? "bi-heart-fill" : "bi-heart") text-danger" style="@(isFav ? "color:#ec4899;" : "")"></i>
+                                    </button>
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="position-absolute top-0 start-0 w-100 h-100">
+                                        <img src="@mainImg" alt="@p.ProductName" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;" />
+                                    </a>
+                                </div>
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <small class="text-primary fw-semibold mb-1" style="font-size:0.78rem;">@p.Category?.CategoryName</small>
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="text-decoration-none text-dark">
+                                        <h6 class="fw-bold mb-2 text-truncate-2 font-heading" style="font-size:0.92rem;line-height:1.4;height:2.6em;" title="@p.ProductName">@p.ProductName</h6>
+                                    </a>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                        <span class="fw-bold text-indigo font-monospace fs-6" style="color:#6366f1;">@p.BasePrice.ToString("N0")đ</span>
+                                        <button type="button" onclick="addToCartAjax(@(firstVar?.VariantId ?? 0), 1, this)"
+                                                class="btn btn-primary-gradient rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                                style="width:34px;height:34px;padding:0;flex-shrink:0;" title="Thêm vào giỏ hàng">
+                                            <i class="bi bi-cart-plus fs-6"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-5 d-flex justify-content-center">
+                        <ul class="pagination pagination-rounded gap-1">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link rounded-3 fw-bold" asp-controller="Product" asp-action="Index"
+                                       asp-route-page="@i"
+                                       asp-route-categoryId="@Model.CategoryId"
+                                       asp-route-brandId="@Model.BrandId"
+                                       asp-route-gender="@Model.Gender"
+                                       asp-route-minPrice="@Model.MinPrice"
+                                       asp-route-maxPrice="@Model.MaxPrice"
+                                       asp-route-searchQuery="@Model.SearchQuery"
+                                       asp-route-sortBy="@Model.SortBy">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</div>

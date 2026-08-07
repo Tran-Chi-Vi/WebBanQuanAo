@@ -1,0 +1,92 @@
+@model Order
+@{
+    ViewData["Title"] = "Hủy Đơn Hàng #" + Model.OrderId;
+}
+
+<div class="container my-4" style="max-width: 760px;">
+    <div class="card border-0 shadow-lg rounded-4 bg-white overflow-hidden">
+        <!-- Header -->
+        <div class="p-4 p-md-5 text-white" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-white text-danger d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; flex-shrink: 0; font-size: 1.5rem;">
+                    <i class="bi bi-x-circle-fill"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold font-heading m-0">XÁC NHẬN HỦY ĐƠN HÀNG #@Model.OrderId</h3>
+                    <p class="text-white-50 mb-0 mt-1 small">Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body p-4 p-md-5">
+            <!-- Warning Box -->
+            <div class="alert alert-danger bg-danger-subtle border-danger-subtle rounded-4 p-3 mb-4 d-flex align-items-start gap-3">
+                <i class="bi bi-exclamation-triangle-fill text-danger fs-4 flex-shrink-0 mt-1"></i>
+                <div class="small text-dark">
+                    <strong class="d-block mb-1">Lưu ý quan trọng trước khi hủy:</strong>
+                    Sau khi hủy, số lượng tồn kho của tất cả sản phẩm trong đơn hàng này sẽ được tự động hoàn lại kho. Đơn hàng này sẽ không được tính vào tích lũy tiêu dùng để nâng hạng VIP của bạn.
+                </div>
+            </div>
+
+            <!-- Order Products Summary -->
+            <div class="mb-4 bg-light rounded-4 p-3 p-md-4 border border-light">
+                <h6 class="fw-bold font-heading text-dark mb-3"><i class="bi bi-bag-check me-2 text-primary"></i>Sản phẩm trong đơn hàng:</h6>
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var detail in Model.OrderDetails)
+                    {
+                        var img = detail.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                        <div class="d-flex align-items-center gap-3 bg-white p-2.5 rounded-3 shadow-sm">
+                            <img src="@img" alt="@detail.Variant?.Product?.ProductName" class="rounded-3 object-fit-cover" style="width: 50px; height: 50px;" />
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark small">@detail.Variant?.Product?.ProductName</div>
+                                <small class="text-muted">Size: @detail.Variant?.Size | Màu: @detail.Variant?.Color | Số lượng: x@(detail.Quantity)</small>
+                            </div>
+                            <div class="fw-bold text-primary font-monospace small">@((detail.UnitPrice * detail.Quantity).ToString("N0"))đ</div>
+                        </div>
+                    }
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top fw-bold">
+                    <span>Tổng tiền thanh toán:</span>
+                    <span class="fs-5 text-indigo font-monospace" style="color: #6366f1;">@Model.TotalAmount.ToString("N0")đ</span>
+                </div>
+            </div>
+
+            <!-- Form Cancellation Reason -->
+            <form asp-controller="Order" asp-action="CancelOrder" method="post" id="cancelOrderForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+                <label class="form-label fw-bold text-dark">Vui lòng chọn lý do hủy đơn hàng (*):</label>
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <div class="form-check p-3 border rounded-3 bg-white">
+                        <input class="form-check-input ms-0 me-2" type="radio" name="cancelReason" id="reason1" value="Đổi ý, không muốn mua nữa" checked />
+                        <label class="form-check-label fw-semibold text-dark" for="reason1">Đổi ý, không còn nhu cầu mua nữa</label>
+                    </div>
+                    <div class="form-check p-3 border rounded-3 bg-white">
+                        <input class="form-check-input ms-0 me-2" type="radio" name="cancelReason" id="reason2" value="Muốn thay đổi địa chỉ nhận hàng" />
+                        <label class="form-check-label fw-semibold text-dark" for="reason2">Muốn thay đổi địa chỉ nhận hàng</label>
+                    </div>
+                    <div class="form-check p-3 border rounded-3 bg-white">
+                        <input class="form-check-input ms-0 me-2" type="radio" name="cancelReason" id="reason3" value="Muốn thay đổi size hoặc màu sắc sản phẩm" />
+                        <label class="form-check-label fw-semibold text-dark" for="reason3">Muốn thay đổi size hoặc màu sắc sản phẩm</label>
+                    </div>
+                    <div class="form-check p-3 border rounded-3 bg-white">
+                        <input class="form-check-input ms-0 me-2" type="radio" name="cancelReason" id="reason4" value="Đặt nhầm sản phẩm" />
+                        <label class="form-check-label fw-semibold text-dark" for="reason4">Đặt nhầm sản phẩm</label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-end align-items-center gap-3 mt-4">
+                    <a asp-controller="Account" asp-action="MyOrders" class="btn btn-light rounded-pill fw-bold px-4 py-2.5 border text-nowrap">
+                        <i class="bi bi-arrow-left me-1"></i> Quay Lại
+                    </a>
+                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xác nhận hủy đơn hàng này không?')" class="btn btn-danger rounded-pill fw-bold px-4 py-2.5 shadow-sm text-nowrap">
+                        <i class="bi bi-check-circle-fill me-1"></i> Xác Nhận
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,36 @@
+@model Order
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+}
+
+<div class="container my-5">
+    <div class="card p-5 border-0 shadow-lg rounded-4 bg-white text-center max-w-700 mx-auto" style="max-width: 700px;">
+        <div class="text-success display-1 mb-3 animate__animated animate__bounceIn">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="fw-bold font-heading mb-2">ĐẶT HÀNG THÀNH CÔNG!</h2>
+        <p class="text-muted mb-4">Cảm ơn bạn đã lựa chọn mua sắm tại <strong>WEBBANQUANAO Fashion Store</strong>. Mã đơn hàng của bạn là <span class="badge bg-primary font-monospace fs-6">#@Model.OrderId</span></p>
+
+        <div class="bg-light p-4 rounded-4 text-start mb-4">
+            <h6 class="fw-bold mb-3 border-bottom pb-2">THÔNG TIN ĐƠN HÀNG</h6>
+            <div class="row g-2 small">
+                <div class="col-6 text-muted">Ngày đặt:</div>
+                <div class="col-6 fw-bold">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+
+                <div class="col-6 text-muted">Người nhận:</div>
+                <div class="col-6 fw-bold">@Model.Address?.RecipientName (@Model.Address?.Phone)</div>
+
+                <div class="col-6 text-muted">Địa chỉ giao:</div>
+                <div class="col-6 fw-bold">@Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province</div>
+
+                <div class="col-6 text-muted">Tổng thanh toán:</div>
+                <div class="col-6 fw-bold text-primary fs-6">@Model.TotalAmount.ToString("N0")đ</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Account" asp-action="MyOrders" class="btn btn-outline-custom">Xem Lịch Sử Đơn Hàng</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary-gradient">Tiếp Tục Mua Sắm</a>
+        </div>
+    </div>
+</div>

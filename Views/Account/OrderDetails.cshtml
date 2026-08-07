@@ -1,0 +1,87 @@
+@model Order
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.OrderId;
+}
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold font-heading m-0"><i class="bi bi-file-text text-primary me-2"></i> CHI TIẾT ĐƠN HÀNG #@Model.OrderId</h2>
+        <a asp-controller="Account" asp-action="MyOrders" class="btn btn-sm btn-outline-custom"><i class="bi bi-arrow-left"></i> Quay lại lịch sử</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+                <h5 class="fw-bold font-heading mb-3">DANH SÁCH SẢN PHẨM</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                var img = item.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="@img" alt="product" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                                            <div>
+                                                <div class="fw-bold text-dark small">@item.Variant?.Product?.ProductName</div>
+                                                <small class="text-muted">Size: @item.Variant?.Size | Màu: @item.Variant?.Color</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@item.UnitPrice.ToString("N0")đ</td>
+                                    <td class="fw-bold font-monospace">x@(item.Quantity)</td>
+                                    <td class="fw-bold text-primary">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+                <h5 class="fw-bold font-heading mb-3">THÔNG TIN GIAO HÀNG</h5>
+                <div class="small mb-3">
+                    <div class="text-muted mb-1">Người nhận:</div>
+                    <div class="fw-bold text-dark">@Model.Address?.RecipientName - @Model.Address?.Phone</div>
+                    <div class="text-muted mt-2 mb-1">Địa chỉ:</div>
+                    <div class="fw-semibold">@Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province</div>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-between small mb-2">
+                    <span class="text-muted">Trạng thái đơn:</span>
+                    <span class="fw-bold text-primary">@Model.Status</span>
+                </div>
+
+                <div class="d-flex justify-content-between small mb-3">
+                    <span class="text-muted">Thanh toán:</span>
+                    <span class="fw-bold text-success">@(Model.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Chờ thanh toán")</span>
+                </div>
+
+                <div class="d-flex justify-content-between fs-5 fw-bold text-dark pt-2 border-top">
+                    <span>Tổng tiền:</span>
+                    <span class="text-primary">@Model.TotalAmount.ToString("N0")đ</span>
+                </div>
+
+                @if (Model.Status == OrderStatus.Pending)
+                {
+                    <a asp-controller="Order" asp-action="CancelOrder" asp-route-id="@Model.OrderId" class="btn btn-outline-danger w-100 py-2.5 rounded-3 fw-bold mt-4">
+                        <i class="bi bi-trash3-fill me-2"></i> Hủy Đơn Hàng Này
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

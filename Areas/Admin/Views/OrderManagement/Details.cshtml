@@ -1,0 +1,133 @@
+@model Order
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.OrderNumber;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    decimal subTotal = Model.OrderDetails.Sum(d => d.UnitPrice * d.Quantity);
+    decimal discountAmount = Math.Max(0, subTotal - Model.TotalAmount);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold font-heading m-0 text-dark">CHI TIẾT ĐƠN HÀNG #@Model.OrderNumber</h4>
+        <small class="text-muted">Mã Đơn ID: #@Model.OrderId | Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+    </div>
+    <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left"></i> Quay lại danh sách đơn hàng</a>
+</div>
+
+<div class="row g-4">
+    <!-- Order Items & Status Change -->
+    <div class="col-lg-8">
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+            <h5 class="fw-bold font-heading mb-3">DANH SÁCH MẶT HÀNG ĐẶT MUA (@Model.OrderDetails.Sum(d => d.Quantity) sản phẩm)</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sản Phẩm</th>
+                            <th>Mã SKU</th>
+                            <th>Đơn Giá</th>
+                            <th class="text-center">Số Lượng</th>
+                            <th class="text-end pe-3">Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderDetails)
+                        {
+                            var img = item.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@img" alt="prod" class="rounded-3" style="width: 54px; height: 54px; object-fit: cover;" />
+                                        <div>
+                                            <div class="fw-bold text-dark small">@item.Variant?.Product?.ProductName</div>
+                                            <small class="text-muted">Size: <span class="badge bg-light text-dark border">@item.Variant?.Size</span> | Màu: <span class="badge bg-light text-dark border">@item.Variant?.Color</span></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-monospace small text-muted">@item.Variant?.SKU</td>
+                                <td>@item.UnitPrice.ToString("N0")đ</td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary px-3 py-2 fs-7 rounded-pill">x @item.Quantity</span>
+                                </td>
+                                <td class="text-end pe-3 fw-bold text-dark">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-3" />
+
+            <!-- Order Pricing Summary -->
+            <div class="row justify-content-end">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between py-1 text-muted">
+                        <span>Tổng tiền hàng (Tạm tính):</span>
+                        <strong>@subTotal.ToString("N0")đ</strong>
+                    </div>
+                    @if (discountAmount > 0)
+                    {
+                        <div class="d-flex justify-content-between py-1 text-success">
+                            <span>Giảm giá & Tích lũy hạng TV:</span>
+                            <strong>-@discountAmount.ToString("N0")đ</strong>
+                        </div>
+                    }
+                    <div class="d-flex justify-content-between py-2 border-top fs-5 fw-bold text-dark mt-2">
+                        <span>Tổng Thanh Toán:</span>
+                        <span class="text-primary">@Model.TotalAmount.ToString("N0")đ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Info & Status Update Form -->
+    <div class="col-lg-4">
+        <!-- Status Update Card -->
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+            <h5 class="fw-bold font-heading mb-3"><i class="bi bi-sliders text-primary me-2"></i> CẬP NHẬT TRẠNG THÁI</h5>
+
+            <form action="/sys-admin-management/OrderManagement/UpdateStatus" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Trạng Thái Đơn Hàng</label>
+                    <select name="newStatus" class="form-select rounded-3">
+                        <option value="0" selected="@(Model.Status == OrderStatus.Pending)">Chờ xử lý (Pending)</option>
+                        <option value="1" selected="@(Model.Status == OrderStatus.Shipping)">Đang giao hàng (Shipping)</option>
+                        <option value="2" selected="@(Model.Status == OrderStatus.Completed)">Đã hoàn thành (Completed)</option>
+                        <option value="3" selected="@(Model.Status == OrderStatus.Cancelled)">Đã hủy (Cancelled)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Trạng Thái Thanh Toán</label>
+                    <select name="paymentStatus" class="form-select rounded-3">
+                        <option value="0" selected="@(Model.Payment?.Status == PaymentStatus.WaitingForPayment)">Chờ thanh toán (WaitingForPayment)</option>
+                        <option value="1" selected="@(Model.Payment?.Status == PaymentStatus.Success)">Thanh toán thành công (Success)</option>
+                        <option value="2" selected="@(Model.Payment?.Status == PaymentStatus.Failed)">Thanh toán thất bại (Failed)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary-gradient w-100 py-2 font-heading fw-bold">Lưu Trạng Thái</button>
+            </form>
+        </div>
+
+        <!-- Customer & Address Info Card -->
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+            <h5 class="fw-bold font-heading mb-3">THÔNG TIN KHÁCH HÀNG</h5>
+            <div class="small">
+                <div class="text-muted mb-1">Tài khoản đặt:</div>
+                <div class="fw-bold text-dark">@Model.User?.FullName (@@@Model.User?.Username)</div>
+                <div class="text-muted small">@Model.User?.Email</div>
+
+                <div class="text-muted mt-3 mb-1">Người nhận hàng:</div>
+                <div class="fw-bold">@Model.Address?.RecipientName - <span class="font-monospace text-primary">@Model.Address?.Phone</span></div>
+
+                <div class="text-muted mt-3 mb-1">Địa chỉ giao hàng:</div>
+                <div class="fw-semibold">@Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province</div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+@model IEnumerable<WEBBANQUANAO.Models.Entities.AssociationRule>
+@{
+    ViewData["Title"] = "Quản Lý Thuật Toán Apriori (Association Rules)";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    int totalOrders = ViewBag.TotalOrdersAnalyzed ?? 0;
+    DateTime? lastMined = ViewBag.LastMinedDate;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold font-heading m-0 text-dark">QUẢN LÝ THUẬT TOÁN APRIORI</h2>
+        <p class="text-muted small m-0">Khai phá luật kết hợp giỏ hàng (Market Basket Analysis) gợi ý mua kèm tự động</p>
+    </div>
+    <form asp-action="RunMining" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary-gradient btn-lg shadow-lg">
+            <i class="bi bi-cpu-fill me-2"></i> 🚀 CHẠY THUẬT TOÁN APRIORI NGAY
+        </button>
+    </form>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <small class="text-muted d-block mb-1">Tổng Số Đơn Hàng Phân Tích</small>
+            <h3 class="fw-bold text-primary m-0">@totalOrders đơn hàng</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <small class="text-muted d-block mb-1">Số Luồng Luật Kết Hợp Khai Thác Được</small>
+            <h3 class="fw-bold text-success m-0">@Model.Count() quy luật</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <small class="text-muted d-block mb-1">Lần Khai Thác Gần Nhất</small>
+            <h3 class="fw-bold text-dark m-0">@(lastMined.HasValue ? lastMined.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa chạy")</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white p-4 border-bottom">
+        <h5 class="fw-bold font-heading m-0">DANH SÁCH LUẬT KẾT HỢP GỢI Ý MUA KÈM (APRIORI RULES)</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Sản Phẩm Tiền Đề (Khi Khách Mua)</th>
+                            <th></th>
+                            <th>Sản Phẩm Gợi Ý Mua Kèm (Hệ Thống Đề Xuất)</th>
+                            <th>Độ Hỗ Trợ (Support)</th>
+                            <th>Độ Tin Cậy (Confidence)</th>
+                            <th>Chỉ Số Lift</th>
+                            <th class="text-end pe-4">Cập Nhật</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rule in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 font-heading fw-bold text-dark">
+                                    <i class="bi bi-box-seam me-2 text-primary"></i>@rule.AntecedentProduct?.ProductName
+                                </td>
+                                <td class="text-center text-primary fs-5"><i class="bi bi-arrow-right-circle-fill"></i></td>
+                                <td class="font-heading fw-bold text-success">
+                                    <i class="bi bi-bag-plus-fill me-2 text-success"></i>@rule.ConsequentProduct?.ProductName
+                                </td>
+                                <td><span class="badge bg-light text-dark border">@((rule.Support * 100).ToString("N1"))%</span></td>
+                                <td>
+                                    <div class="progress" style="height: 18px;">
+                                        <div class="progress-bar bg-success" style="width: @(rule.Confidence * 100)%;">
+                                            @((rule.Confidence * 100).ToString("N0"))%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning text-dark fw-bold">@rule.Lift.ToString("N2")x</span></td>
+                                <td class="text-end pe-4 small text-muted">@rule.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-magic fs-1 d-block mb-3 text-secondary"></i>
+                Chưa có dữ liệu luật kết hợp Apriori. Vui lòng nhấn nút <strong>"🚀 CHẠY THUẬT TOÁN APRIORI NGAY"</strong> để tự động quét toàn bộ giỏ hàng và tạo gợi ý mua kèm!
+            </div>
+        }
+    </div>
+</div>

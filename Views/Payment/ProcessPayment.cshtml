@@ -1,0 +1,43 @@
+@model Order
+@{
+    ViewData["Title"] = "Thanh Toán Đơn Hàng #" + Model.OrderId;
+}
+
+<div class="container my-5">
+    <div class="card p-5 border-0 shadow-lg rounded-4 bg-white max-w-650 mx-auto" style="max-width: 650px;">
+        <div class="text-center mb-4">
+            <span class="badge bg-warning text-dark mb-2 px-3 py-2 rounded-pill font-monospace">PAYMENT GATEWAY SIMULATOR</span>
+            <h3 class="fw-bold font-heading m-0">THANH TOÁN ĐƠN HÀNG #@Model.OrderId</h3>
+            <p class="text-muted small">Vui lòng thực hiện chuyển khoản hoặc quét mã QR bên dưới để hoàn tất đơn hàng</p>
+        </div>
+
+        <div class="text-center p-4 bg-light rounded-4 mb-4">
+            <h4 class="text-primary fw-bold mb-3">Số tiền cần thanh toán: @Model.TotalAmount.ToString("N0")đ</h4>
+
+            @if (!string.IsNullOrEmpty(Model.Payment?.QRCodeUrl))
+            {
+                <div class="mb-3">
+                    <img src="@Model.Payment.QRCodeUrl" alt="VietQR" class="img-fluid rounded-3 border shadow-sm" style="max-width: 250px;" />
+                </div>
+            }
+
+            <div class="small text-muted font-monospace">
+                Nội dung chuyển khoản: <strong>DH @Model.OrderId</strong>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <form asp-controller="Payment" asp-action="ConfirmPayment" method="post">
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+                <button type="submit" class="btn btn-primary-gradient btn-lg w-100 font-heading fw-bold shadow-lg">
+                    <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN ĐÃ THANH TOÁN (DEMO)
+                </button>
+            </form>
+
+            <form asp-controller="Payment" asp-action="CancelPayment" method="post">
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+                <button type="submit" class="btn btn-link text-danger w-100 text-decoration-none small">Hủy giao dịch thanh toán</button>
+            </form>
+        </div>
+    </div>
+</div>

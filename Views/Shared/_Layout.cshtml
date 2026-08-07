@@ -1,0 +1,361 @@
+@inject WEBBANQUANAO.Data.ApplicationDbContext _layoutDbContext
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="FASHION STORE - Thời trang cao cấp, phong cách hiện đại. Khám phá bộ sưu tập quần áo nam nữ mới nhất." />
+    <meta name="theme-color" content="#6366f1" />
+    <title>@ViewData["Title"] - FASHION STORE</title>
+
+    <!-- Preconnect for fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ====== SCROLL PROGRESS INDICATOR BAR ====== -->
+    <div id="scrollProgressBar" style="position:fixed;top:0;left:0;height:3.5px;background:linear-gradient(90deg,#5b5fc7,#db2777);z-index:999999;width:0%;transition:width 0.1s linear;"></div>
+
+    <!-- ====== STICKY HEADER CONTAINER ====== -->
+    <header class="sticky-top" style="z-index:999;">
+        <!-- ====== TOP ANNOUNCEMENT MARQUEE ====== -->
+        <div class="top-announcement-marquee-wrapper" id="announcementBar">
+            <div class="top-announcement-marquee-content" id="announcementContent">
+                🔥 MÃ GIẢM GIÁ: <strong class="text-warning">"FASHION2026"</strong> - GIẢM 10% CHO ĐƠN TỪ 300.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
+                💥 <strong class="text-warning">"GIAM50K"</strong> - GIẢM 50.000đ CHO ĐƠN TỪ 500.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
+                🚚 MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN TỪ 500.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
+                ⚡ MỚI VỀ HÔM NAY: Váy Đầm Luxury, Áo Blazer Modern, Quần Jean Slimfit, Áo Polo Cotton...
+            </div>
+        </div>
+
+        <!-- ====== NAVBAR ====== -->
+        <nav class="navbar navbar-expand-lg navbar-custom" id="mainNavbar">
+            <div class="container">
+                <!-- Brand Logo -->
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <i class="bi bi-bag-heart-fill" style="background:linear-gradient(135deg,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.6rem;"></i>
+                    <span>FASHION<span style="background:linear-gradient(135deg,#ec4899,#f43f5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">STORE</span></span>
+                </a>
+
+                <!-- Mobile Toggler -->
+                <button class="navbar-toggler border-0 p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-4 text-dark"></i>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <!-- Main Navigation Links -->
+                    <ul class="navbar-nav mb-2 mb-lg-0 ms-lg-3 gap-lg-1">
+                        <!-- Trang Chủ -->
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" href="/">
+                                <i class="bi bi-house-door d-lg-none me-2"></i> Trang Chủ
+                            </a>
+                        </li>
+
+                        <!-- Dropdown Sản Phẩm -->
+                        <li class="nav-item dropdown dropdown-hover">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Product" && string.IsNullOrEmpty(Context.Request.Query["gender"]) ? "active" : "")" href="/Product" id="navProductDropdown" role="button" aria-expanded="false">
+                                <i class="bi bi-grid d-lg-none me-2"></i> Sản Phẩm
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2 mt-2" style="min-width:240px;">
+                                <li><a class="dropdown-item rounded-3 py-2 fw-bold text-primary" href="/Product"><i class="bi bi-collection-fill me-2"></i> Tất Cả Sản Phẩm</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?categoryId=1"><i class="bi bi-tag-fill text-info me-2"></i> Áo Nam & Nữ</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?categoryId=2"><i class="bi bi-tag-fill text-success me-2"></i> Quần Thời Trang</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?categoryId=3"><i class="bi bi-tag-fill text-danger me-2"></i> Váy & Đầm</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?categoryId=4"><i class="bi bi-tag-fill text-warning me-2"></i> Phụ Kiện</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?sortBy=newest"><i class="bi bi-stars text-warning me-2"></i> Sản Phẩm Mới Về</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?sortBy=popular"><i class="bi bi-fire text-danger me-2"></i> Sản Phẩm Bán Chạy</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Dropdown Nam -->
+                        <li class="nav-item dropdown dropdown-hover">
+                            <a class="nav-link @(Context.Request.Query["gender"] == "0" || Context.Request.Query["gender"] == "Male" ? "active" : "")" href="/Product?gender=0" id="navMaleDropdown" role="button" aria-expanded="false">
+                                <i class="bi bi-gender-male me-1 text-info"></i> Nam
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2 mt-2" style="min-width:230px;">
+                                <li><a class="dropdown-item rounded-3 py-2 fw-bold text-info" href="/Product?gender=0"><i class="bi bi-gender-male me-2"></i> Tất Cả Thời Trang Nam</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=0&categoryId=1"><i class="bi bi-shirt me-2 text-primary"></i> Áo Nam</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=0&categoryId=2"><i class="bi bi-square me-2 text-secondary"></i> Quần Nam</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=0&categoryId=4"><i class="bi bi-watch me-2 text-warning"></i> Phụ Kiện Nam</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=0&sortBy=newest"><i class="bi bi-stars text-warning me-2"></i> Đồ Nam Mới Về</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Dropdown Nữ -->
+                        <li class="nav-item dropdown dropdown-hover">
+                            <a class="nav-link @(Context.Request.Query["gender"] == "1" || Context.Request.Query["gender"] == "Female" ? "active" : "")" href="/Product?gender=1" id="navFemaleDropdown" role="button" aria-expanded="false">
+                                <i class="bi bi-gender-female me-1 text-danger"></i> Nữ
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2 mt-2" style="min-width:230px;">
+                                <li><a class="dropdown-item rounded-3 py-2 fw-bold text-danger" href="/Product?gender=1"><i class="bi bi-gender-female me-2"></i> Tất Cả Thời Trang Nữ</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=1&categoryId=1"><i class="bi bi-shirt me-2 text-primary"></i> Áo Nữ</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=1&categoryId=2"><i class="bi bi-square me-2 text-secondary"></i> Quần Nữ</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=1&categoryId=3"><i class="bi bi-heart me-2 text-danger"></i> Váy & Đầm Nữ</a></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=1&categoryId=4"><i class="bi bi-gem me-2 text-warning"></i> Phụ Kiện Nữ</a></li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li><a class="dropdown-item rounded-3 py-2" href="/Product?gender=1&sortBy=newest"><i class="bi bi-stars text-warning me-2"></i> Đồ Nữ Mới Về</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Liên Hệ -->
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Contact" ? "active" : "")" href="/Home/Contact">
+                                <i class="bi bi-telephone d-lg-none me-2"></i> Liên Hệ
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Spacer on desktop -->
+                    <div class="flex-grow-1 d-none d-lg-block"></div>
+
+                    <!-- Live Search -->
+                    <form class="navbar-search-form position-relative my-2 my-lg-0 me-lg-3" action="/Product" method="get" id="globalSearchForm">
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute" style="left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:0.95rem;z-index:2;pointer-events:none;"></i>
+                            <input type="text" id="liveSearchInput" name="searchQuery" class="form-control navbar-search-input" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" style="padding-left:2.8rem !important;" />
+                        </div>
+                        <!-- Live Search Results Dropdown -->
+                        <div id="liveSearchResults" class="dropdown-menu shadow-lg border-0 rounded-4 p-2" style="display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:1050;max-height:420px;overflow-y:auto;min-width:340px;"></div>
+                    </form>
+
+                    <!-- Cart & User Actions -->
+                    <div class="d-flex align-items-center gap-2 my-2 my-lg-0">
+                        @{
+                            int layoutCartCount = 0;
+                            try
+                            {
+                                var uIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                                if (int.TryParse(uIdClaim, out int uId) && uId > 0)
+                                {
+                                    layoutCartCount = _layoutDbContext.CartItems
+                                        .Where(ci => ci.Cart.UserId == uId)
+                                        .Sum(ci => (int?)ci.Quantity) ?? 0;
+                                }
+                                else
+                                {
+                                    var gCartJson = Context.Session.GetString("GUEST_CART");
+                                    if (!string.IsNullOrEmpty(gCartJson))
+                                    {
+                                        using var doc = System.Text.Json.JsonDocument.Parse(gCartJson);
+                                        if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                                        {
+                                            foreach (var el in doc.RootElement.EnumerateArray())
+                                            {
+                                                if (el.TryGetProperty("Quantity", out var qProp))
+                                                {
+                                                    layoutCartCount += qProp.GetInt32();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch {}
+                        }
+                        <!-- Cart Button with Outer Positioned Non-Clipped Circle Badge -->
+                        <div class="position-relative d-inline-flex align-items-center" style="z-index:50;">
+                            <a id="headerCartBtn" href="/Cart" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width:44px;height:44px;flex-shrink:0;" title="Giỏ Hàng Của Bạn">
+                                <i class="bi bi-cart3 fs-5 text-dark"></i>
+                            </a>
+                            <span class="cart-count-badge position-absolute bg-danger text-white fw-bold d-flex align-items-center justify-content-center shadow" style="top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:50px;font-size:0.72rem;line-height:1;border:2px solid #ffffff;z-index:1000;box-shadow:0 3px 8px rgba(239,68,68,0.5);pointer-events:none;@(layoutCartCount > 0 ? "display:flex !important;" : "display:none !important;")">@layoutCartCount</span>
+                        </div>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-outline-custom d-flex align-items-center gap-2 py-2 px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-size:0.75rem;font-weight:700;flex-shrink:0;">
+                                        @(User.FindFirst("FullName")?.Value?.Substring(0,1)?.ToUpper() ?? "U")
+                                    </div>
+                                    <span class="d-none d-md-inline" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.88rem;">@User.FindFirst("FullName")?.Value</span>
+                                    <i class="bi bi-chevron-down" style="font-size:0.75rem;"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2" style="min-width:210px;">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item fw-bold rounded-3 py-2 d-flex align-items-center gap-2" href="/sys-admin-management/Dashboard/Index" style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.05));color:#4f46e5;">
+                                                <i class="bi bi-speedometer2 text-warning fs-6"></i> Bảng Quản Trị
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider my-1"></li>
+                                    }
+                                    <li>
+                                        <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" asp-controller="Account" asp-action="Profile">
+                                            <i class="bi bi-person-badge text-primary"></i> Hồ sơ cá nhân
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item rounded-3 py-2 d-flex align-items-center gap-2" asp-controller="Account" asp-action="MyOrders">
+                                            <i class="bi bi-box-seam text-success"></i> Đơn hàng của tôi
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger rounded-3 py-2 d-flex align-items-center gap-2">
+                                                <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-custom py-2 px-3" style="font-size:0.88rem;">Đăng Nhập</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary-gradient py-2 px-3" style="font-size:0.88rem;">Đăng Ký</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Admin Quick Access -->
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="admin-quick-btn">
+            <a href="/sys-admin-management/Dashboard/Index" class="btn btn-dark d-flex align-items-center gap-2 rounded-pill shadow-lg py-2 px-3" style="border:1px solid rgba(250,204,21,0.4);font-size:0.82rem;font-weight:600;">
+                <i class="bi bi-speedometer2 text-warning"></i>
+                <span class="d-none d-sm-inline text-warning">Admin Panel</span>
+            </a>
+        </div>
+    }
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <main role="main" class="pb-5">
+        @RenderBody()
+    </main>
+
+    <!-- React Chatbot Root -->
+    <div id="react-chatbot-root"></div>
+
+    <!-- ====== FOOTER ====== -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 pb-4">
+                <!-- Brand Column -->
+                <div class="col-lg-4 col-md-12">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-bag-heart-fill fs-3" style="color:#6366f1;"></i>
+                        <span class="text-white fw-bold font-heading fs-4" style="font-family:'Outfit',sans-serif;letter-spacing:-0.03em;">FASHION STORE</span>
+                    </div>
+                    <p class="small opacity-75 lh-lg">Hệ thống cửa hàng thời trang cao cấp hàng đầu Việt Nam. Mang đến phong cách thời trang hiện đại, tinh tế và đẳng cấp cho mọi người.</p>
+                    <div class="footer-social d-flex gap-2 mt-3">
+                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="col-lg-2 col-6">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:0.8rem;letter-spacing:0.08em;">Danh Mục</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="/Product?gender=0">👔 Thời Trang Nam</a></li>
+                        <li><a href="/Product?gender=1">👗 Thời Trang Nữ</a></li>
+                        <li><a href="/Product?categoryId=1">👕 Áo & Sơ Mi</a></li>
+                        <li><a href="/Product?categoryId=2">👖 Quần & Jogger</a></li>
+                        <li><a href="/Product?categoryId=4">👜 Phụ Kiện</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div class="col-lg-3 col-6">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:0.8rem;letter-spacing:0.08em;">Hỗ Trợ</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="/Home/SizeGuide">📏 Hướng dẫn chọn size</a></li>
+                        <li><a href="/Home/ReturnPolicy">🔄 Chính sách đổi trả 7 ngày</a></li>
+                        <li><a href="/Home/PaymentPolicy">💳 Phương thức thanh toán</a></li>
+                        <li><a href="/Home/Privacy">🔒 Chính sách bảo mật</a></li>
+                        <li><a href="/Account/MyOrders">📦 Tra cứu đơn hàng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-lg-3">
+                    <h6 class="text-white fw-bold mb-3 text-uppercase" style="font-size:0.8rem;letter-spacing:0.08em;">Liên Hệ</h6>
+                    <div class="d-flex flex-column gap-2 small">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-geo-alt-fill text-primary mt-1"></i>
+                            <span>123 Đường Thời Trang, Quận 1, TP. Hồ Chí Minh</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-telephone-fill text-success"></i>
+                            <a href="tel:19006789">Hotline: 1900 6789</a>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-envelope-fill text-warning"></i>
+                            <a href="mailto:support@fashionstore.vn">support@fashionstore.vn</a>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <i class="bi bi-clock-fill text-info"></i>
+                            <span>8:00 - 22:00 (T2 - CN)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-15 my-3" />
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 py-2">
+                <small class="opacity-60 text-center">© 2026 FASHION STORE. All Rights Reserved. Powered by .NET 8 MVC.</small>
+                <div class="d-flex gap-3 small opacity-60">
+                    <a href="/Home/ReturnPolicy">Điều khoản</a>
+                    <a href="/Home/Privacy">Bảo mật</a>
+                    <a href="/Home/Contact">Liên hệ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+    <!-- React 18 & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@@babel/standalone/babel.min.js"></script>
+
+    <!-- Site Scripts -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/babel" src="~/js/chatbot-react.js" asp-append-version="true"></script>
+
+    <!-- Toast Notifications -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@Html.Raw(TempData["SuccessMessage"]?.ToString()?.Replace("\"","\\\""))", 'success'));</script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@Html.Raw(TempData["ErrorMessage"]?.ToString()?.Replace("\"","\\\""))", 'error'));</script>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@Html.Raw(TempData["InfoMessage"]?.ToString()?.Replace("\"","\\\""))", 'info'));</script>
+    }
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

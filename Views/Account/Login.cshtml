@@ -1,0 +1,263 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Đăng Nhập";
+}
+
+<div class="container my-5">
+    <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 bg-white max-w-500 mx-auto" style="max-width: 480px;">
+        <div class="text-center mb-4">
+            <i class="bi bi-person-circle display-4 text-primary mb-2"></i>
+            <h3 class="fw-bold font-heading m-0">ĐĂNG NHẬP TÀI KHOẢN</h3>
+            <p class="text-muted small">Chào mừng bạn quay trở lại với Fashion Store</p>
+        </div>
+
+        <form asp-controller="Account" asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="UsernameOrEmail" class="form-label fw-bold small">Tên đăng nhập hoặc Email</label>
+                <input asp-for="UsernameOrEmail" id="loginUsernameInput" class="form-control rounded-3" placeholder="username hoặc email@example.com" />
+                <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-bold small">Mật khẩu</label>
+                <input asp-for="Password" class="form-control rounded-3" placeholder="••••••••" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label small text-muted">Ghi nhớ đăng nhập</label>
+                </div>
+                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="small text-primary fw-bold text-decoration-none">
+                    <i class="bi bi-key-fill me-1"></i> Quên mật khẩu?
+                </a>
+            </div>
+
+            <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3">
+                ĐĂNG NHẬP
+            </button>
+        </form>
+
+        <div class="position-relative my-4">
+            <hr class="text-muted opacity-25" />
+            <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">Hoặc đăng nhập nhanh</span>
+        </div>
+
+        <!-- Google & Facebook Login Buttons -->
+        <div class="d-flex gap-2 mb-4">
+            <a asp-controller="Account" asp-action="GoogleLogin" class="btn btn-outline-danger w-50 py-2 rounded-3 font-heading fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                <i class="bi bi-google"></i> Google
+            </a>
+            <a asp-controller="Account" asp-action="FacebookLogin" class="btn btn-outline-primary w-50 py-2 rounded-3 font-heading fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                <i class="bi bi-facebook"></i> Facebook
+            </a>
+        </div>
+
+        <div class="text-center small text-muted">
+            Chưa có tài khoản? <a asp-controller="Account" asp-action="Register" class="text-primary fw-bold text-decoration-none">Đăng ký ngay</a>
+        </div>
+    </div>
+</div>
+
+<!-- ====== FORGOT PASSWORD OTP MODAL ====== -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold font-heading"><i class="bi bi-shield-lock-fill text-primary me-2"></i> QUÊN MẬT KHẨU (OTP)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                
+                <!-- STEP 1: Enter Gmail -->
+                <div id="otpStep1">
+                    <p class="text-muted small mb-3">Nhập địa chỉ Gmail đăng ký tài khoản của bạn để hệ thống gửi mã OTP xác thực 6 chữ số.</p>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Địa Chỉ Gmail (*)</label>
+                        <input type="email" id="otpEmailInput" class="form-control rounded-3" placeholder="nhapemail@gmail.com" />
+                    </div>
+                    <button type="button" onclick="sendOtpCode()" id="btnSendOtp" class="btn btn-primary-gradient w-100 fw-bold rounded-3 py-2">
+                        <i class="bi bi-envelope-paper-fill me-1"></i> GỬI MÃ OTP VỀ GMAIL
+                    </button>
+                </div>
+
+                <!-- STEP 2: Enter 6-Digit OTP Code -->
+                <div id="otpStep2" style="display:none;">
+                    <div class="alert alert-info rounded-3 py-2 small mb-3">
+                        <i class="bi bi-envelope-check-fill text-success me-1"></i> Mã OTP xác thực đã được gửi tới Gmail của bạn. Vui lòng kiểm tra hộp thư (kể cả hòm thư rác/spam).
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Nhập Mã OTP (6 chữ số) (*)</label>
+                        <input type="text" id="otpCodeInput" class="form-control rounded-3 text-center font-monospace fw-bold fs-4" placeholder="••••••" maxlength="6" />
+                    </div>
+                    <button type="button" onclick="verifyOtpCode()" id="btnVerifyOtp" class="btn btn-primary-gradient w-100 fw-bold rounded-3 py-2">
+                        <i class="bi bi-check-circle-fill me-1"></i> XÁC NHẬN MÃ OTP
+                    </button>
+                </div>
+
+                <!-- STEP 3: Set New Password -->
+                <div id="otpStep3" style="display:none;">
+                    <div class="alert alert-success rounded-3 py-2 small mb-3">
+                        <i class="bi bi-check2-circle me-1"></i> Mã OTP hợp lệ! Vui lòng tạo mật khẩu mới cho tài khoản.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Mật Khẩu Mới (*)</label>
+                        <input type="password" id="newPasswordInput" class="form-control rounded-3" placeholder="Tối thiểu 6 ký tự..." minlength="6" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Xác Nhận Mật Khẩu Mới (*)</label>
+                        <input type="password" id="confirmPasswordInput" class="form-control rounded-3" placeholder="Nhập lại mật khẩu mới..." minlength="6" />
+                    </div>
+                    <button type="button" onclick="submitResetPassword()" id="btnResetPwd" class="btn btn-success w-100 fw-bold rounded-3 py-2">
+                        <i class="bi bi-lock-fill me-1"></i> ĐỔI MẬT KHẨU MỚI
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    let forgotModal = null;
+
+    function openForgotPasswordModal() {
+        if (!forgotModal) {
+            forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+        }
+        backToStep1();
+        forgotModal.show();
+    }
+
+    function backToStep1() {
+        document.getElementById('otpStep1').style.display = 'block';
+        document.getElementById('otpStep2').style.display = 'none';
+        document.getElementById('otpStep3').style.display = 'none';
+        document.getElementById('otpCodeInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('confirmPasswordInput').value = '';
+    }
+
+    function sendOtpCode() {
+        const email = document.getElementById('otpEmailInput').value.trim();
+        if (!email) {
+            showToast('Vui lòng nhập địa chỉ Gmail!', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnSendOtp');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang gửi OTP...';
+
+        fetch('/Account/SendOtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-envelope-paper-fill me-1"></i> GỬI MÃ OTP VỀ GMAIL';
+
+            if (data.success) {
+                showToast(data.message, 'success');
+                document.getElementById('otpStep1').style.display = 'none';
+                document.getElementById('otpStep2').style.display = 'block';
+
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-envelope-paper-fill me-1"></i> GỬI MÃ OTP VỀ GMAIL';
+            showToast('Lỗi kết nối máy chủ!', 'error');
+        });
+    }
+
+    function verifyOtpCode() {
+        const code = document.getElementById('otpCodeInput').value.trim();
+        if (!code || code.length < 6) {
+            showToast('Vui lòng nhập đủ 6 chữ số mã OTP!', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnVerifyOtp');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang xác nhận...';
+
+        fetch('/Account/VerifyOtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ otpCode: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> XÁC NHẬN MÃ OTP';
+
+            if (data.success) {
+                showToast(data.message, 'success');
+                document.getElementById('otpStep2').style.display = 'none';
+                document.getElementById('otpStep3').style.display = 'block';
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> XÁC NHẬN MÃ OTP';
+            showToast('Lỗi kết nối máy chủ!', 'error');
+        });
+    }
+
+    function submitResetPassword() {
+        const p1 = document.getElementById('newPasswordInput').value;
+        const p2 = document.getElementById('confirmPasswordInput').value;
+
+        if (!p1 || p1.length < 6) {
+            showToast('Mật khẩu mới phải từ 6 ký tự trở lên!', 'error');
+            return;
+        }
+        if (p1 !== p2) {
+            showToast('Xác nhận mật khẩu mới không khớp!', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btnResetPwd');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang lưu mật khẩu...';
+
+        fetch('/Account/ResetPasswordWithOtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ newPassword: p1 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> ĐỔI MẬT KHẨU MỚI';
+
+            if (data.success) {
+                showToast(data.message, 'success');
+                if (forgotModal) forgotModal.hide();
+                if (data.email) {
+                    document.getElementById('loginUsernameInput').value = data.email;
+                }
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> ĐỔI MẬT KHẨU MỚI';
+            showToast('Lỗi kết nối máy chủ!', 'error');
+        });
+    }
+    </script>
+}

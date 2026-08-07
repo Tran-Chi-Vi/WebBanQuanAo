@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>@ViewData["Title"] — Admin Command Center</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+
+    <!-- ====== SIDEBAR OVERLAY (Mobile) ====== -->
+    <div class="admin-sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ====== SIDEBAR ====== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <!-- Brand -->
+        <div class="admin-sidebar-header">
+            <div class="logo-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <span>ADMIN<span style="color:#6366f1;">PANEL</span></span>
+        </div>
+
+        <!-- Nav Navigation -->
+        <nav style="padding:0.5rem 0 2rem;flex:1;">
+            <div class="admin-nav-section">Tổng Quan</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+                   href="/sys-admin-management/Dashboard/Index">
+                    <i class="bi bi-grid-1x2-fill nav-icon"></i>
+                    <span>Tổng Quan (Dashboard)</span>
+                </a>
+            </div>
+
+            <div class="admin-nav-section">Quản Lý Hệ Thống</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "ProductManagement" ? "active" : "")"
+                   href="/sys-admin-management/ProductManagement/Index">
+                    <i class="bi bi-box-seam-fill nav-icon"></i>
+                    <span>Quản Lý Sản Phẩm</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryBrand" ? "active" : "")"
+                   href="/sys-admin-management/CategoryBrand/Categories">
+                    <i class="bi bi-tags-fill nav-icon"></i>
+                    <span>Danh Mục & Thương Hiệu</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "OrderManagement" ? "active" : "")"
+                   href="/sys-admin-management/OrderManagement/Index">
+                    <i class="bi bi-cart-check-fill nav-icon"></i>
+                    <span>Quản Lý Đơn Hàng</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Promotion" ? "active" : "")"
+                   href="/sys-admin-management/Promotion/Index">
+                    <i class="bi bi-ticket-perforated-fill nav-icon"></i>
+                    <span>Mã Khuyến Mãi</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")"
+                   href="/sys-admin-management/User/Index">
+                    <i class="bi bi-people-fill nav-icon"></i>
+                    <span>Quản Lý Người Dùng</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserAccount" ? "active" : "")"
+                   href="/sys-admin-management/UserAccount/Index">
+                    <i class="bi bi-shield-lock-fill nav-icon text-warning"></i>
+                    <span>Quản Lý Tài Khoản (2FA)</span>
+                </a>
+            </div>
+
+            <div class="admin-nav-section">Phân Tích & AI</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Apriori" ? "active" : "")"
+                   href="/sys-admin-management/Apriori/Index">
+                    <i class="bi bi-diagram-3-fill nav-icon"></i>
+                    <span>Thuật Toán Apriori</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Analytics" ? "active" : "")"
+                   href="/sys-admin-management/Analytics/Index">
+                    <i class="bi bi-cpu-fill nav-icon"></i>
+                    <span>Phân Tích AI & ML</span>
+                </a>
+            </div>
+
+            <hr style="border-color:rgba(255,255,255,0.08);margin:1rem 1.25rem;">
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="/" style="color:#fbbf24;">
+                    <i class="bi bi-shop nav-icon"></i>
+                    <span>Xem Trang Bán Hàng</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <div class="admin-content">
+        <!-- Top Header -->
+        <header class="admin-topbar">
+            <div class="admin-topbar-left">
+                <!-- Mobile hamburger -->
+                <button class="admin-hamburger" id="adminHamburger" onclick="toggleSidebar()" aria-label="Menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="admin-page-title">
+                    <h4 class="m-0 fw-bold font-heading">@ViewData["Title"]</h4>
+                    <small class="text-muted">Hệ thống quản trị Fashion Store Command Center</small>
+                </div>
+            </div>
+
+            <div class="admin-topbar-right d-flex align-items-center gap-3">
+
+                <!-- Notification Bell -->
+                <button class="btn btn-light rounded-circle d-flex align-items-center justify-content-center position-relative border" style="width:40px;height:40px;" title="Thông báo hệ thống">
+                    <i class="bi bi-bell fs-5 text-secondary"></i>
+                </button>
+
+                <!-- User Dropdown Menu -->
+                <div class="dropdown">
+                    <div class="admin-user-badge" data-bs-toggle="dropdown" aria-expanded="false" style="cursor:pointer;">
+                        <div class="admin-avatar">
+                            @(User.FindFirst("FullName")?.Value?.Substring(0,1)?.ToUpper() ?? "A")
+                        </div>
+                        <span class="admin-user-name d-none d-sm-inline">@(User.FindFirst("FullName")?.Value ?? "Admin")</span>
+                        <i class="bi bi-chevron-down ms-1" style="font-size:0.7rem;color:#94a3b8;"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 mt-2 p-2" style="min-width:210px;">
+                        <li>
+                            <div class="px-3 py-2">
+                                <div class="fw-bold small text-dark">@(User.FindFirst("FullName")?.Value)</div>
+                                <div class="text-muted" style="font-size:0.78rem;">Quản trị viên hệ thống</div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item rounded-3 py-2 small" href="/">
+                                <i class="bi bi-shop text-primary me-2"></i> Xem trang bán hàng
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <form action="/Account/Logout" method="post">
+                                <button type="submit" class="dropdown-item text-danger rounded-3 py-2 small fw-bold">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Đăng Xuất
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Body Content -->
+        <div class="admin-body-content p-4">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    // Sidebar toggle (mobile)
+    function toggleSidebar() {
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+    function closeSidebar() {
+        document.getElementById('adminSidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+
+    // Toast function
+    function showToast(message, type = 'info') {
+        const icon = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+        Swal.fire({ toast: true, position: 'top-end', icon, title: message, showConfirmButton: false, timer: 3500, timerProgressBar: true });
+    }
+    </script>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@TempData["SuccessMessage"]", 'success'));</script>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@TempData["ErrorMessage"]", 'error'));</script>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <script>document.addEventListener('DOMContentLoaded', () => showToast("@TempData["InfoMessage"]", 'info'));</script>
+    }
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

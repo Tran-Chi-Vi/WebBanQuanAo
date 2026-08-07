@@ -1,0 +1,213 @@
+using System.Net;
+using System.Net.Mail;
+using Microsoft.EntityFrameworkCore;
+using WEBBANQUANAO.Data;
+using WEBBANQUANAO.Models.Entities;
+
+namespace WEBBANQUANAO.Services;
+
+public class EmailService : IEmailService
+{
+    private readonly ApplicationDbContext _context;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService> _logger;
+
+    public EmailService(ApplicationDbContext context, IConfiguration configuration, ILogger<EmailService> logger)
+    {
+        _context = context;
+        _configuration = configuration;
+        _logger = logger;
+    }
+
+    public async Task<bool> SendOtpEmailAsync(string toEmail, string recipientName, string otpCode)
+    {
+        string subject = "[FASHION STORE] - Mã OTP Xác Thực Đổi Mật Khẩu";
+        
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;"">
+                <div style=""text-align: center; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0;"">
+                    <h2 style=""background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; color: #6366f1; margin: 0; font-size: 24px;"">FASHION STORE</h2>
+                    <p style=""color: #64748b; margin: 5px 0 0 0; font-size: 14px;"">Hệ thống thời trang cao cấp & phong cách hiện đại</p>
+                </div>
+                
+                <div style=""padding: 30px 10px; text-align: center;"">
+                    <h3 style=""color: #0f172a; margin-top: 0;"">XÁC NHẬN YÊU CẦU QUÊN MẬT KHẨU</h3>
+                    <p style=""color: #334155; line-height: 1.6;"">Xin chào <strong>{recipientName}</strong>,</p>
+                    <p style=""color: #334155; line-height: 1.6;"">Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản Gmail <strong>{toEmail}</strong>.</p>
+                    <p style=""color: #334155; line-height: 1.6;"">Dưới đây là mã xác thực OTP 6 chữ số của bạn:</p>
+
+                    <div style=""margin: 25px auto; width: 220px; padding: 15px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 32px; font-weight: bold; letter-spacing: 8px; border-radius: 12px; box-shadow: 0 4px 15px rgba(99,102,241,0.3);"">
+                        {otpCode}
+                    </div>
+
+                    <p style=""color: #ef4444; font-size: 13px; font-weight: bold;"">⚠️ Mã OTP có hiệu lực trong 10 phút. Vui lòng tuyệt đối không chia sẻ mã này cho bất kỳ ai.</p>
+                </div>
+
+                <div style=""border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; color: #94a3b8; font-size: 12px;"">
+                    <p style=""margin: 0;"">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này hoặc liên hệ hỗ trợ.</p>
+                    <p style=""margin: 5px 0 0 0;"">© 2026 FASHION STORE. All rights reserved.</p>
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(toEmail, subject, body);
+    }
+
+    public async Task<bool> SendOrderInvoiceEmailAsync(int orderId)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                        .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null || order.User == null) return false;
+
+        string statusText = order.Status switch
+        {
+            OrderStatus.Pending => "<span style=\"color:#f59e0b;font-weight:bold;padding:4px 12px;background:#fef3c7;border-radius:20px;\">⏳ Đang Xử Lý</span>",
+            OrderStatus.Shipping => "<span style=\"color:#06b6d4;font-weight:bold;padding:4px 12px;background:#cff4fc;border-radius:20px;\">🚚 Đang Giao Hàng</span>",
+            OrderStatus.Completed => "<span style=\"color:#10b981;font-weight:bold;padding:4px 12px;background:#d1fae5;border-radius:20px;\">✅ Đã Hoàn Thành</span>",
+            OrderStatus.Cancelled => "<span style=\"color:#ef4444;font-weight:bold;padding:4px 12px;background:#fee2e2;border-radius:20px;\">❌ Đã Hủy</span>",
+            _ => "<span style=\"color:#64748b;\">Chờ Duyệt</span>"
+        };
+
+        string subject = $"[FASHION STORE] - Hóa Đơn Đơn Hàng #{order.OrderNumber} ({order.Status})";
+
+        var itemsHtml = "";
+        int totalItemsCount = 0;
+
+        foreach (var item in order.OrderDetails)
+        {
+            var p = item.Variant?.Product;
+            var imgUrl = p?.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p?.Images.FirstOrDefault()?.ImageUrl ?? "https://via.placeholder.com/80";
+            if (!imgUrl.StartsWith("http") && !imgUrl.StartsWith("/")) imgUrl = "/" + imgUrl;
+            
+            totalItemsCount += item.Quantity;
+            decimal itemTotal = item.UnitPrice * item.Quantity;
+
+            itemsHtml += $@"
+                <tr>
+                    <td style=""padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle;"">
+                        <img src=""{imgUrl}"" alt=""{p?.ProductName}"" style=""width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;"" />
+                    </td>
+                    <td style=""padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle;"">
+                        <strong style=""color: #0f172a; font-size: 14px; d-block;"">{p?.ProductName}</strong>
+                        <div style=""color: #64748b; font-size: 12px; margin-top: 4px;"">Size: <strong>{item.Variant?.Size}</strong> | Màu: <strong>{item.Variant?.Color}</strong></div>
+                    </td>
+                    <td style=""padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; vertical-align: middle; font-weight: bold;"">
+                        x{item.Quantity}
+                    </td>
+                    <td style=""padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: right; vertical-align: middle; color: #4338ca; font-weight: bold;"">
+                        {itemTotal:N0}đ
+                    </td>
+                </tr>";
+        }
+
+        string addressText = order.Address != null 
+            ? $"{order.Address.RecipientName} - SĐT: {order.Address.Phone} ({order.Address.DetailAddress}, {order.Address.Ward}, {order.Address.District}, {order.Address.Province})"
+            : "Chưa cập nhật";
+
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
+                
+                <!-- HEADER -->
+                <div style=""display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9;"">
+                    <div>
+                        <h2 style=""color: #6366f1; margin: 0; font-size: 24px; font-weight: bold;"">FASHION STORE</h2>
+                        <span style=""color: #64748b; font-size: 13px;"">HÓA ĐƠN XÁC NHẬN ĐƠN HÀNG</span>
+                    </div>
+                    <div style=""text-align: right;"">
+                        <div style=""font-family: monospace; font-size: 14px; font-weight: bold; color: #0f172a;"">#{order.OrderNumber}</div>
+                        <div style=""color: #94a3b8; font-size: 12px; margin-top: 4px;"">{order.OrderDate:dd/MM/yyyy HH:mm}</div>
+                    </div>
+                </div>
+
+                <!-- STATUS BADGE -->
+                <div style=""margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;"">
+                    <span style=""color: #334155; font-size: 14px; font-weight: 500;"">Trạng Thái Đơn Hàng Xét Duyệt:</span>
+                    <div>{statusText}</div>
+                </div>
+
+                <!-- RECIPIENT INFO -->
+                <div style=""margin-bottom: 25px; padding: 15px; background: #f8fafc; border-radius: 12px; font-size: 13px; color: #334155; line-height: 1.6;"">
+                    <div style=""font-weight: bold; color: #0f172a; margin-bottom: 6px; font-size: 14px;"">📌 THÔNG TIN GIAO HÀNG:</div>
+                    <div>Khách hàng: <strong>{order.User.FullName}</strong> ({order.User.Email})</div>
+                    <div>Địa chỉ nhận: <strong>{addressText}</strong></div>
+                    <div>Thanh toán: <strong>{(order.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Thanh toán khi nhận hàng / Chờ xác nhận")}</strong></div>
+                </div>
+
+                <!-- PRODUCT ITEMS TABLE -->
+                <h4 style=""color: #0f172a; margin: 0 0 12px 0; font-size: 15px;"">🛒 DANH SÁCH SẢN PHẨM MUA ({totalItemsCount} sản phẩm):</h4>
+                <table style=""width: 100%; border-collapse: collapse; margin-bottom: 20px;"">
+                    <thead>
+                        <tr style=""background: #f1f5f9; color: #475569; font-size: 12px; text-transform: uppercase;"">
+                            <th style=""padding: 10px; text-align: left;"">Hình ảnh</th>
+                            <th style=""padding: 10px; text-align: left;"">Sản phẩm</th>
+                            <th style=""padding: 10px; text-align: center;"">SL</th>
+                            <th style=""padding: 10px; text-align: right;"">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {itemsHtml}
+                    </tbody>
+                </table>
+
+                <!-- TOTAL SUMMARY -->
+                <div style=""text-align: right; padding-top: 15px; border-top: 2px dashed #e2e8f0;"">
+                    <div style=""font-size: 18px; font-weight: bold; color: #0f172a;"">
+                        TỔNG CỘNG THANH TOÁN: <span style=""color: #6366f1; font-size: 24px;"">{order.TotalAmount:N0}đ</span>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div style=""margin-top: 30px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; color: #94a3b8; font-size: 12px; line-height: 1.5;"">
+                    <p style=""margin: 0;"">Cảm ơn bạn đã tin tưởng mua sắm tại <strong>FASHION STORE</strong>!</p>
+                    <p style=""margin: 4px 0 0 0;"">Mọi thắc mắc về đơn hàng xin vui lòng liên hệ Hotline: 1900-FASHION hoặc Email: support@fashionstore.vn</p>
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(order.User.Email, subject, body);
+    }
+
+    private async Task<bool> SendEmailInternalAsync(string toEmail, string subject, string htmlBody)
+    {
+        try
+        {
+            string smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+            int smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out int p) ? p : 587;
+            string senderEmail = _configuration["EmailSettings:SenderEmail"] ?? "tranchivi29102005@gmail.com";
+            string senderName = _configuration["EmailSettings:SenderName"] ?? "FASHION STORE";
+            string password = _configuration["EmailSettings:Password"] ?? "";
+
+            if (string.IsNullOrEmpty(password))
+            {
+                _logger.LogWarning($"SMTP Password is empty in EmailSettings. Email to {toEmail} with subject '{subject}' logged/simulated.");
+                return true; // Graceful simulation mode
+            }
+
+            using var message = new MailMessage();
+            message.From = new MailAddress(senderEmail, senderName);
+            message.To.Add(new MailAddress(toEmail));
+            message.Subject = subject;
+            message.Body = htmlBody;
+            message.IsBodyHtml = true;
+
+            using var client = new SmtpClient(smtpServer, smtpPort);
+            client.Credentials = new NetworkCredential(senderEmail, password);
+            client.EnableSsl = true;
+
+            await client.SendMailAsync(message);
+            _logger.LogInformation($"Successfully sent email to {toEmail} with subject '{subject}'.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failed to send email to {toEmail}. Error: {ex.Message}");
+            return false;
+        }
+    }
+}

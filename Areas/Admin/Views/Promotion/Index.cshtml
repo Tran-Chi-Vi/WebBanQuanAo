@@ -1,0 +1,69 @@
+@model List<Promotion>
+@{
+    ViewData["Title"] = "Quản Lý Mã Khuyến Mãi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold font-heading m-0">QUẢN LÝ MÃ KHUYẾN MÃI</h4>
+    <a asp-area="Admin" asp-controller="Promotion" asp-action="Create" class="btn btn-primary-gradient shadow-sm">
+        + Thêm Mã Khuyến Mãi Mới
+    </a>
+</div>
+
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle">
+            <thead>
+                <tr>
+                    <th>Mã Khuyến Mãi</th>
+                    <th>Loại Giảm Giá</th>
+                    <th>Giá Trị Giảm</th>
+                    <th>Đơn Tối Thiểu</th>
+                    <th>Thời Gian Hiệu Lực</th>
+                    <th>Lượt Dùng</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    bool isActive = p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now;
+                    <tr>
+                        <td class="fw-bold"><span class="badge bg-primary fs-6 font-monospace">@p.Code</span></td>
+                        <td>@p.DiscountType</td>
+                        <td class="fw-bold text-success">
+                            @(p.DiscountType == DiscountType.Percentage ? $"{p.DiscountValue}%" : $"{p.DiscountValue:N0}đ")
+                        </td>
+                        <td>@p.MinOrderValue.ToString("N0")đ</td>
+                        <td class="small">
+                            <div>Từ: @p.StartDate.ToString("dd/MM/yyyy")</div>
+                            <div>Đến: @p.EndDate.ToString("dd/MM/yyyy")</div>
+                            <span class="badge @(isActive ? "bg-success" : "bg-secondary") mt-1">
+                                @(isActive ? "Đang hiệu lực" : "Hết hạn/Chưa có")
+                            </span>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">@p.Orders.Count lượt</span></td>
+                        <td>
+                            <div class="d-flex gap-2 align-items-center">
+                                <a asp-area="Admin" asp-controller="Promotion" asp-action="Edit" asp-route-id="@p.PromotionId"
+                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
+                                   style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <form asp-area="Admin" asp-controller="Promotion" asp-action="Delete" method="post" onsubmit="return confirm('Xóa mã này?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.PromotionId" />
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold"
+                                            style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+@model AdminPromotionFormViewModel
+@{
+    ViewData["Title"] = "Thêm Mã Khuyến Mãi Mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold font-heading m-0">THÊM MÃ KHUYẾN MÃI MỚI</h4>
+    <a asp-area="Admin" asp-controller="Promotion" asp-action="Index" class="btn btn-sm btn-outline-custom"><i class="bi bi-arrow-left"></i> Quay lại</a>
+</div>
+
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white max-w-600 mx-auto" style="max-width: 600px;">
+    <form asp-area="Admin" asp-controller="Promotion" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="Code" class="form-label fw-bold small">Mã Giảm Giá (*)</label>
+            <input asp-for="Code" class="form-control rounded-3 text-uppercase font-monospace fw-bold" placeholder="VD: FASHION50K" required />
+            <span asp-validation-for="Code" class="text-danger small"></span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label asp-for="DiscountType" class="form-label fw-bold small">Loại Giảm Giá</label>
+                <select asp-for="DiscountType" class="form-select rounded-3">
+                    <option value="0">Phần trăm (%)</option>
+                    <option value="1">Số tiền cố định (VNĐ)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DiscountValue" class="form-label fw-bold small">Giá Trị Giảm (*)</label>
+                <input asp-for="DiscountValue" type="number" class="form-control rounded-3" placeholder="Ví dụ: 10 hoặc 50000" required />
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="MinOrderValue" class="form-label fw-bold small">Giá Trị Đơn Tối Thiểu (VNĐ)</label>
+            <input asp-for="MinOrderValue" type="number" class="form-control rounded-3" placeholder="0" />
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label asp-for="StartDate" class="form-label fw-bold small">Ngày Bắt Đầu</label>
+                <input asp-for="StartDate" type="datetime-local" class="form-control rounded-3" value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" required />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="EndDate" class="form-label fw-bold small">Ngày Kết Thúc</label>
+                <input asp-for="EndDate" type="datetime-local" class="form-control rounded-3" value="@Model.EndDate.ToString("yyyy-MM-ddTHH:mm")" required />
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg">
+            TẠO MÃ KHUYẾN MÃI
+        </button>
+    </form>
+</div>

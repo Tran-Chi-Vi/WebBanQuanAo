@@ -1,0 +1,221 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Giỏ Hàng Của Bạn";
+}
+
+<div class="container my-4">
+    <h2 class="fw-bold font-heading mb-4"><i class="bi bi-cart3 text-primary me-2"></i> GIỎ HÀNG CỦA BẠN</h2>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm border">
+            <i class="bi bi-cart-x fs-1 text-muted"></i>
+            <h4 class="fw-bold mt-3">Giỏ hàng của bạn đang trống</h4>
+            <p class="text-muted">Hãy chọn mua thêm các sản phẩm thời trang phong cách từ cửa hàng nhé!</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary-gradient mt-2">Khám Phá Sản Phẩm</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Items Table -->
+            <div class="col-lg-8">
+                <div class="card p-3 border-0 shadow-sm rounded-4 bg-white">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Sản Phẩm</th>
+                                    <th>Giá</th>
+                                    <th style="width: 140px;">Số Lượng</th>
+                                    <th>Tổng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr id="cart-row-@item.VariantId">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;" />
+                                                <div>
+                                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="fw-bold text-dark text-decoration-none d-block">@item.ProductName</a>
+                                                    <small class="text-muted">Size: @item.Size | Màu: @item.Color</small>
+                                                    <div class="small text-info font-monospace" id="stock-hint-@item.VariantId">(Tồn kho: @item.AvailableStock SP)</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold">@item.Price.ToString("N0")đ</td>
+                                        <td>
+                                            <div class="input-group input-group-sm">
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)">-</button>
+                                                <input type="number" id="qty-@item.VariantId" 
+                                                       class="form-control text-center font-monospace fw-bold px-1" 
+                                                       value="@item.Quantity" 
+                                                       min="1" 
+                                                       max="@item.AvailableStock" 
+                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" />
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold text-primary" id="item-total-@item.VariantId">@item.TotalPrice.ToString("N0")đ</td>
+                                        <td>
+                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm btn-outline-danger border-0 rounded-circle">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary & Promo Code -->
+            <div class="col-lg-4">
+                <div class="card p-4 border-0 shadow-sm rounded-4 bg-white sticky-top" style="top: 100px;">
+                    <h5 class="fw-bold font-heading mb-3">TỔNG ĐƠN HÀNG</h5>
+
+                    <!-- Promo Code Form -->
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">MÃ GIẢM GIÁ (PROMO CODE)</label>
+                        <div class="input-group">
+                            <input type="text" id="promoCodeInput" class="form-control text-uppercase" placeholder="Nhập mã..." value="@Model.AppliedPromoCode" />
+                            <button onclick="applyPromoAjax()" class="btn btn-outline-primary fw-bold" type="button">Áp Dụng</button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.PromoMessage))
+                        {
+                            <div class="small text-success fw-bold mt-1"><i class="bi bi-check-circle-fill me-1"></i> @Model.PromoMessage</div>
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tạm tính:</span>
+                        <span id="summarySubTotal" class="fw-bold">@Model.SubTotal.ToString("N0")đ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 text-success">
+                        <span>Giảm giá:</span>
+                        <span id="summaryDiscount" class="fw-bold">-@Model.DiscountAmount.ToString("N0")đ</span>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between mb-4 fs-5">
+                        <span class="fw-bold">Tổng thanh toán:</span>
+                        <span id="summaryFinalTotal" class="fw-bold text-primary">@Model.FinalTotal.ToString("N0")đ</span>
+                    </div>
+
+                    <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg">
+                        TIẾN HÀNH ĐẶT HÀNG <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function adjustCartQty(variantId, delta, maxStock) {
+            const input = document.getElementById(`qty-${variantId}`);
+            if (!input) return;
+            let currentVal = parseInt(input.value) || 1;
+            let newVal = currentVal + delta;
+            handleQtyInputBlur(variantId, newVal, maxStock);
+        }
+
+        function handleQtyInputBlur(variantId, val, maxStock) {
+            let targetVal = parseInt(val) || 1;
+
+            if (targetVal > maxStock) {
+                targetVal = maxStock;
+                showToast(`Số lượng tồn kho sản phẩm này chỉ còn ${maxStock} SP!`, 'warning');
+            }
+
+            if (targetVal < 1) targetVal = 1;
+
+            document.getElementById(`qty-${variantId}`).value = targetVal;
+            sendUpdateQuantity(variantId, targetVal);
+        }
+
+        function getCsrfToken() {
+            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+        }
+
+        function sendUpdateQuantity(variantId, newQty) {
+            fetch('/Cart/UpdateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': getCsrfToken()
+                },
+                body: `variantId=${variantId}&quantity=${newQty}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (newQty <= 0) {
+                        document.getElementById(`cart-row-${variantId}`)?.remove();
+                    } else {
+                        document.getElementById(`qty-${variantId}`).value = newQty;
+                        document.getElementById(`item-total-${variantId}`).textContent = data.itemTotal.toLocaleString('vi-VN') + 'đ';
+                    }
+                    updateTotals(data.subTotal, data.discount, data.finalTotal);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            })
+            .catch(err => console.error(err));
+        }
+
+        function removeCartItem(variantId) {
+            fetch('/Cart/RemoveItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': getCsrfToken()
+                },
+                body: `variantId=${variantId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`cart-row-${variantId}`)?.remove();
+                    updateTotals(data.subTotal, data.discount, data.finalTotal);
+                    showToast(data.message, 'info');
+                    if (data.cartCount === 0) location.reload();
+                }
+            });
+        }
+
+        function applyPromoAjax() {
+            const code = document.getElementById('promoCodeInput').value.trim();
+            fetch('/Cart/ApplyPromotion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': getCsrfToken()
+                },
+                body: `promoCode=${encodeURIComponent(code)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    location.reload();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            });
+        }
+
+        function updateTotals(subTotal, discount, finalTotal) {
+            document.getElementById('summarySubTotal').textContent = subTotal.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('summaryDiscount').textContent = '-' + discount.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('summaryFinalTotal').textContent = finalTotal.toLocaleString('vi-VN') + 'đ';
+        }
+    </script>
+}

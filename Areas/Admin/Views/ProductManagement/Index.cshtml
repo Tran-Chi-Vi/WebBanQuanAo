@@ -1,0 +1,105 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Quản Lý Sản Phẩm";
+    var categories = ViewBag.Categories as List<Category> ?? new List<Category>();
+    var brands = ViewBag.Brands as List<Brand> ?? new List<Brand>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold font-heading m-0">DANH SÁCH SẢN PHẨM</h4>
+        <small class="text-muted">Tổng số: @ViewBag.TotalItems sản phẩm</small>
+    </div>
+    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary-gradient shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Thêm Sản Phẩm Mới
+    </a>
+</div>
+
+<!-- Filters Header -->
+<div class="card p-3 border-0 shadow-sm rounded-4 bg-white mb-4">
+    <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" method="get" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="searchQuery" class="form-control rounded-3" placeholder="Tìm theo tên sản phẩm..." value="@ViewBag.SearchQuery" />
+        </div>
+        <div class="col-md-3">
+            <select name="categoryId" class="form-select rounded-3">
+                <option value="">-- Tất cả danh mục --</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c.CategoryId" selected="@(ViewBag.CategoryId == c.CategoryId)">@c.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="brandId" class="form-select rounded-3">
+                <option value="">-- Tất cả thương hiệu --</option>
+                @foreach (var b in brands)
+                {
+                    <option value="@b.BrandId" selected="@(ViewBag.BrandId == b.BrandId)">@b.BrandName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Lọc</button>
+        </div>
+    </form>
+</div>
+
+<!-- Product Table -->
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle">
+            <thead>
+                <tr>
+                    <th>Hình Ảnh</th>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Danh Mục</th>
+                    <th>Thương Hiệu</th>
+                    <th>Giá Gốc</th>
+                    <th>Biến Thể (Size/Màu)</th>
+                    <th>Trạng Thái</th>
+                    <th>Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                    <tr>
+                        <td>
+                            <img src="@img" alt="@p.ProductName" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                        </td>
+                        <td class="fw-bold">@p.ProductName</td>
+                        <td class="small text-muted">@p.Category?.CategoryName</td>
+                        <td class="small text-muted">@p.Brand?.BrandName</td>
+                        <td class="fw-bold text-primary">@p.BasePrice.ToString("N0")đ</td>
+                        <td>
+                            <span class="badge bg-light text-dark border">@p.Variants.Count biến thể</span>
+                        </td>
+                        <td>
+                            <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary")">@p.Status</span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2 align-items-center">
+                                <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Edit" asp-route-id="@p.ProductId"
+                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
+                                   style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa/ngưng kinh doanh sản phẩm này?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.ProductId" />
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold"
+                                            style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

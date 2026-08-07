@@ -1,0 +1,98 @@
+@model AdminOrderListViewModel
+@{
+    ViewData["Title"] = "Quản Lý Đơn Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold font-heading m-0 text-dark">QUẢN LÝ ĐƠN HÀNG TOÀN HỆ THỐNG</h4>
+        <small class="text-muted">Tổng số: @Model.TotalOrdersCount đơn hàng</small>
+    </div>
+</div>
+
+<!-- Filters & Date Range Selector -->
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
+    <form action="/sys-admin-management/OrderManagement/Index" method="get" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label small fw-bold">Từ Khóa Tìm Kiếm</label>
+            <input type="text" name="searchQuery" class="form-control rounded-3" placeholder="Tìm theo mã đơn #, tên KH, SĐT..." value="@Model.SearchQuery" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-bold">Trạng Thái Đơn Hàng</label>
+            <select name="statusFilter" class="form-select rounded-3">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="0" selected="@(Model.StatusFilter == OrderStatus.Pending)">Chờ xử lý (Pending)</option>
+                <option value="1" selected="@(Model.StatusFilter == OrderStatus.Shipping)">Đang giao hàng (Shipping)</option>
+                <option value="2" selected="@(Model.StatusFilter == OrderStatus.Completed)">Đã hoàn thành (Completed)</option>
+                <option value="3" selected="@(Model.StatusFilter == OrderStatus.Cancelled)">Đã hủy (Cancelled)</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small fw-bold">Từ Ngày Đặt</label>
+            <input type="date" name="fromDate" class="form-control rounded-3" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small fw-bold">Đến Ngày Đặt</label>
+            <input type="date" name="toDate" class="form-control rounded-3" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-bold"><i class="bi bi-filter me-1"></i> Lọc Đơn Hàng</button>
+        </div>
+    </form>
+</div>
+
+<!-- Order Table -->
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-3">Mã Đơn</th>
+                    <th>Khách Hàng</th>
+                    <th>Số Điện Thoại</th>
+                    <th>Ngày Đặt Hàng</th>
+                    <th>Thanh Toán</th>
+                    <th>Trạng Thái</th>
+                    <th>Tổng Tiền</th>
+                    <th class="text-end pe-3">Thao Tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model.Orders)
+                {
+                    <tr>
+                        <td class="ps-3 fw-bold font-monospace text-primary">#@o.OrderNumber</td>
+                        <td class="fw-bold text-dark">@o.User?.FullName</td>
+                        <td class="font-monospace small text-muted">@(o.User?.Phone ?? o.Address?.Phone)</td>
+                        <td class="small text-muted"><i class="bi bi-calendar-event me-1"></i>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <span class="badge @(o.Payment?.Status == PaymentStatus.Success ? "bg-success" : "bg-warning text-dark")">
+                                @(o.Payment?.Status == PaymentStatus.Success ? "Đã Thanh Toán" : "Chờ Thanh Toán")
+                            </span>
+                        </td>
+                        <td>
+                            @{
+                                string badgeClass = o.Status switch
+                                {
+                                    OrderStatus.Pending => "bg-warning text-dark",
+                                    OrderStatus.Shipping => "bg-info text-white",
+                                    OrderStatus.Completed => "bg-success text-white",
+                                    OrderStatus.Cancelled => "bg-danger text-white",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @badgeClass rounded-pill">@o.Status</span>
+                        </td>
+                        <td class="fw-bold text-primary">@o.TotalAmount.ToString("N0")đ</td>
+                        <td class="text-end pe-3">
+                            <a asp-action="Details" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                <i class="bi bi-eye me-1"></i> Chi Tiết
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

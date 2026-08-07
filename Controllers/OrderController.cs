@@ -1,0 +1,427 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using FashionStore.Web.Services;
+using WEBBANQUANAO.Data;
+using WEBBANQUANAO.Models.Entities;
+using WEBBANQUANAO.Models.ViewModels;
+using WEBBANQUANAO.Services;
+
+namespace WEBBANQUANAO.Controllers;
+
+[Authorize]
+public class OrderController : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly IInventoryService _inventoryService;
+    private readonly IAprioriService _aprioriService;
+    private readonly IEmailService _emailService;
+    private const string SESSION_PROMO_KEY = "APPLIED_PROMO_CODE";
+
+    public OrderController(ApplicationDbContext context, IInventoryService inventoryService, IAprioriService aprioriService, IEmailService emailService)
+    {
+        _context = context;
+        _inventoryService = inventoryService;
+        _aprioriService = aprioriService;
+        _emailService = emailService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Checkout()
+    {
+        int userId = GetCurrentUserId();
+
+        var cartItems = await _context.CartItems
+            .Where(ci => ci.Cart.UserId == userId)
+            .Include(ci => ci.Variant)
+                .ThenInclude(v => v.Product)
+                    .ThenInclude(p => p.Images)
+            .ToListAsync();
+
+        if (!cartItems.Any())
+        {
+            TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+            return RedirectToAction("Index", "Cart");
+        }
+
+        var addresses = await _context.Addresses
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.IsDefault)
+            .ToListAsync();
+
+        var cartVM = await BuildCartViewModelAsync(userId, cartItems);
+
+        // APRIORI CROSS-SELLING RECOMMENDATIONS FOR CHECKOUT
+        var cartProductIds = cartItems.Select(ci => ci.Variant.ProductId).Distinct().ToList();
+        var aprioriRecommendations = new List<Product>();
+
+        foreach (var pId in cartProductIds)
+        {
+            var rules = await _aprioriService.GetRecommendationsAsync(pId, topN: 4);
+            foreach (var rule in rules)
+            {
+                if (rule.ConsequentProduct != null &&
+                    rule.ConsequentProduct.Status == ProductStatus.Active &&
+                    !cartProductIds.Contains(rule.ConsequentProductId) &&
+                    !aprioriRecommendations.Any(p => p.ProductId == rule.ConsequentProductId))
+                {
+                    aprioriRecommendations.Add(rule.ConsequentProduct);
+                }
+            }
+        }
+
+        if (aprioriRecommendations.Count < 4)
+        {
+            var existingIds = aprioriRecommendations.Select(ar => ar.ProductId).ToList();
+            var additionalProducts = await _context.Products
+                .Where(p => p.Status == ProductStatus.Active && !cartProductIds.Contains(p.ProductId) && !existingIds.Contains(p.ProductId))
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .Take(4 - aprioriRecommendations.Count)
+                .ToListAsync();
+
+            aprioriRecommendations.AddRange(additionalProducts);
+        }
+
+        // Re-query full entities with Images & Variants included so product images are never missing
+        var finalRecIds = aprioriRecommendations.Select(p => p.ProductId).Distinct().ToList();
+        if (finalRecIds.Any())
+        {
+            aprioriRecommendations = await _context.Products
+                .Where(p => finalRecIds.Contains(p.ProductId))
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .ToListAsync();
+        }
+
+        ViewBag.AprioriRecommendations = aprioriRecommendations;
+
+        var viewModel = new CheckoutViewModel
+        {
+            Cart = cartVM,
+            UserAddresses = addresses,
+            SelectedAddressId = addresses.FirstOrDefault(a => a.IsDefault)?.AddressId ?? addresses.FirstOrDefault()?.AddressId
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Checkout(CheckoutViewModel model)
+    {
+        int userId = GetCurrentUserId();
+
+        var cartItems = await _context.CartItems
+            .Where(ci => ci.Cart.UserId == userId)
+            .Include(ci => ci.Variant)
+                .ThenInclude(v => v.Product)
+            .ToListAsync();
+
+        if (!cartItems.Any())
+        {
+            TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+            return RedirectToAction("Index", "Cart");
+        }
+
+        int addressId = 0;
+        if (model.CreateNewAddress)
+        {
+            if (string.IsNullOrWhiteSpace(model.NewAddress.RecipientName) ||
+                string.IsNullOrWhiteSpace(model.NewAddress.Phone) ||
+                string.IsNullOrWhiteSpace(model.NewAddress.StreetAddress) ||
+                string.IsNullOrWhiteSpace(model.NewAddress.City) ||
+                string.IsNullOrWhiteSpace(model.NewAddress.District) ||
+                string.IsNullOrWhiteSpace(model.NewAddress.Ward))
+            {
+                TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng mới.";
+                return await RebindCheckoutViewAsync(userId, cartItems, model);
+            }
+
+            var newAddress = new Address
+            {
+                UserId = userId,
+                RecipientName = model.NewAddress.RecipientName,
+                Phone = model.NewAddress.Phone,
+                DetailAddress = model.NewAddress.StreetAddress,
+                Province = model.NewAddress.City,
+                District = model.NewAddress.District,
+                Ward = model.NewAddress.Ward,
+                IsDefault = !await _context.Addresses.AnyAsync(a => a.UserId == userId)
+            };
+
+            _context.Addresses.Add(newAddress);
+            await _context.SaveChangesAsync();
+            addressId = newAddress.AddressId;
+        }
+        else
+        {
+            if (!model.SelectedAddressId.HasValue || !await _context.Addresses.AnyAsync(a => a.AddressId == model.SelectedAddressId.Value && a.UserId == userId))
+            {
+                TempData["ErrorMessage"] = "Vui lòng chọn địa chỉ giao hàng hợp lệ.";
+                return await RebindCheckoutViewAsync(userId, cartItems, model);
+            }
+            addressId = model.SelectedAddressId.Value;
+        }
+
+        foreach (var item in cartItems)
+        {
+            bool stockDeducted = await _inventoryService.TryDeductStockAsync(item.VariantId, item.Quantity);
+            if (!stockDeducted)
+            {
+                TempData["ErrorMessage"] = $"Sản phẩm {item.Variant.Product.ProductName} ({item.Variant.Size} - {item.Variant.Color}) đã hết hàng hoặc không đủ số lượng.";
+                return await RebindCheckoutViewAsync(userId, cartItems, model);
+            }
+        }
+
+        decimal subTotal = cartItems.Sum(i => i.Variant.Price * i.Quantity);
+
+        decimal totalSpent = await _context.Orders
+            .Where(o => o.UserId == userId && o.Status == OrderStatus.Completed && o.Payment != null && o.Payment.Status == PaymentStatus.Success)
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
+        decimal tierDiscountAmount = (subTotal * tierInfo.DiscountPercent) / 100m;
+
+        decimal promoDiscount = 0;
+        int? promotionId = null;
+
+        string? promoCode = HttpContext.Session.GetString(SESSION_PROMO_KEY);
+        if (!string.IsNullOrEmpty(promoCode))
+        {
+            var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
+            if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
+            {
+                promotionId = promo.PromotionId;
+                promoDiscount = promo.DiscountType == DiscountType.Percentage ? (subTotal * promo.DiscountValue) / 100m : promo.DiscountValue;
+            }
+        }
+
+        decimal totalDiscount = tierDiscountAmount + promoDiscount;
+        decimal finalTotal = Math.Max(0, subTotal - totalDiscount);
+
+        var orderGuid = Guid.NewGuid();
+        var orderNumber = $"ORD-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 5).ToUpper()}";
+
+        var order = new Order
+        {
+            OrderGuid = orderGuid,
+            OrderNumber = orderNumber,
+            UserId = userId,
+            AddressId = addressId,
+            PromotionId = promotionId,
+            OrderDate = DateTime.Now,
+            Status = OrderStatus.Pending,
+            TotalAmount = finalTotal
+        };
+
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
+
+        foreach (var item in cartItems)
+        {
+            _context.OrderDetails.Add(new OrderDetail
+            {
+                OrderId = order.OrderId,
+                VariantId = item.VariantId,
+                UnitPrice = item.Variant.Price,
+                Quantity = item.Quantity
+            });
+
+            _context.UserBehaviorLogs.Add(new UserBehaviorLog
+            {
+                UserId = userId,
+                ProductId = item.Variant.ProductId,
+                ActionType = BehaviorActionType.Purchase,
+                Timestamp = DateTime.Now
+            });
+        }
+
+        var payment = new Payment
+        {
+            OrderId = order.OrderId,
+            Amount = finalTotal,
+            Status = PaymentStatus.WaitingForPayment,
+            PayOSTransactionId = model.PaymentMethod != "COD" ? $"PAYOS_{order.OrderGuid.ToString().Substring(0, 8).ToUpper()}" : null,
+            QRCodeUrl = model.PaymentMethod == "QR" ? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)finalTotal}&addInfo={order.OrderNumber}" : null
+        };
+
+        _context.Payments.Add(payment);
+
+        _context.CartItems.RemoveRange(cartItems);
+        HttpContext.Session.Remove(SESSION_PROMO_KEY);
+
+        await _context.SaveChangesAsync();
+
+        // Gửi Hóa Đơn Đặt Hàng Qua Gmail Người Dùng
+        try
+        {
+            await _emailService.SendOrderInvoiceEmailAsync(order.OrderId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Lỗi gửi email hóa đơn: " + ex.Message);
+        }
+
+        if (model.PaymentMethod == "PayOS" || model.PaymentMethod == "QR")
+        {
+            return RedirectToAction("ProcessPayment", "Payment", new { orderId = order.OrderId });
+        }
+
+        TempData["SuccessMessage"] = $"Đặt hàng thành công! Bạn nhận được ưu đãi {tierInfo.TierName} giảm {tierInfo.DiscountPercent}%. Cảm ơn bạn đã mua sắm.";
+        return RedirectToAction("Success", new { id = order.OrderId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Success(int id)
+    {
+        int userId = GetCurrentUserId();
+        var order = await _context.Orders
+            .Include(o => o.Address)
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                        .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
+
+        if (order == null) return NotFound();
+
+        return View(order);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> CancelOrder(int id)
+    {
+        int userId = GetCurrentUserId();
+        var order = await _context.Orders
+            .Include(o => o.Address)
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                        .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
+
+        if (order == null) return NotFound();
+
+        if (order.Status != OrderStatus.Pending)
+        {
+            TempData["ErrorMessage"] = "Chỉ có thể hủy đơn hàng đang ở trạng thái 'Chờ xử lý'.";
+            return RedirectToAction("MyOrders", "Account");
+        }
+
+        return View(order);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelOrder(int orderId, string? cancelReason)
+    {
+        int userId = GetCurrentUserId();
+        var order = await _context.Orders
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId && o.UserId == userId);
+
+        if (order == null) return NotFound();
+
+        if (order.Status != OrderStatus.Pending)
+        {
+            TempData["ErrorMessage"] = "Đơn hàng này không thể hủy do đã được xử lý hoặc giao hàng.";
+            return RedirectToAction("MyOrders", "Account");
+        }
+
+        // Cập nhật trạng thái đơn hàng -> Cancelled
+        order.Status = OrderStatus.Cancelled;
+
+        // Cập nhật trạng thái thanh toán -> Failed nếu có
+        if (order.Payment != null)
+        {
+            order.Payment.Status = PaymentStatus.Failed;
+        }
+
+        // HOÀN TRẢ SỐ LƯỢNG TỒN KHO CHO CÁC SẢN PHẨM TRONG ĐƠN HÀNG
+        foreach (var detail in order.OrderDetails)
+        {
+            var variant = await _context.ProductVariants.FindAsync(detail.VariantId);
+            if (variant != null)
+            {
+                variant.StockQuantity += detail.Quantity;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = $"Đã hủy đơn hàng #{order.OrderId} thành công! Số lượng sản phẩm đã được tự động hoàn lại vào kho.";
+        return RedirectToAction("MyOrders", "Account");
+    }
+
+    #region Helpers
+
+    private int GetCurrentUserId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+        return claim != null && int.TryParse(claim.Value, out int id) ? id : 0;
+    }
+
+    private async Task<CartViewModel> BuildCartViewModelAsync(int userId, List<CartItem> cartItems)
+    {
+        var items = cartItems.Select(ci => new CartItemViewModel
+        {
+            CartItemId = ci.CartItemId,
+            VariantId = ci.VariantId,
+            ProductId = ci.Variant.ProductId,
+            ProductName = ci.Variant.Product.ProductName,
+            Size = ci.Variant.Size,
+            Color = ci.Variant.Color,
+            Price = ci.Variant.Price,
+            Quantity = ci.Quantity,
+            AvailableStock = ci.Variant.StockQuantity,
+            ImageUrl = ci.Variant.Product.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png"
+        }).ToList();
+
+        decimal subTotal = items.Sum(i => i.TotalPrice);
+
+        // Tính ưu đãi phân hạng thành viên (Chỉ tính đơn đã Giao Thành Công & Đã Thanh Toán)
+        decimal totalSpent = await _context.Orders
+            .Where(o => o.UserId == userId && o.Status == OrderStatus.Completed && o.Payment != null && o.Payment.Status == PaymentStatus.Success)
+            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+        var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
+        decimal tierDiscount = (subTotal * tierInfo.DiscountPercent) / 100m;
+
+        string? promoCode = HttpContext.Session.GetString(SESSION_PROMO_KEY);
+        decimal promoDiscount = 0;
+
+        if (!string.IsNullOrEmpty(promoCode))
+        {
+            var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
+            if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
+            {
+                promoDiscount = promo.DiscountType == DiscountType.Percentage ? (subTotal * promo.DiscountValue) / 100m : promo.DiscountValue;
+            }
+        }
+
+        return new CartViewModel
+        {
+            Items = items,
+            AppliedPromoCode = promoCode,
+            DiscountAmount = tierDiscount + promoDiscount
+        };
+    }
+
+    private async Task<IActionResult> RebindCheckoutViewAsync(int userId, List<CartItem> cartItems, CheckoutViewModel model)
+    {
+        model.Cart = await BuildCartViewModelAsync(userId, cartItems);
+        model.UserAddresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
+        return View(model);
+    }
+
+    #endregion
+}

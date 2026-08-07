@@ -1,0 +1,232 @@
+@model IEnumerable<WEBBANQUANAO.Models.Entities.User>
+@{
+    ViewData["Title"] = "Quản Lý Tài Khoản Người Dùng (2FA)";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    bool isUnlocked = ViewBag.IsUnlocked ?? false;
+    var roles = ViewBag.Roles as List<WEBBANQUANAO.Models.Entities.Role> ?? new List<WEBBANQUANAO.Models.Entities.Role>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold font-heading m-0 text-dark">QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG 🔐</h2>
+        <p class="text-muted small m-0">Thay đổi thông tin cá nhân, phân quyền, đổi mật khẩu và quản trị quyền truy cập tài khoản</p>
+    </div>
+    @if (isUnlocked)
+    {
+        <form asp-action="LockSession" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                <i class="bi bi-lock-fill me-1"></i> Khóa Bảo Mật (2FA)
+            </button>
+        </form>
+    }
+</div>
+
+@if (!isUnlocked)
+{
+    <!-- ====== 2FA LOCK SCREEN CARD ====== -->
+    <div class="row justify-content-center my-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 text-center bg-white position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 w-100" style="height:6px;background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);"></div>
+                
+                <div class="mx-auto mb-3" style="width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#e0e7ff);display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-shield-lock-fill text-primary display-5"></i>
+                </div>
+
+                <h4 class="fw-bold font-heading mb-1 text-dark">XÁC THỰC BẢO MẬT 2 LỚP</h4>
+                <p class="text-muted small mb-4">Vui lòng nhập mã PIN bảo vệ để truy cập hệ thống Quản Lý & Thay Đổi Mật Khẩu Tài Khoản Người Dùng.</p>
+
+                <form asp-action="VerifyPin" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted d-block text-start">MÃ PIN BẢO VỆ (SECURITY PIN):</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-key-fill text-primary"></i></span>
+                            <input type="password" name="pin" class="form-control form-control-lg bg-light border-start-0 text-center font-monospace fw-bold fs-4" placeholder="••••••" maxlength="10" required autofocus />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-gradient btn-lg w-100 fw-bold rounded-3 shadow">
+                        <i class="bi bi-unlock-fill me-2"></i> XÁC NHẬN MỞ KHÓA
+                    </button>
+                </form>
+
+                <div class="mt-4 pt-3 border-top text-muted small">
+                    <i class="bi bi-shield-check text-success me-1"></i> Tính năng yêu cầu quyền Quản trị viên cấp cao.
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- ====== UNLOCKED ACCOUNT MANAGEMENT TABLE ====== -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, username, email, SĐT..." />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="roleFilter" class="form-select bg-light">
+                        <option value="">-- Tất cả vai trò --</option>
+                        <option value="Admin" selected="@(ViewBag.RoleFilter == "Admin")">Quản Trị Viên (Admin)</option>
+                        <option value="Customer" selected="@(ViewBag.RoleFilter == "Customer")">Khách Hàng (Customer)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-filter me-1"></i> Lọc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Họ và Tên</th>
+                            <th>Username</th>
+                            <th>Email / SĐT</th>
+                            <th>Vai Trò</th>
+                            <th>Ngày Tạo</th>
+                            <th class="text-end pe-4">Thao Tác Quản Trị</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:0.85rem;font-weight:700;flex-shrink:0;">
+                                            @(u.FullName?.Substring(0,1)?.ToUpper() ?? "U")
+                                        </div>
+                                        <span>@u.FullName</span>
+                                    </div>
+                                </td>
+                                <td class="font-monospace text-muted">@@@u.Username</td>
+                                <td>
+                                    <div><i class="bi bi-envelope me-1 text-muted"></i>@u.Email</div>
+                                    <small class="text-muted"><i class="bi bi-telephone me-1"></i>@(u.Phone ?? "Chưa cập nhật")</small>
+                                </td>
+                                <td>
+                                    @if (u.Role?.RoleName == "Admin")
+                                    {
+                                        <span class="badge bg-danger">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info text-dark">Khách Hàng</span>
+                                    }
+                                </td>
+                                <td class="small text-muted">@u.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <!-- Edit Profile Button -->
+                                        <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold" style="border-radius:8px;font-size:0.82rem;" data-bs-toggle="modal" data-bs-target="#editModal-@u.UserId">
+                                            <i class="bi bi-pencil"></i> Sửa
+                                        </button>
+
+                                        <!-- Reset Password Button -->
+                                        <button type="button" class="btn btn-sm btn-outline-warning text-dark d-inline-flex align-items-center gap-1 fw-semibold" style="border-radius:8px;font-size:0.82rem;" data-bs-toggle="modal" data-bs-target="#pwdModal-@u.UserId">
+                                            <i class="bi bi-key-fill"></i> Đổi Mật Khẩu
+                                        </button>
+
+                                        <!-- Delete Account -->
+                                        @if (u.Role?.RoleName != "Admin" || u.Username != "admin")
+                                        {
+                                            <form asp-action="DeleteAccount" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản @u.Username?')">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="userId" value="@u.UserId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold" style="border-radius:8px;font-size:0.82rem;">
+                                                    <i class="bi bi-trash"></i> Xóa
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+
+                                    <!-- EDIT MODAL -->
+                                    <div class="modal fade text-start" id="editModal-@u.UserId" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title fw-bold">Sửa Tài Khoản: @u.Username</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form asp-action="EditAccount" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="userId" value="@u.UserId" />
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-bold">Họ và Tên</label>
+                                                            <input type="text" name="fullName" value="@u.FullName" class="form-control rounded-3" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-bold">Email</label>
+                                                            <input type="email" name="email" value="@u.Email" class="form-control rounded-3" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-bold">Số điện thoại</label>
+                                                            <input type="text" name="phone" value="@u.Phone" class="form-control rounded-3" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-bold">Vai Trò</label>
+                                                            <select name="roleId" class="form-select rounded-3">
+                                                                @foreach (var r in roles)
+                                                                {
+                                                                    <option value="@r.RoleId" selected="@(r.RoleId == u.RoleId)">@r.RoleName</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-primary-gradient">Lưu Thay Đổi</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- RESET PASSWORD MODAL -->
+                                    <div class="modal fade text-start" id="pwdModal-@u.UserId" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title fw-bold"><i class="bi bi-key-fill text-warning me-2"></i>Đổi Mật Khẩu: @u.Username</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form asp-action="ResetPassword" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="userId" value="@u.UserId" />
+                                                    <div class="modal-body">
+                                                        <p class="text-muted small">Nhập mật khẩu mới thay thế cho tài khoản <strong>@@@u.Username</strong>:</p>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-bold">Mật khẩu mới (*)</label>
+                                                            <input type="password" name="newPassword" class="form-control rounded-3" placeholder="Nhập ít nhất 6 ký tự..." required minlength="6" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                                                        <button type="submit" class="btn btn-warning text-dark fw-bold">Cập Nhật Mật Khẩu</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

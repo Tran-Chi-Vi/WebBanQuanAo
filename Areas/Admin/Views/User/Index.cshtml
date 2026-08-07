@@ -1,0 +1,103 @@
+@model IEnumerable<WEBBANQUANAO.Models.Entities.User>
+@{
+    ViewData["Title"] = "Quản Lý Người Dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="fw-bold font-heading m-0 text-dark">QUẢN LÝ NGƯỜI DÙNG</h2>
+        <p class="text-muted small m-0">Tra cứu thông tin khách hàng, lịch sử đặt hàng, và bài viết đánh giá/bình luận</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, username, email, SĐT..." />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="roleFilter" class="form-select bg-light">
+                    <option value="">-- Tất cả vai trò --</option>
+                    <option value="Admin" selected="@(ViewBag.RoleFilter == "Admin")">Quản Trị Viên (Admin)</option>
+                    <option value="Customer" selected="@(ViewBag.RoleFilter == "Customer")">Khách Hàng (Customer)</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-filter me-1"></i> Lọc</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Họ và Tên</th>
+                        <th>Username</th>
+                        <th>Email / SĐT</th>
+                        <th>Vai Trò</th>
+                        <th>Tổng Chi Tiêu</th>
+                        <th>Hạng Thành Viên</th>
+                        <th>Ngày Đăng Ký</th>
+                        <th class="text-end pe-4">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        decimal totalSpend = user.Orders != null ? user.Orders.Where(o => o.Status != WEBBANQUANAO.Models.Entities.OrderStatus.Cancelled).Sum(o => o.TotalAmount) : 0m;
+                        var tierInfo = WEBBANQUANAO.Services.MembershipTierHelper.CalculateTier(totalSpend);
+
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:0.85rem;font-weight:700;flex-shrink:0;">
+                                        @(user.FullName?.Substring(0,1)?.ToUpper() ?? "U")
+                                    </div>
+                                    <span>@user.FullName</span>
+                                </div>
+                            </td>
+                            <td class="font-monospace text-muted">@@@user.Username</td>
+                            <td>
+                                <div><i class="bi bi-envelope me-1 text-muted"></i>@user.Email</div>
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>@(user.Phone ?? "Chưa cập nhật")</small>
+                            </td>
+                            <td>
+                                @if (user.Role?.RoleName == "Admin")
+                                {
+                                    <span class="badge bg-danger">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">Khách Hàng</span>
+                                }
+                            </td>
+                            <td class="fw-bold text-success">@totalSpend.ToString("N0")đ</td>
+                            <td>
+                                <span class="badge bg-dark text-warning">
+                                    <i class="bi bi-award-fill me-1"></i> @tierInfo.TierName (@tierInfo.DiscountPercent%)
+                                </span>
+                            </td>
+                            <td class="small text-muted">@user.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-end pe-4">
+                                <a asp-action="Details" asp-route-id="@user.UserId"
+                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
+                                   style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                    <i class="bi bi-eye"></i> Xem Chi Tiết & Bình Luận
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
