@@ -13,38 +13,61 @@ var builder = WebApplication.CreateBuilder(args);
 // =========================================================================
 // 1. CẤU HÌNH CƠ SỞ DỮ LIỆU (POSTGRESQL HOẶC SQL SERVER)
 // =========================================================================
-var defaultConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+var defaultConnStr = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? builder.Configuration["DATABASE_URL"] 
+    ?? "";
 
-// Tự động đọc cấu hình JSON khối "production" / "development" / "PostgreSQL" nếu có
-var activeSection = builder.Environment.IsDevelopment() ? "development" : "production";
-var pgHost = builder.Configuration[$"{activeSection}:host"] 
-    ?? builder.Configuration["production:host"] 
-    ?? builder.Configuration["development:host"] 
-    ?? builder.Configuration["PostgreSQL:Host"];
-
-if (!string.IsNullOrEmpty(pgHost))
+// Ưu tiên sử dụng Connection String trực tiếp nếu được cấp qua Biến Môi Trường (Render Environment Variables)
+if (string.IsNullOrEmpty(defaultConnStr))
 {
-    var pgUser = builder.Configuration[$"{activeSection}:username"] 
-        ?? builder.Configuration["production:username"] 
-        ?? builder.Configuration["development:username"] 
-        ?? builder.Configuration["PostgreSQL:Username"] ?? "vi";
-        
-    var pgPass = builder.Configuration[$"{activeSection}:password"] 
-        ?? builder.Configuration["production:password"] 
-        ?? builder.Configuration["development:password"] 
-        ?? builder.Configuration["PostgreSQL:Password"] ?? "";
-        
-    var pgDb = builder.Configuration[$"{activeSection}:database"] 
-        ?? builder.Configuration["production:database"] 
-        ?? builder.Configuration["development:database"] 
-        ?? builder.Configuration["PostgreSQL:Database"] ?? "fashionstore_1y94";
-        
-    var pgPort = builder.Configuration[$"{activeSection}:port"] 
-        ?? builder.Configuration["production:port"] 
-        ?? builder.Configuration["development:port"] 
-        ?? builder.Configuration["PostgreSQL:Port"] ?? "5432";
-        
-    defaultConnStr = $"Host={pgHost};Port={pgPort};Database={pgDb};Username={pgUser};Password={pgPass};SSL Mode=Require;Trust Server Certificate=true;";
+    var activeSection = builder.Environment.IsDevelopment() ? "development" : "production";
+    var pgHost = builder.Configuration[$"{activeSection}:host"] 
+        ?? builder.Configuration["production:host"] 
+        ?? builder.Configuration["development:host"] 
+        ?? builder.Configuration["PostgreSQL:Host"];
+
+    if (!string.IsNullOrEmpty(pgHost))
+    {
+        var pgUser = builder.Configuration[$"{activeSection}:username"] 
+            ?? builder.Configuration["production:username"] 
+            ?? builder.Configuration["development:username"] 
+            ?? builder.Configuration["PostgreSQL:Username"] ?? "vi";
+            
+        var pgPass = builder.Configuration[$"{activeSection}:password"] 
+            ?? builder.Configuration["production:password"] 
+            ?? builder.Configuration["development:password"] 
+            ?? builder.Configuration["PostgreSQL:Password"] ?? "";
+            
+        var pgDb = builder.Configuration[$"{activeSection}:database"] 
+            ?? builder.Configuration["production:database"] 
+            ?? builder.Configuration["development:database"] 
+            ?? builder.Configuration["PostgreSQL:Database"] ?? "fashionstore_1y94";
+            
+        var pgPort = builder.Configuration[$"{activeSection}:port"] 
+            ?? builder.Configuration["production:port"] 
+            ?? builder.Configuration["development:port"] 
+            ?? builder.Configuration["PostgreSQL:Port"] ?? "5432";
+            
+        defaultConnStr = $"Host={pgHost};Port={pgPort};Database={pgDb};Username={pgUser};Password={pgPass};SSL Mode=Require;Trust Server Certificate=true;";
+    }
+}
+
+// Chuyển đổi định dạng postgres:// hoặc postgresql:// nếu Render cấp dạng URL
+if (defaultConnStr.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) || 
+    defaultConnStr.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+{
+    try
+    {
+        var uri = new Uri(defaultConnStr);
+        var userInfo = uri.UserInfo.Split(':');
+        var user = userInfo[0];
+        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var dbName = uri.AbsolutePath.TrimStart('/');
+        defaultConnStr = $"Host={host};Port={port};Database={dbName};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+    }
+    catch { }
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

@@ -98,10 +98,10 @@ public class ProductController : Controller
 
         query = sortBy switch
         {
-            "price_asc" => query.OrderByDescending(p => favIds.Contains(p.ProductId)).ThenBy(p => p.BasePrice),
-            "price_desc" => query.OrderByDescending(p => favIds.Contains(p.ProductId)).ThenByDescending(p => p.BasePrice),
-            "name" => query.OrderByDescending(p => favIds.Contains(p.ProductId)).ThenBy(p => p.ProductName),
-            _ => query.OrderByDescending(p => favIds.Contains(p.ProductId)).ThenByDescending(p => p.CreatedAt)
+            "price_asc" => query.OrderBy(p => p.BasePrice),
+            "price_desc" => query.OrderByDescending(p => p.BasePrice),
+            "name" => query.OrderBy(p => p.ProductName),
+            _ => query.OrderByDescending(p => p.CreatedAt)
         };
 
         int totalItems = await query.CountAsync();
@@ -112,6 +112,11 @@ public class ProductController : Controller
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+        if (favIds.Any())
+        {
+            products = products.OrderByDescending(p => favIds.Contains(p.ProductId)).ToList();
+        }
 
         var categories = await _context.Categories.Where(c => c.ParentCategoryId == null).Include(c => c.SubCategories).ToListAsync();
         var brands = await _context.Brands.ToListAsync();
