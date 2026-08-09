@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "CfJn6viec9g=",
+  "dgSpecHash": "6fCx+Io+2TI=",
   "success": true,
-  "projectFilePath": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
+  "projectFilePath": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\anhvi\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\anhvi\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

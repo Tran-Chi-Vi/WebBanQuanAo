@@ -1249,3 +1249,195 @@ body.page-transitioning {
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   border: 1px solid rgba(255,255,255,0.15);
 }
+
+/* ==========================================================================
+   GLOBAL STORE FRONT DARK MODE SYSTEM (IMPECCABLE CRAFT)
+   ========================================================================== */
+body.user-dark-mode {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.user-dark-mode .navbar-custom,
+body.user-dark-mode header,
+body.user-dark-mode footer {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .nav-link {
+  color: #cbd5e1 !important;
+}
+
+body.user-dark-mode .nav-link:hover,
+body.user-dark-mode .nav-link.active {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .bg-white,
+body.user-dark-mode .bg-light,
+body.user-dark-mode .product-card,
+body.user-dark-mode .card,
+body.user-dark-mode .dropdown-menu,
+body.user-dark-mode .modal-content {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .text-dark,
+body.user-dark-mode .text-slate-800,
+body.user-dark-mode .text-slate-900,
+body.user-dark-mode h1,
+body.user-dark-mode h2,
+body.user-dark-mode h3,
+body.user-dark-mode h4,
+body.user-dark-mode h5,
+body.user-dark-mode h6 {
+  color: #f8fafc !important;
+}
+
+body.user-dark-mode .text-muted,
+body.user-dark-mode .text-secondary {
+  color: #94a3b8 !important;
+}
+
+body.user-dark-mode .border,
+body.user-dark-mode .border-bottom,
+body.user-dark-mode .border-top {
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .form-control,
+body.user-dark-mode .form-select {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .dropdown-item {
+  color: #cbd5e1 !important;
+}
+
+body.user-dark-mode .dropdown-item:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .btn-light {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+/* ==========================================================================
+   IMPECCABLE BOLDER ENHANCEMENTS (VIBRANT GLOW, RICH GRADIENTS, MICRO-ANIMATIONS)
+   ========================================================================== */
+.product-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease !important;
+}
+
+.product-card:hover {
+  transform: translateY(-6px) scale(1.015) !important;
+  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.18) !important;
+  border-color: rgba(99, 102, 241, 0.35) !important;
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 10px 28px rgba(99, 102, 241, 0.45) !important;
+  color: #ffffff !important;
+}
+
+.analytics-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+}
+
+.analytics-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 30px -5px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* ==========================================================================
+   IMPECCABLE COLORIZE PALETTE ENHANCEMENTS
+   ========================================================================== */
+.badge-color-indigo {
+  background: #e0e7ff !important;
+  color: #3730a3 !important;
+  border: 1px solid #c7d2fe !important;
+}
+
+.badge-color-rose {
+  background: #ffe4e6 !important;
+  color: #9f1239 !important;
+  border: 1px solid #fecdd3 !important;
+}
+
+.badge-color-emerald {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.badge-color-amber {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border: 1px solid #fde68a !important;
+}
+
+.badge-color-purple {
+  background: #f3e8ff !important;
+  color: #6b21a8 !important;
+  border: 1px solid #e9d5ff !important;
+}
+
+/* ==========================================================================
+   IMPECCABLE TYPESET TYPOGRAPHY ENHANCEMENTS
+   ========================================================================== */
+body {
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.font-heading, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', 'Plus Jakarta Sans', 'Be Vietnam Pro', sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+.font-monospace {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace !important;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   IMPECCABLE LAYOUT & SPACING SYSTEM
+   ========================================================================== */
+.container, .container-fluid {
+  max-width: 1440px;
+}
+
+.table-responsive {
+  border-radius: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gap-responsive {
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .gap-responsive {
+    gap: 1.5rem;
+  }
+}

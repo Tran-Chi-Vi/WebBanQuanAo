@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {}
+    "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {}
   },
   "projects": {
-    "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {
+    "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
+        "projectUniqueName": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
         "projectName": "WEBBANQUANAO",
-        "projectPath": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
+        "projectPath": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
         "packagesPath": "C:\\Users\\anhvi\\.nuget\\packages\\",
-        "outputPath": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\obj\\",
+        "outputPath": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

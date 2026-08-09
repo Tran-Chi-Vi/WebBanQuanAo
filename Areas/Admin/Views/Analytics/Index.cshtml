@@ -25,47 +25,105 @@
     var recentLogs = ViewBag.RecentLogs as IEnumerable<WEBBANQUANAO.Controllers.Admin.VisitorLogDto> ?? new List<WEBBANQUANAO.Controllers.Admin.VisitorLogDto>();
 }
 
-<!-- Custom Impeccable Light Theme Styling -->
+<!-- Custom Impeccable Dynamic Theme (Light & Dark Mode Switcher) -->
 <style>
-    .analytics-light-container {
-        background-color: #f8fafc !important;
-        color: #0f172a !important;
+    /* BASE CONTAINER TRANSITION */
+    .analytics-container {
+        border-radius: 16px;
+        transition: background-color 0.3s ease, color 0.3s ease;
         font-family: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
     }
+
+    /* LIGHT THEME (DEFAULT) */
+    .analytics-container.theme-light {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+    }
+    .analytics-container.theme-light .analytics-card {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04) !important;
+    }
+    .analytics-container.theme-light .funnel-step-box {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+    .analytics-container.theme-light .light-table th {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border-bottom: 1.5px solid #cbd5e1 !important;
+    }
+    .analytics-container.theme-light .light-table td {
+        border-bottom: 1px solid #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+    .analytics-container.theme-light .kpi-val-1 { color: #2563eb !important; }
+    .analytics-container.theme-light .kpi-val-2 { color: #059669 !important; }
+    .analytics-container.theme-light .kpi-val-3 { color: #d97706 !important; }
+    .analytics-container.theme-light .kpi-val-4 { color: #be123c !important; }
+    .analytics-container.theme-light .text-adaptive { color: #0f172a !important; }
+    .analytics-container.theme-light .text-muted-adaptive { color: #64748b !important; }
+
+    /* DARK THEME */
+    .analytics-container.theme-dark {
+        background-color: #0b1329 !important;
+        color: #f8fafc !important;
+    }
+    .analytics-container.theme-dark .analytics-card {
+        background: #1e293b !important;
+        border: 1px solid #334155 !important;
+        color: #f8fafc !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
+    .analytics-container.theme-dark .funnel-step-box {
+        background: #0f172a !important;
+        border: 1px solid #1e293b !important;
+        color: #f8fafc !important;
+    }
+    .analytics-container.theme-dark .light-table th {
+        background: #0f172a !important;
+        color: #94a3b8 !important;
+        border-bottom: 1px solid #334155 !important;
+    }
+    .analytics-container.theme-dark .light-table td {
+        border-bottom: 1px solid #1e293b !important;
+        color: #f8fafc !important;
+    }
+    .analytics-container.theme-dark .kpi-val-1 { color: #38bdf8 !important; }
+    .analytics-container.theme-dark .kpi-val-2 { color: #34d399 !important; }
+    .analytics-container.theme-dark .kpi-val-3 { color: #fbbf24 !important; }
+    .analytics-container.theme-dark .kpi-val-4 { color: #f43f5e !important; }
+    .analytics-container.theme-dark .text-adaptive { color: #f8fafc !important; }
+    .analytics-container.theme-dark .text-muted-adaptive { color: #94a3b8 !important; }
+    .analytics-container.theme-dark .period-btn {
+        background: #1e293b !important;
+        color: #94a3b8 !important;
+        border-color: #334155 !important;
+    }
+    .analytics-container.theme-dark .period-btn.active {
+        background: #eab308 !important;
+        color: #0f172a !important;
+        border-color: #eab308 !important;
+    }
+
+    /* CARD & BUTTON STYLES */
     .analytics-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
         border-radius: 16px;
         padding: 1.25rem 1.5rem;
-        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
     }
     .analytics-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
     }
     .period-btn {
-        background: #ffffff;
-        color: #0f172a !important;
-        border: 1.5px solid #cbd5e1;
         border-radius: 10px;
         padding: 0.5rem 1.25rem;
         font-weight: 700;
         font-size: 0.88rem;
         text-decoration: none;
         transition: all 0.2s ease;
-    }
-    .period-btn:hover {
-        color: #0f172a !important;
-        background: #f1f5f9;
-        border-color: #94a3b8;
-    }
-    .period-btn.active {
-        background: #2563eb !important;
-        color: #ffffff !important;
-        border-color: #2563eb !important;
-        font-weight: 700;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
     .kpi-icon-box {
         width: 42px;
@@ -80,8 +138,8 @@
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.05em;
-        color: #64748b;
         text-transform: uppercase;
+        opacity: 0.85;
     }
     .kpi-value {
         font-size: 2.1rem;
@@ -90,44 +148,23 @@
         margin: 0.25rem 0;
     }
     .funnel-step-box {
-        background: #f8fafc;
         border-radius: 12px;
         padding: 1rem 1.25rem;
-        border: 1px solid #e2e8f0;
+        transition: background-color 0.3s ease;
     }
     .funnel-bar-track {
-        background: #e2e8f0;
+        background: #cbd5e1;
         height: 10px;
         border-radius: 6px;
         overflow: hidden;
+    }
+    .analytics-container.theme-dark .funnel-bar-track {
+        background: #334155;
     }
     .funnel-bar-fill {
         height: 100%;
         border-radius: 6px;
         transition: width 0.8s ease-in-out;
-    }
-    .light-table {
-        color: #0f172a !important;
-    }
-    .light-table th {
-        background: #f1f5f9;
-        color: #0f172a !important;
-        font-size: 0.75rem;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        border-bottom: 1.5px solid #cbd5e1;
-        padding: 0.85rem 1rem;
-    }
-    .light-table td {
-        border-bottom: 1px solid #f1f5f9;
-        padding: 0.85rem 1rem;
-        vertical-align: middle;
-        font-size: 0.88rem;
-        color: #0f172a !important;
-    }
-    .light-table tr:hover td {
-        background: #f8fafc;
     }
     .pill-badge-green {
         background-color: #dcfce7 !important;
@@ -150,9 +187,21 @@
         font-weight: 700 !important;
         border-radius: 50px !important;
     }
+    .theme-toggle-btn {
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: 1.5px solid #cbd5e1;
+    }
+    .theme-toggle-btn:hover {
+        transform: scale(1.03);
+    }
 </style>
 
-<div class="analytics-light-container p-3 p-md-4 rounded-4 my-2">
+<div id="analyticsContainer" class="analytics-container theme-light p-3 p-md-4 my-2">
 
     <!-- Top Action Bar Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom border-slate-200 pb-3">
@@ -161,13 +210,20 @@
                 <i class="bi bi-house-door-fill"></i>
             </a>
             <div>
-                <h4 class="fw-bold font-heading text-slate-900 m-0">📊 Báo Cáo Phân Tích Hành Vi Người Dùng</h4>
-                <small class="text-muted">Hệ thống theo dõi thời gian thực (Real-time Behavioral Analytics & Recommendation Engine)</small>
+                <h4 class="fw-bold font-heading text-adaptive m-0">📊 Báo Cáo Phân Tích Hành Vi Người Dùng</h4>
+                <small class="text-muted-adaptive">Hệ thống theo dõi thời gian thực (Real-time Behavioral Analytics & Recommendation Engine)</small>
             </div>
         </div>
         
-        <!-- Filter Bar -->
-        <div class="d-flex align-items-center gap-2">
+        <!-- Controls Bar: Theme Switcher + Period Filters -->
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <!-- Light / Dark Theme Switcher Button -->
+            <button id="themeToggleBtn" onclick="toggleAnalyticsTheme()" class="theme-toggle-btn bg-white text-slate-800 shadow-sm d-flex align-items-center gap-2" title="Chuyển chế độ Giao diện Sáng / Tối">
+                <i id="themeIcon" class="bi bi-moon-stars-fill text-primary"></i>
+                <span id="themeLabel">Giao diện Tối</span>
+            </button>
+
+            <!-- Filter Period Pills -->
             <a href="/sys-admin-management/Analytics/Index?period=7d" class="period-btn @(activePeriod == "7d" ? "active" : "")">
                 7 ngày qua
             </a>
@@ -186,13 +242,13 @@
         <div class="col-12 col-sm-6 col-lg-3">
             <div class="analytics-card">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="kpi-title">TỔNG LƯỢT XEM</span>
+                    <span class="kpi-title text-muted-adaptive">TỔNG LƯỢT XEM</span>
                     <div class="kpi-icon-box bg-primary bg-opacity-10 text-primary">
                         <i class="bi bi-eye-fill"></i>
                     </div>
                 </div>
-                <div class="kpi-value text-primary">@totalPageViews</div>
-                <div class="small text-muted"><i class="bi bi-clock-history me-1 text-primary"></i> Xem hôm nay: <strong class="text-slate-800">@todayPageViews lượt</strong></div>
+                <div class="kpi-value kpi-val-1">@totalPageViews</div>
+                <div class="small text-muted-adaptive"><i class="bi bi-clock-history me-1 text-primary"></i> Xem hôm nay: <strong class="text-adaptive">@todayPageViews lượt</strong></div>
             </div>
         </div>
 
@@ -200,13 +256,13 @@
         <div class="col-12 col-sm-6 col-lg-3">
             <div class="analytics-card">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="kpi-title">KHÁCH TRUY CẬP ĐỘC LẬP</span>
+                    <span class="kpi-title text-muted-adaptive">KHÁCH TRUY CẬP ĐỘC LẬP</span>
                     <div class="kpi-icon-box bg-success bg-opacity-10 text-success">
                         <i class="bi bi-people-fill"></i>
                     </div>
                 </div>
-                <div class="kpi-value text-success">@totalUniqueSessions</div>
-                <div class="small text-muted"><i class="bi bi-person-badge-fill me-1 text-success"></i> Phiên người dùng (Sessions)</div>
+                <div class="kpi-value kpi-val-2">@totalUniqueSessions</div>
+                <div class="small text-muted-adaptive"><i class="bi bi-person-badge-fill me-1 text-success"></i> Phiên người dùng (Sessions)</div>
             </div>
         </div>
 
@@ -214,13 +270,13 @@
         <div class="col-12 col-sm-6 col-lg-3">
             <div class="analytics-card">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="kpi-title">THỜI GIAN XEM TRANG TB</span>
+                    <span class="kpi-title text-muted-adaptive">THỜI GIAN XEM TRANG TB</span>
                     <div class="kpi-icon-box bg-warning bg-opacity-10 text-warning">
                         <i class="bi bi-stopwatch-fill"></i>
                     </div>
                 </div>
-                <div class="kpi-value text-warning">@(avgDwellSeconds.ToString("F1"))s</div>
-                <div class="small text-muted"><i class="bi bi-hourglass-split me-1 text-warning"></i> Dwell Time (Active tab)</div>
+                <div class="kpi-value kpi-val-3">@(avgDwellSeconds.ToString("F1"))s</div>
+                <div class="small text-muted-adaptive"><i class="bi bi-hourglass-split me-1 text-warning"></i> Dwell Time (Active tab)</div>
             </div>
         </div>
 
@@ -228,13 +284,13 @@
         <div class="col-12 col-sm-6 col-lg-3">
             <div class="analytics-card">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="kpi-title">CÚ NHẤP BỰC BỘI (RAGE CLICKS)</span>
+                    <span class="kpi-title text-muted-adaptive">CÚ NHẤP BỰC BỘI (RAGE CLICKS)</span>
                     <div class="kpi-icon-box bg-danger bg-opacity-10 text-danger">
                         <i class="bi bi-hand-index-thumb-fill"></i>
                     </div>
                 </div>
-                <div class="kpi-value text-danger">@rageClickCount</div>
-                <div class="small text-muted"><i class="bi bi-exclamation-triangle-fill me-1 text-danger"></i> Bấm dồn dập khi đơ/lag</div>
+                <div class="kpi-value kpi-val-4">@rageClickCount</div>
+                <div class="small text-muted-adaptive"><i class="bi bi-exclamation-triangle-fill me-1 text-danger"></i> Bấm dồn dập khi đơ/lag</div>
             </div>
         </div>
     </div>
@@ -245,7 +301,7 @@
         <div class="col-lg-7">
             <div class="analytics-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
-                    <h5 class="fw-bold text-slate-800 m-0"><i class="bi bi-funnel-fill text-primary me-2"></i> Phễu Chuyển Đổi (Conversion Funnel)</h5>
+                    <h5 class="fw-bold text-adaptive m-0"><i class="bi bi-funnel-fill text-primary me-2"></i> Phễu Chuyển Đổi (Conversion Funnel)</h5>
                     <span class="badge pill-badge-green px-3 py-2 fw-bold" style="font-size:0.88rem;">
                         Tỷ lệ mua hàng chung: @(overallConversionRate.ToString("F1"))%
                     </span>
@@ -256,7 +312,7 @@
                     <div class="funnel-step-box">
                         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
                             <span class="fw-bold text-primary"><i class="bi bi-eye-fill me-1.5"></i> 1. Xem sản phẩm</span>
-                            <span class="fw-bold text-slate-900">@viewProductCount lượt (100%)</span>
+                            <span class="fw-bold text-adaptive">@viewProductCount lượt (100%)</span>
                         </div>
                         <div class="funnel-bar-track mt-2">
                             <div class="funnel-bar-fill bg-primary" style="width: 100%;"></div>
@@ -270,7 +326,7 @@
                             @{
                                 double addPct = viewProductCount > 0 ? Math.Round((double)addToCartCount / viewProductCount * 100, 1) : 34.8;
                             }
-                            <span class="fw-bold text-slate-900">@addToCartCount lượt (@addPct% từ Xem SP)</span>
+                            <span class="fw-bold text-adaptive">@addToCartCount lượt (@addPct% từ Xem SP)</span>
                         </div>
                         <div class="funnel-bar-track mt-2">
                             <div class="funnel-bar-fill bg-warning" style="width: @Math.Min(100, addPct)%;"></div>
@@ -284,7 +340,7 @@
                             @{
                                 double checkoutPct = addToCartCount > 0 ? Math.Round((double)checkoutCount / addToCartCount * 100, 1) : 118.8;
                             }
-                            <span class="fw-bold text-slate-900">@checkoutCount lượt (@checkoutPct% từ Giỏ hàng)</span>
+                            <span class="fw-bold text-adaptive">@checkoutCount lượt (@checkoutPct% từ Giỏ hàng)</span>
                         </div>
                         <div class="funnel-bar-track mt-2">
                             <div class="funnel-bar-fill" style="background:#7c3aed; width: @Math.Min(100, checkoutPct)%;"></div>
@@ -298,7 +354,7 @@
                             @{
                                 double purchasePct = checkoutCount > 0 ? Math.Round((double)purchaseCount / checkoutCount * 100, 1) : 84.2;
                             }
-                            <span class="fw-bold text-slate-900">@purchaseCount đơn (@purchasePct% từ Thanh toán)</span>
+                            <span class="fw-bold text-adaptive">@purchaseCount đơn (@purchasePct% từ Thanh toán)</span>
                         </div>
                         <div class="funnel-bar-track mt-2">
                             <div class="funnel-bar-fill bg-success" style="width: @Math.Min(100, purchasePct)%;"></div>
@@ -311,16 +367,16 @@
         <!-- Tỷ Lệ Thiết Bị Truy Cập -->
         <div class="col-lg-5">
             <div class="analytics-card h-100 d-flex flex-column">
-                <h5 class="fw-bold text-slate-800 mb-3"><i class="bi bi-phone-fill text-primary me-2"></i> Tỷ Lệ Thiết Bị Truy Cập</h5>
+                <h5 class="fw-bold text-adaptive mb-3"><i class="bi bi-phone-fill text-primary me-2"></i> Tỷ Lệ Thiết Bị Truy Cập</h5>
                 
                 <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:220px; position:relative;">
                     <canvas id="deviceDonutChart" style="max-height:230px;"></canvas>
                 </div>
 
                 <div class="d-flex justify-content-around align-items-center mt-3 pt-3 border-top border-slate-200 small text-secondary">
-                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-primary me-1"></i> Điện thoại</div>
-                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-success me-1"></i> Máy tính</div>
-                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-warning me-1"></i> Tablet</div>
+                    <div class="fw-bold text-adaptive"><i class="bi bi-circle-fill text-primary me-1"></i> Điện thoại</div>
+                    <div class="fw-bold text-adaptive"><i class="bi bi-circle-fill text-success me-1"></i> Máy tính</div>
+                    <div class="fw-bold text-adaptive"><i class="bi bi-circle-fill text-warning me-1"></i> Tablet</div>
                 </div>
             </div>
         </div>
@@ -331,7 +387,7 @@
         <!-- Top Từ Khóa Tìm Kiếm Hot -->
         <div class="col-lg-5">
             <div class="analytics-card h-100">
-                <h5 class="fw-bold text-slate-800 mb-3"><i class="bi bi-search text-warning me-2"></i> Top Từ Khóa Tìm Kiếm Hot</h5>
+                <h5 class="fw-bold text-adaptive mb-3"><i class="bi bi-search text-warning me-2"></i> Top Từ Khóa Tìm Kiếm Hot</h5>
                 
                 <div class="table-responsive">
                     <table class="table light-table align-middle mb-0">
@@ -348,7 +404,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <i class="bi bi-search text-primary small"></i>
-                                            <span class="fw-bold text-slate-900">@search.Keyword</span>
+                                            <span class="fw-bold text-adaptive">@search.Keyword</span>
                                         </div>
                                     </td>
                                     <td class="text-end">
@@ -368,7 +424,7 @@
         <div class="col-lg-7">
             <div class="analytics-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
-                    <h5 class="fw-bold text-slate-800 m-0"><i class="bi bi-list-ul text-primary me-2"></i> Danh Sách Khách Vãng Lai & Địa Chỉ IP</h5>
+                    <h5 class="fw-bold text-adaptive m-0"><i class="bi bi-list-ul text-primary me-2"></i> Danh Sách Khách Vãng Lai & Địa Chỉ IP</h5>
                     
                     <div class="d-flex gap-2 small">
                         <span class="badge pill-badge-grey px-2.5 py-1.5 fw-bold">
@@ -410,7 +466,7 @@
                                             </span>
                                         }
                                     </td>
-                                    <td class="font-monospace text-slate-900 fw-bold">@log.IpAddress</td>
+                                    <td class="font-monospace text-adaptive fw-bold">@log.IpAddress</td>
                                     <td>
                                         @if (log.DeviceType == "Mobile")
                                         {
@@ -425,7 +481,7 @@
                                             <span class="text-success fw-bold"><i class="bi bi-display me-1"></i> Desktop</span>
                                         }
                                     </td>
-                                    <td class="text-end text-slate-800 fw-bold small">@log.Timestamp.ToString("HH:mm dd/MM")</td>
+                                    <td class="text-end text-muted-adaptive fw-bold small">@log.Timestamp.ToString("HH:mm dd/MM")</td>
                                 </tr>
                             }
                         </tbody>
@@ -436,10 +492,44 @@
     </div>
 </div>
 
-<!-- Chart.js Script for Device Donut Chart -->
+<!-- Chart.js Script & Dynamic Light / Dark Theme Switcher Logic -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    function applyAnalyticsTheme(mode) {
+        const container = document.getElementById('analyticsContainer');
+        const label = document.getElementById('themeLabel');
+        const icon = document.getElementById('themeIcon');
+        const btn = document.getElementById('themeToggleBtn');
+
+        if (mode === 'dark') {
+            container.classList.remove('theme-light');
+            container.classList.add('theme-dark');
+            localStorage.setItem('analytics_theme_mode', 'dark');
+            if (label) label.textContent = 'Giao diện Sáng';
+            if (icon) icon.className = 'bi bi-sun-fill text-warning';
+            if (btn) btn.className = 'theme-toggle-btn bg-dark text-white border-secondary shadow-sm d-flex align-items-center gap-2';
+        } else {
+            container.classList.remove('theme-dark');
+            container.classList.add('theme-light');
+            localStorage.setItem('analytics_theme_mode', 'light');
+            if (label) label.textContent = 'Giao diện Tối';
+            if (icon) icon.className = 'bi bi-moon-stars-fill text-primary';
+            if (btn) btn.className = 'theme-toggle-btn bg-white text-slate-800 shadow-sm d-flex align-items-center gap-2';
+        }
+    }
+
+    function toggleAnalyticsTheme() {
+        const container = document.getElementById('analyticsContainer');
+        const isDark = container.classList.contains('theme-dark');
+        applyAnalyticsTheme(isDark ? 'light' : 'dark');
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('analytics_theme_mode') || 'light';
+        applyAnalyticsTheme(savedTheme);
+
+        // Donut Chart Initialization
         const ctx = document.getElementById('deviceDonutChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',

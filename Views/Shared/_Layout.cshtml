@@ -21,6 +21,19 @@
 
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Theme Initialization (Zero Flicker) -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('fs_user_theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('user-dark-mode');
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.classList.add('user-dark-mode');
+                });
+            }
+        })();
+    </script>
 </head>
 <body>
     <!-- ====== SCROLL PROGRESS INDICATOR BAR ====== -->
@@ -168,6 +181,11 @@
                             }
                             catch {}
                         }
+                        <!-- User Theme Toggle Button -->
+                        <button id="userThemeToggleBtn" onclick="toggleUserStoreTheme()" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm ms-1 me-1" style="width:44px;height:44px;flex-shrink:0;" title="Chuyển chế độ Giao diện Sáng / Tối">
+                            <i id="userThemeIcon" class="bi bi-moon-stars-fill fs-5 text-indigo" style="color:#6366f1;"></i>
+                        </button>
+
                         <!-- Cart Button with Outer Positioned Non-Clipped Circle Badge -->
                         <div class="position-relative d-inline-flex align-items-center" style="z-index:50;">
                             <a id="headerCartBtn" href="/Cart" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width:44px;height:44px;flex-shrink:0;" title="Giỏ Hàng Của Bạn">

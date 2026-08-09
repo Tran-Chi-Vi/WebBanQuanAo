@@ -1,6 +1,0 @@
-wwwroot\css\admin.css
-wwwroot\css\site.css
-wwwroot\images\app_icon.jpg
-wwwroot\js\behavior-tracker.js
-wwwroot\js\chatbot-react.js
-wwwroot\js\site.js

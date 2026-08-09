@@ -3,7 +3,37 @@
    Features: Scroll Animations, Live Search, Flying Cart, Navbar Effects
    ========================================================================== */
 
+/* =========================================================================
+   STORE FRONT LIGHT / DARK THEME TOGGLE SYSTEM
+   ========================================================================= */
+function applyUserThemeUI(isDark) {
+  const icon = document.getElementById('userThemeIcon');
+  if (isDark) {
+    document.body.classList.add('user-dark-mode');
+    document.documentElement.classList.add('user-dark-mode');
+    if (icon) {
+      icon.className = 'bi bi-sun-fill fs-5 text-warning';
+    }
+  } else {
+    document.body.classList.remove('user-dark-mode');
+    document.documentElement.classList.remove('user-dark-mode');
+    if (icon) {
+      icon.className = 'bi bi-moon-stars-fill fs-5 text-indigo';
+      icon.style.color = '#6366f1';
+    }
+  }
+}
+
+function toggleUserStoreTheme() {
+  const isDark = document.body.classList.contains('user-dark-mode');
+  const nextMode = isDark ? 'light' : 'dark';
+  localStorage.setItem('fs_user_theme', nextMode);
+  applyUserThemeUI(!isDark);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  const savedTheme = localStorage.getItem('fs_user_theme');
+  applyUserThemeUI(savedTheme === 'dark');
   console.log('WEBBANQUANAO Fashion Engine v2.0 Initialized.');
 
   // =========================================================================

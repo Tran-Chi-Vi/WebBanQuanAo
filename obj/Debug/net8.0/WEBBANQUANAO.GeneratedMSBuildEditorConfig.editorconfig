@@ -9,181 +9,181 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = WEBBANQUANAO
 build_property.RootNamespace = WEBBANQUANAO
-build_property.ProjectDir = D:\WEBBANQUANAO\WEBBANQUANAO\
+build_property.ProjectDir = d:\WEBBANQUANAO\WEBBANQUANAO\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\WEBBANQUANAO\WEBBANQUANAO
+build_property.MSBuildProjectDirectory = d:\WEBBANQUANAO\WEBBANQUANAO
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Analytics/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Analytics/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcQW5hbHl0aWNzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Apriori/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Apriori/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcQXByaW9yaVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/CategoryBrand/Brands.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/CategoryBrand/Brands.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcQ2F0ZWdvcnlCcmFuZFxCcmFuZHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/CategoryBrand/Categories.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/CategoryBrand/Categories.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcQ2F0ZWdvcnlCcmFuZFxDYXRlZ29yaWVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Dashboard/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Dashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/OrderManagement/Details.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/OrderManagement/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcT3JkZXJNYW5hZ2VtZW50XERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/OrderManagement/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/OrderManagement/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcT3JkZXJNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Create.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZHVjdE1hbmFnZW1lbnRcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Edit.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZHVjdE1hbmFnZW1lbnRcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/ProductManagement/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvZHVjdE1hbmFnZW1lbnRcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Create.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvbW90aW9uXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Edit.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvbW90aW9uXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Promotion/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUHJvbW90aW9uXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Shared/_AdminLayout.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/Shared/_AdminLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/UserAccount/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/UserAccount/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVXNlckFjY291bnRcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/User/Details.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/User/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVXNlclxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/User/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/User/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcVXNlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/_ViewImports.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/_ViewStart.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Areas/Admin/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/AccessDenied.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Login.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/MyOrders.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/MyOrders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxNeU9yZGVycy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/OrderDetails.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/OrderDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxPcmRlckRldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Profile.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxQcm9maWxlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Register.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Cart/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Cart/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Contact.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Contact.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb250YWN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/PaymentPolicy.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/PaymentPolicy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXltZW50UG9saWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Privacy.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/ReturnPolicy.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/ReturnPolicy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSZXR1cm5Qb2xpY3kuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/SizeGuide.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Home/SizeGuide.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaXplR3VpZGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/CancelOrder.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/CancelOrder.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJcQ2FuY2VsT3JkZXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/Checkout.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/Checkout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJcQ2hlY2tvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/Success.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Order/Success.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJcU3VjY2Vzcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Payment/ProcessPayment.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Payment/ProcessPayment.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGF5bWVudFxQcm9jZXNzUGF5bWVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Product/Details.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Product/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Product/Index.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Product/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Shared/_AdminLayout.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Shared/_AdminLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/Shared/_Layout.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/_ViewImports.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/WEBBANQUANAO/WEBBANQUANAO/Views/_ViewStart.cshtml]
+[d:/WEBBANQUANAO/WEBBANQUANAO/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
