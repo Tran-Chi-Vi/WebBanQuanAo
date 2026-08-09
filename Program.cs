@@ -5,6 +5,9 @@ using WEBBANQUANAO.Data;
 using WEBBANQUANAO.Hubs;
 using WEBBANQUANAO.Services;
 
+// Bật legacy timestamp behavior cho Npgsql (tránh lỗi xung đột timezone giữa C# DateTime và PostgreSQL timestamp)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // DB CONTEXT (AUTO DETECT POSTGRESQL VS SQL SERVER)
