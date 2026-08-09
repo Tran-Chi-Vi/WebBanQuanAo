@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {}
+    "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {}
   },
   "projects": {
-    "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {
+    "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
+        "projectUniqueName": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
         "projectName": "WEBBANQUANAO",
-        "projectPath": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
+        "projectPath": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\WEBBANQUANAO.csproj",
         "packagesPath": "C:\\Users\\anhvi\\.nuget\\packages\\",
-        "outputPath": "d:\\WEBBANQUANAO\\WEBBANQUANAO\\obj\\",
+        "outputPath": "D:\\WEBBANQUANAO\\WEBBANQUANAO\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -80,6 +80,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.22.1, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
