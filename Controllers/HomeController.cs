@@ -4,15 +4,20 @@ using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Data;
 using WEBBANQUANAO.Models.Entities;
 
+using System.Security.Claims;
+using WEBBANQUANAO.Services;
+
 namespace WEBBANQUANAO.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IRecommendationService _recommendationService;
 
-    public HomeController(ApplicationDbContext context)
+    public HomeController(ApplicationDbContext context, IRecommendationService recommendationService)
     {
         _context = context;
+        _recommendationService = recommendationService;
     }
 
     public async Task<IActionResult> Index()
@@ -76,6 +81,14 @@ public class HomeController : Controller
             .Where(p => p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now)
             .Take(3)
             .ToListAsync();
+
+        int? userId = null;
+        var uIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (int.TryParse(uIdStr, out int uId) && uId > 0) userId = uId;
+        string? sessionId = HttpContext.Session.GetString("fs_behavior_sid");
+
+        ViewBag.PersonalizedRecommendations = await _recommendationService.GetPersonalizedRecommendationsAsync(userId, sessionId, 8);
+        ViewBag.TopSearchRecommendations = await _recommendationService.GetTrendingAndTopSearchProductsAsync(8);
 
         ViewBag.NewArrivals = newArrivals;
         ViewBag.Bestsellers = bestsellers;

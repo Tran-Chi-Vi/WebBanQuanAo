@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "ContainingType": "WEBBANQUANAO.Controllers.BehaviorTrackerController",
+    "Method": "Log",
+    "RelativePath": "BehaviorTracker/Log",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "WEBBANQUANAO.Controllers.BehaviorTrackerController\u002BTrackLogDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

@@ -201,23 +201,52 @@
     </div>
 </section>
 
-<!-- ====== AI RECOMMENDATION BANNER ====== -->
-<section class="container my-5 reveal">
-    <div class="card border-0 rounded-4 shadow-lg overflow-hidden position-relative" style="background:linear-gradient(135deg, #1e1b4b 0%, #311042 100%);">
-        <div class="card-body p-4 p-md-5 text-white position-relative" style="z-index:2;">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-8">
-                    <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill fw-bold mb-3" style="font-size:0.78rem;">✨ GỢI Ý PHỐI ĐỒ DÀNH CHO BẠN</span>
-                    <h3 class="fw-bold font-heading display-6 mb-2">PHỐI ĐỒ ĐẸP CÙNG SMART RECOMMENDATION</h3>
-                    <p class="text-white-50 mb-4" style="max-width:540px;font-size:0.98rem;">Hệ thống mua sắm thông minh tự động gợi ý những set đồ và phụ kiện thời trang phối cùng hoàn hảo nhất dành riêng cho phong cách của bạn.</p>
-                    <a href="/Product" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark shadow">
-                        <i class="bi bi-sparkles text-primary me-2"></i> Trải Nghiệm Khám Phá Ngay
-                    </a>
-                </div>
+<!-- ====== AI RECOMMENDATION SECTION ====== -->
+@{
+    var personalizedRecs = ViewBag.PersonalizedRecommendations as List<Product> ?? new List<Product>();
+}
+@if (personalizedRecs.Any())
+{
+    <section class="container my-5 reveal">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-1.5 rounded-pill mb-2" style="font-size:0.78rem;">✨ AI RECOMMENDATION ENGINE</span>
+                <h3 class="fw-bold font-heading m-0 text-dark">Gợi Ý Sản Phẩm Dành Riêng Cho Bạn</h3>
             </div>
+            <a href="/Product" class="text-primary text-decoration-none fw-semibold small">Xem tất cả <i class="bi bi-arrow-right"></i></a>
         </div>
-    </div>
-</section>
+
+        <div class="row g-3 g-md-4">
+            @foreach (var p in personalizedRecs.Take(4))
+            {
+                var firstVar = p.Variants.FirstOrDefault();
+                var mainImg = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                <div class="col-6 col-md-3" data-rec-source="personalized_ai" data-rec-block="homepage_personalized" data-product-id="@p.ProductId">
+                    <div class="product-card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white d-flex flex-column" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
+                        <div class="product-card-img-wrapper position-relative overflow-hidden" style="padding-top:125%;background:#f8fafc;">
+                            <span class="position-absolute top-0 start-0 m-3 badge bg-primary text-white rounded-pill fw-bold" style="font-size:0.72rem;z-index:2;">GỢI Ý AI</span>
+                            <a href="/Product/Details/@p.ProductId" class="position-absolute top-0 start-0 w-100 h-100">
+                                <img src="@mainImg" alt="@p.ProductName" loading="lazy" style="width:100%;height:100%;object-fit:cover;" class="product-img" />
+                            </a>
+                        </div>
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <small class="text-primary fw-semibold mb-1" style="font-size:0.78rem;">@p.Category?.CategoryName</small>
+                            <a href="/Product/Details/@p.ProductId" class="text-decoration-none text-dark">
+                                <h6 class="fw-bold mb-2 text-truncate-2 font-heading" style="font-size:0.95rem;line-height:1.4;height:2.7em;" title="@p.ProductName">@p.ProductName</h6>
+                            </a>
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                <span class="fw-bold text-indigo fs-6 font-monospace" style="color:#6366f1;">@p.BasePrice.ToString("N0")đ</span>
+                                <button type="button" onclick="addToCartAjax(@(firstVar?.VariantId ?? 0), 1, this)" class="btn btn-primary-gradient rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width:36px;height:36px;padding:0;" title="Thêm vào giỏ hàng">
+                                    <i class="bi bi-cart-plus fs-6"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
 
 <!-- ====== CUSTOMER REVIEWS & SOCIAL PROOF ====== -->
 <section class="container my-5">

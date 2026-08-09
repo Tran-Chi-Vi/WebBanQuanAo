@@ -124,6 +124,7 @@ D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.csproj.CoreCompileInp
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.MvcApplicationPartsAssemblyInfo.cache
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.RazorAssemblyInfo.cache
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.RazorAssemblyInfo.cs
+D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.sourcelink.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json

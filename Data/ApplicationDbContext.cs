@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Models.Entities;
 namespace WEBBANQUANAO.Data;
 
@@ -206,7 +206,7 @@ public class ApplicationDbContext : DbContext
             .HasOne(l => l.Product)
             .WithMany(p => p.BehaviorLogs)
             .HasForeignKey(l => l.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
         // AssociationRule: Product tham gia 2 vai trò Antecedent/Consequent
         // -> phải tắt cascade cả 2 để tránh multiple cascade paths trên SQL Server

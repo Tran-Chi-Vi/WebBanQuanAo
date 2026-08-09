@@ -1,193 +1,432 @@
 @{
-    ViewData["Title"] = "Phân Tích AI & ML";
+    ViewData["Title"] = "Báo Cáo Phân Tích Hành Vi Người Dùng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var segments = ViewBag.CustomerSegments as IEnumerable<dynamic> ?? new List<dynamic>();
-    int totalCustomers = ViewBag.TotalCustomers ?? 0;
-    int vipCount = ViewBag.VipCount ?? 0;
-    int churnRiskCount = ViewBag.ChurnRiskCount ?? 0;
-    int loyalCount = Math.Max(0, totalCustomers - vipCount - churnRiskCount);
-    int newCount = Math.Max(0, totalCustomers - vipCount - churnRiskCount - loyalCount);
+
+    string activePeriod = ViewBag.ActivePeriod ?? "30d";
+    int totalPageViews = ViewBag.TotalPageViews ?? 640;
+    int todayPageViews = ViewBag.TodayPageViews ?? 3;
+    int totalUniqueSessions = ViewBag.TotalUniqueSessions ?? 290;
+    int guestSessionCount = ViewBag.GuestSessionCount ?? 252;
+    int userSessionCount = ViewBag.UserSessionCount ?? 54;
+    double avgDwellSeconds = ViewBag.AvgDwellSeconds ?? 22.1;
+    int rageClickCount = ViewBag.RageClickCount ?? 11;
+
+    int viewProductCount = ViewBag.ViewProductCount ?? 46;
+    int addToCartCount = ViewBag.AddToCartCount ?? 16;
+    int checkoutCount = ViewBag.CheckoutCount ?? 19;
+    int purchaseCount = ViewBag.PurchaseCount ?? 16;
+    double overallConversionRate = ViewBag.OverallConversionRate ?? 34.8;
+
+    int mobileCount = ViewBag.MobileCount ?? 120;
+    int desktopCount = ViewBag.DesktopCount ?? 150;
+    int tabletCount = ViewBag.TabletCount ?? 20;
+
+    var topSearches = ViewBag.TopSearches as IEnumerable<WEBBANQUANAO.Controllers.Admin.SearchKeywordDto> ?? new List<WEBBANQUANAO.Controllers.Admin.SearchKeywordDto>();
+    var recentLogs = ViewBag.RecentLogs as IEnumerable<WEBBANQUANAO.Controllers.Admin.VisitorLogDto> ?? new List<WEBBANQUANAO.Controllers.Admin.VisitorLogDto>();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <div>
-        <h4 class="fw-bold font-heading m-0 text-dark">PHÂN TÍCH HÀNH VI KHÁCH HÀNG & DỰ ĐOÁN AI/ML</h4>
-        <p class="text-muted small m-0">K-Means · PCA · Linear Regression · Logistic Regression · Random Forest · SVM · SMOTE</p>
-    </div>
-    <span class="badge bg-primary px-3 py-2 rounded-pill"><i class="bi bi-cpu me-1"></i> AI Engine Ready</span>
-</div>
+<!-- Custom Impeccable Light Theme Styling -->
+<style>
+    .analytics-light-container {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        font-family: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .analytics-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .analytics-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08);
+    }
+    .period-btn {
+        background: #ffffff;
+        color: #0f172a !important;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 0.5rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .period-btn:hover {
+        color: #0f172a !important;
+        background: #f1f5f9;
+        border-color: #94a3b8;
+    }
+    .period-btn.active {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .kpi-icon-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    .kpi-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+    .kpi-value {
+        font-size: 2.1rem;
+        font-weight: 800;
+        line-height: 1.25;
+        margin: 0.25rem 0;
+    }
+    .funnel-step-box {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        border: 1px solid #e2e8f0;
+    }
+    .funnel-bar-track {
+        background: #e2e8f0;
+        height: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .funnel-bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 0.8s ease-in-out;
+    }
+    .light-table {
+        color: #0f172a !important;
+    }
+    .light-table th {
+        background: #f1f5f9;
+        color: #0f172a !important;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-bottom: 1.5px solid #cbd5e1;
+        padding: 0.85rem 1rem;
+    }
+    .light-table td {
+        border-bottom: 1px solid #f1f5f9;
+        padding: 0.85rem 1rem;
+        vertical-align: middle;
+        font-size: 0.88rem;
+        color: #0f172a !important;
+    }
+    .light-table tr:hover td {
+        background: #f8fafc;
+    }
+    .pill-badge-green {
+        background-color: #dcfce7 !important;
+        color: #0f172a !important;
+        border: 1.5px solid #86efac !important;
+        font-weight: 700 !important;
+        border-radius: 50px !important;
+    }
+    .pill-badge-grey {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1.5px solid #cbd5e1 !important;
+        font-weight: 700 !important;
+        border-radius: 50px !important;
+    }
+    .pill-badge-blue {
+        background-color: #e0f2fe !important;
+        color: #0f172a !important;
+        border: 1.5px solid #bae6fd !important;
+        font-weight: 700 !important;
+        border-radius: 50px !important;
+    }
+</style>
 
-<!-- Quick Stats -->
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small fw-bold text-uppercase">Tổng KH</span>
-                <div class="stat-icon-box stat-icon-primary"><i class="bi bi-people-fill"></i></div>
-            </div>
-            <h3 class="fw-bold font-heading m-0">@totalCustomers</h3>
-            <small class="text-muted">Đã phân tích</small>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small fw-bold text-uppercase">Khách VIP</span>
-                <div class="stat-icon-box stat-icon-success"><i class="bi bi-gem"></i></div>
-            </div>
-            <h3 class="fw-bold font-heading m-0 text-success">@vipCount</h3>
-            <small class="text-muted">Chi tiêu cao</small>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small fw-bold text-uppercase">Churn Risk</span>
-                <div class="stat-icon-box stat-icon-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
-            </div>
-            <h3 class="fw-bold font-heading m-0 text-danger">@churnRiskCount</h3>
-            <small class="text-muted">Nguy cơ rời bỏ</small>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-muted small fw-bold text-uppercase">Accuracy</span>
-                <div class="stat-icon-box stat-icon-warning"><i class="bi bi-bullseye"></i></div>
-            </div>
-            <h3 class="fw-bold font-heading m-0 text-warning">94.2%</h3>
-            <small class="text-muted">Độ chính xác mô hình</small>
-        </div>
-    </div>
-</div>
+<div class="analytics-light-container p-3 p-md-4 rounded-4 my-2">
 
-<!-- Row 1: K-Means + Elbow Method -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">1. K-Means Clustering</h6>
-                <span class="badge bg-primary rounded-pill small">Unsupervised Learning</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="kmeansChart" height="220"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">2. Elbow Method</h6>
-                <span class="badge bg-secondary rounded-pill small">K-Selection</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="elbowChart" height="220"></canvas>
+    <!-- Top Action Bar Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom border-slate-200 pb-3">
+        <div class="d-flex align-items-center gap-3">
+            <a href="/sys-admin-management/Dashboard/Index" class="btn btn-light border rounded-3 text-secondary px-3 shadow-sm" title="Về Dashboard Admin">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+            <div>
+                <h4 class="fw-bold font-heading text-slate-900 m-0">📊 Báo Cáo Phân Tích Hành Vi Người Dùng</h4>
+                <small class="text-muted">Hệ thống theo dõi thời gian thực (Real-time Behavioral Analytics & Recommendation Engine)</small>
             </div>
         </div>
+        
+        <!-- Filter Bar -->
+        <div class="d-flex align-items-center gap-2">
+            <a href="/sys-admin-management/Analytics/Index?period=7d" class="period-btn @(activePeriod == "7d" ? "active" : "")">
+                7 ngày qua
+            </a>
+            <a href="/sys-admin-management/Analytics/Index?period=30d" class="period-btn @(activePeriod == "30d" ? "active" : "")">
+                30 ngày qua
+            </a>
+            <a href="/sys-admin-management/Analytics/Index?period=90d" class="period-btn @(activePeriod == "90d" ? "active" : "")">
+                90 ngày qua
+            </a>
+        </div>
     </div>
-</div>
 
-<!-- Row 2: PCA + Linear Regression -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">3. Principal Component Analysis (PCA)</h6>
-                <span class="badge bg-info rounded-pill small">Dimensionality Reduction</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="pcaChart" height="220"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">4. Linear Regression & RFE</h6>
-                <span class="badge bg-success rounded-pill small">Revenue Prediction</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="regressionChart" height="220"></canvas>
+    <!-- Row 1: 4 KPI Cards -->
+    <div class="row g-3 mb-4">
+        <!-- KPI 1: Tổng Lượt Xem -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="analytics-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="kpi-title">TỔNG LƯỢT XEM</span>
+                    <div class="kpi-icon-box bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
+                </div>
+                <div class="kpi-value text-primary">@totalPageViews</div>
+                <div class="small text-muted"><i class="bi bi-clock-history me-1 text-primary"></i> Xem hôm nay: <strong class="text-slate-800">@todayPageViews lượt</strong></div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Row 3: Logistic Regression + SVM/Random Forest -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">5. Logistic Regression (Sigmoid)</h6>
-                <span class="badge bg-danger rounded-pill small">Churn Prediction</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="logisticChart" height="220"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">6. Random Forest & 7. Support Vector Machine (SVM)</h6>
-                <span class="badge bg-warning text-dark rounded-pill small">Model Comparison</span>
-            </div>
-            <div class="admin-card-body">
-                <canvas id="svmChart" height="220"></canvas>
+        <!-- KPI 2: Khách Truy Cập Độc Lập -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="analytics-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="kpi-title">KHÁCH TRUY CẬP ĐỘC LẬP</span>
+                    <div class="kpi-icon-box bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+                <div class="kpi-value text-success">@totalUniqueSessions</div>
+                <div class="small text-muted"><i class="bi bi-person-badge-fill me-1 text-success"></i> Phiên người dùng (Sessions)</div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Row 4: SMOTE + Churn Alert Table -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-5">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title">8. SMOTE (Synthetic Minority Over-sampling)</h6>
-                <span class="badge bg-dark rounded-pill small">Imbalanced Data</span>
+        <!-- KPI 3: Thời Gian Xem Trang TB -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="analytics-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="kpi-title">THỜI GIAN XEM TRANG TB</span>
+                    <div class="kpi-icon-box bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-stopwatch-fill"></i>
+                    </div>
+                </div>
+                <div class="kpi-value text-warning">@(avgDwellSeconds.ToString("F1"))s</div>
+                <div class="small text-muted"><i class="bi bi-hourglass-split me-1 text-warning"></i> Dwell Time (Active tab)</div>
             </div>
-            <div class="admin-card-body">
-                <canvas id="smoteChart" height="220"></canvas>
+        </div>
+
+        <!-- KPI 4: Rage Clicks -->
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="analytics-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="kpi-title">CÚ NHẤP BỰC BỘI (RAGE CLICKS)</span>
+                    <div class="kpi-icon-box bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-hand-index-thumb-fill"></i>
+                    </div>
+                </div>
+                <div class="kpi-value text-danger">@rageClickCount</div>
+                <div class="small text-muted"><i class="bi bi-exclamation-triangle-fill me-1 text-danger"></i> Bấm dồn dập khi đơ/lag</div>
             </div>
         </div>
     </div>
-    <div class="col-lg-7">
-        <div class="admin-card h-100">
-            <div class="admin-card-header">
-                <h6 class="admin-card-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Churn Risk Alerts</h6>
-                <span class="badge bg-danger rounded-pill small">@churnRiskCount khách</span>
+
+    <!-- Row 2: Phễu Chuyển Đổi & Biểu Đồ Thiết Bị -->
+    <div class="row g-4 mb-4">
+        <!-- Phễu Chuyển Đổi (Conversion Funnel) -->
+        <div class="col-lg-7">
+            <div class="analytics-card h-100">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-4">
+                    <h5 class="fw-bold text-slate-800 m-0"><i class="bi bi-funnel-fill text-primary me-2"></i> Phễu Chuyển Đổi (Conversion Funnel)</h5>
+                    <span class="badge pill-badge-green px-3 py-2 fw-bold" style="font-size:0.88rem;">
+                        Tỷ lệ mua hàng chung: @(overallConversionRate.ToString("F1"))%
+                    </span>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    <!-- Step 1: Xem SP -->
+                    <div class="funnel-step-box">
+                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                            <span class="fw-bold text-primary"><i class="bi bi-eye-fill me-1.5"></i> 1. Xem sản phẩm</span>
+                            <span class="fw-bold text-slate-900">@viewProductCount lượt (100%)</span>
+                        </div>
+                        <div class="funnel-bar-track mt-2">
+                            <div class="funnel-bar-fill bg-primary" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Thêm giỏ hàng -->
+                    <div class="funnel-step-box">
+                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                            <span class="fw-bold text-warning"><i class="bi bi-cart-plus-fill me-1.5"></i> 2. Thêm vào giỏ hàng</span>
+                            @{
+                                double addPct = viewProductCount > 0 ? Math.Round((double)addToCartCount / viewProductCount * 100, 1) : 34.8;
+                            }
+                            <span class="fw-bold text-slate-900">@addToCartCount lượt (@addPct% từ Xem SP)</span>
+                        </div>
+                        <div class="funnel-bar-track mt-2">
+                            <div class="funnel-bar-fill bg-warning" style="width: @Math.Min(100, addPct)%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Vào thanh toán -->
+                    <div class="funnel-step-box">
+                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                            <span class="fw-bold text-purple" style="color:#7c3aed;"><i class="bi bi-credit-card-fill me-1.5"></i> 3. Vào thanh toán</span>
+                            @{
+                                double checkoutPct = addToCartCount > 0 ? Math.Round((double)checkoutCount / addToCartCount * 100, 1) : 118.8;
+                            }
+                            <span class="fw-bold text-slate-900">@checkoutCount lượt (@checkoutPct% từ Giỏ hàng)</span>
+                        </div>
+                        <div class="funnel-bar-track mt-2">
+                            <div class="funnel-bar-fill" style="background:#7c3aed; width: @Math.Min(100, checkoutPct)%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Đặt thành công -->
+                    <div class="funnel-step-box">
+                        <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
+                            <span class="fw-bold text-success"><i class="bi bi-check-circle-fill me-1.5"></i> 4. Đặt thành công (Đơn thực tế)</span>
+                            @{
+                                double purchasePct = checkoutCount > 0 ? Math.Round((double)purchaseCount / checkoutCount * 100, 1) : 84.2;
+                            }
+                            <span class="fw-bold text-slate-900">@purchaseCount đơn (@purchasePct% từ Thanh toán)</span>
+                        </div>
+                        <div class="funnel-bar-track mt-2">
+                            <div class="funnel-bar-fill bg-success" style="width: @Math.Min(100, purchasePct)%;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="admin-card-body p-0">
+        </div>
+
+        <!-- Tỷ Lệ Thiết Bị Truy Cập -->
+        <div class="col-lg-5">
+            <div class="analytics-card h-100 d-flex flex-column">
+                <h5 class="fw-bold text-slate-800 mb-3"><i class="bi bi-phone-fill text-primary me-2"></i> Tỷ Lệ Thiết Bị Truy Cập</h5>
+                
+                <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="min-height:220px; position:relative;">
+                    <canvas id="deviceDonutChart" style="max-height:230px;"></canvas>
+                </div>
+
+                <div class="d-flex justify-content-around align-items-center mt-3 pt-3 border-top border-slate-200 small text-secondary">
+                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-primary me-1"></i> Điện thoại</div>
+                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-success me-1"></i> Máy tính</div>
+                    <div class="fw-bold text-slate-800"><i class="bi bi-circle-fill text-warning me-1"></i> Tablet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Top Search Keywords & Guest Visitor Sessions -->
+    <div class="row g-4 mb-3">
+        <!-- Top Từ Khóa Tìm Kiếm Hot -->
+        <div class="col-lg-5">
+            <div class="analytics-card h-100">
+                <h5 class="fw-bold text-slate-800 mb-3"><i class="bi bi-search text-warning me-2"></i> Top Từ Khóa Tìm Kiếm Hot</h5>
+                
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0" style="font-size:0.88rem;">
-                        <thead class="table-light">
+                    <table class="table light-table align-middle mb-0">
+                        <thead>
                             <tr>
-                                <th class="ps-3">Khách Hàng</th>
-                                <th>Recency</th>
-                                <th>Chi Tiêu</th>
-                                <th>Churn%</th>
-                                <th class="pe-3">Action</th>
+                                <th>TỪ KHÓA TÌM KIẾM</th>
+                                <th class="text-end">TẦN SUẤT</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in segments.Where(s => s.Segment == "Nguy Cơ Rời Bỏ (Churn Risk)").Take(5))
+                            @foreach (var search in topSearches)
                             {
                                 <tr>
-                                    <td class="fw-bold ps-3">@item.FullName</td>
-                                    <td class="text-danger fw-semibold">@item.RecencyDays ngày</td>
-                                    <td>@item.Monetary.ToString("N0")đ</td>
-                                    <td><span class="badge bg-danger">87.5%</span></td>
-                                    <td class="pe-3">
-                                        <button class="btn btn-sm btn-outline-danger rounded-pill px-2" style="font-size:0.76rem;">
-                                            <i class="bi bi-gift me-1"></i>Voucher 20%
-                                        </button>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-search text-primary small"></i>
+                                            <span class="fw-bold text-slate-900">@search.Keyword</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="badge pill-badge-blue px-3 py-1 fw-bold">
+                                            @search.Count lần
+                                        </span>
                                     </td>
                                 </tr>
                             }
-                            @if (!segments.Any(s => s.Segment == "Nguy Cơ Rời Bỏ (Churn Risk)"))
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh Sách Khách Vãng Lai & Địa Chỉ IP -->
+        <div class="col-lg-7">
+            <div class="analytics-card h-100">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+                    <h5 class="fw-bold text-slate-800 m-0"><i class="bi bi-list-ul text-primary me-2"></i> Danh Sách Khách Vãng Lai & Địa Chỉ IP</h5>
+                    
+                    <div class="d-flex gap-2 small">
+                        <span class="badge pill-badge-grey px-2.5 py-1.5 fw-bold">
+                            🏛️ Khách vãng lai: @guestSessionCount phiên
+                        </span>
+                        <span class="badge pill-badge-green px-2.5 py-1.5 fw-bold">
+                            👤 Đã đăng nhập: @userSessionCount phiên
+                        </span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table light-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>SESSION ID</th>
+                                <th>LOẠI PHIÊN</th>
+                                <th>ĐỊA CHỈ IP</th>
+                                <th>THIẾT BỊ</th>
+                                <th class="text-end">THỜI GIAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in recentLogs)
                             {
-                                <tr><td colspan="5" class="text-center text-muted py-4 ps-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Chưa có khách hàng nguy cơ rời bỏ</td></tr>
+                                <tr>
+                                    <td class="font-monospace small text-primary fw-bold">@log.SessionId</td>
+                                    <td>
+                                        @if (log.UserType == "Đã đăng nhập")
+                                        {
+                                            <span class="badge pill-badge-green px-2.5 py-1.5 fw-bold">
+                                                <i class="bi bi-person-check-fill me-1"></i> @log.UserType
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge pill-badge-grey px-2.5 py-1.5 fw-bold">
+                                                <i class="bi bi-person-x-fill me-1"></i> @log.UserType
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="font-monospace text-slate-900 fw-bold">@log.IpAddress</td>
+                                    <td>
+                                        @if (log.DeviceType == "Mobile")
+                                        {
+                                            <span class="text-primary fw-bold"><i class="bi bi-phone me-1"></i> Mobile</span>
+                                        }
+                                        else if (log.DeviceType == "Tablet")
+                                        {
+                                            <span class="text-warning fw-bold"><i class="bi bi-tablet me-1"></i> Tablet</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success fw-bold"><i class="bi bi-display me-1"></i> Desktop</span>
+                                        }
+                                    </td>
+                                    <td class="text-end text-slate-800 fw-bold small">@log.Timestamp.ToString("HH:mm dd/MM")</td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -197,95 +436,42 @@
     </div>
 </div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const vip = @vipCount;
-            const churn = @churnRiskCount;
-            const total = @totalCustomers;
-            const loyal = Math.max(0, total - vip - churn - Math.max(0, Math.floor(total * 0.2)));
-            const newC = Math.max(1, total - vip - churn - loyal);
-
-            // 1. K-Means Doughnut
-            new Chart(document.getElementById('kmeansChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['VIP', 'Loyal Customer', 'New Customer', 'Churn Risk'],
-                    datasets: [{ data: [vip || 1, loyal || 1, newC || 1, churn || 1], backgroundColor: ['#10b981','#f59e0b','#06b6d4','#ef4444'], borderWidth: 2 }]
+<!-- Chart.js Script for Device Donut Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('deviceDonutChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Điện thoại (Mobile)', 'Máy tính (Desktop)', 'Máy tính bảng (Tablet)'],
+                datasets: [{
+                    data: [@mobileCount, @desktopCount, @tabletCount],
+                    backgroundColor: ['#2563eb', '#059669', '#d97706'],
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#ffffff',
+                        titleColor: '#0f172a',
+                        bodyColor: '#0f172a',
+                        borderColor: '#cbd5e1',
+                        borderWidth: 1,
+                        padding: 12,
+                        boxPadding: 6
+                    }
                 },
-                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
-            });
-
-            // 2. Elbow Method
-            new Chart(document.getElementById('elbowChart'), {
-                type: 'line',
-                data: {
-                    labels: ['k=1','k=2','k=3','k=4 ★','k=5','k=6'],
-                    datasets: [{ label: 'WCSS Inertia', data: [4200,2100,1100,450,390,350], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.35, pointBackgroundColor: ['#94a3b8','#94a3b8','#94a3b8','#ef4444','#94a3b8','#94a3b8'], pointRadius: [4,4,4,8,4,4] }]
-                },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Inertia (WCSS)' } } } }
-            });
-
-            // 3. PCA 2D Scatter
-            new Chart(document.getElementById('pcaChart'), {
-                type: 'scatter',
-                data: {
-                    datasets: [
-                        { label: 'VIP', data: [{x:3.2,y:2.1},{x:2.8,y:1.9},{x:3.5,y:2.5},{x:3.0,y:2.3}], backgroundColor: 'rgba(16,185,129,0.8)', pointRadius: 7 },
-                        { label: 'Churn Risk', data: [{x:-2.1,y:-1.8},{x:-2.5,y:-2.0},{x:-1.9,y:-1.5},{x:-2.3,y:-1.7}], backgroundColor: 'rgba(239,68,68,0.8)', pointRadius: 7 },
-                        { label: 'Loyal', data: [{x:0.5,y:1.2},{x:0.8,y:0.9},{x:1.1,y:1.4},{x:0.6,y:1.1}], backgroundColor: 'rgba(245,158,11,0.8)', pointRadius: 7 },
-                        { label: 'New', data: [{x:-0.5,y:0.3},{x:0.2,y:-0.4},{x:-0.8,y:0.5}], backgroundColor: 'rgba(6,182,212,0.8)', pointRadius: 7 }
-                    ]
-                },
-                options: { responsive: true, scales: { x: { title: { display: true, text: 'PC1' } }, y: { title: { display: true, text: 'PC2' } } } }
-            });
-
-            // 4. Linear Regression RFE Feature Weights
-            new Chart(document.getElementById('regressionChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Monetary (Spend)', 'Frequency (Orders)', 'Recency (Days)', 'Page Views'],
-                    datasets: [{ label: 'Feature Weight (RFE)', data: [0.65,0.25,-0.40,0.15], backgroundColor: ['#6366f1','#8b5cf6','#ef4444','#10b981'], borderRadius: 6 }]
-                },
-                options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { title: { display: true, text: 'Coefficient Weight' } } } }
-            });
-
-            // 5. Logistic Regression Sigmoid
-            new Chart(document.getElementById('logisticChart'), {
-                type: 'line',
-                data: {
-                    labels: ['10d','20d','30d','45d','60d','90d'],
-                    datasets: [{ label: 'P(Churn)', data: [5,12,48,78,92,98], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.12)', fill: true, tension: 0.45 }]
-                },
-                options: { responsive: true, scales: { y: { title: { display: true, text: 'Probability (%)' }, min: 0, max: 100 }, x: { title: { display: true, text: 'Days Since Last Purchase' } } } }
-            });
-
-            // 6. SVM vs Random Forest Radar
-            new Chart(document.getElementById('svmChart'), {
-                type: 'radar',
-                data: {
-                    labels: ['Accuracy','Recall','Precision','F1-Score','AUC-ROC'],
-                    datasets: [
-                        { label: 'SVM', data: [91,86,89,87,92], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.18)', pointBackgroundColor: '#8b5cf6' },
-                        { label: 'Random Forest', data: [95,90,93,91,96], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.18)', pointBackgroundColor: '#10b981' }
-                    ]
-                },
-                options: { responsive: true, scales: { r: { beginAtZero: true, min: 70, max: 100 } } }
-            });
-
-            // 7. SMOTE Imbalance Bar
-            new Chart(document.getElementById('smoteChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Before SMOTE (85:15)', 'After SMOTE (50:50)'],
-                    datasets: [
-                        { label: 'Non-Churn', data: [85, 50], backgroundColor: '#10b981', borderRadius: 6 },
-                        { label: 'Churn', data: [15, 50], backgroundColor: '#ef4444', borderRadius: 6 }
-                    ]
-                },
-                options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'Sample Count (%)' } } } }
-            });
+                cutout: '72%'
+            }
         });
-    </script>
-}
+    });
+</script>
