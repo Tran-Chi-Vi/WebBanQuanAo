@@ -7,9 +7,54 @@ using WEBBANQUANAO.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB CONTEXT
+// DB CONTEXT (AUTO DETECT POSTGRESQL VS SQL SERVER)
+var defaultConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+
+// Hỗ trợ cả 2 khối JSON "development" và "production"
+var activeSection = builder.Environment.IsDevelopment() ? "development" : "production";
+var pgHost = builder.Configuration[$"{activeSection}:host"] 
+    ?? builder.Configuration["production:host"] 
+    ?? builder.Configuration["development:host"] 
+    ?? builder.Configuration["PostgreSQL:Host"];
+
+if (!string.IsNullOrEmpty(pgHost))
+{
+    var pgUser = builder.Configuration[$"{activeSection}:username"] 
+        ?? builder.Configuration["production:username"] 
+        ?? builder.Configuration["development:username"] 
+        ?? builder.Configuration["PostgreSQL:Username"] ?? "v1";
+        
+    var pgPass = builder.Configuration[$"{activeSection}:password"] 
+        ?? builder.Configuration["production:password"] 
+        ?? builder.Configuration["development:password"] 
+        ?? builder.Configuration["PostgreSQL:Password"] ?? "";
+        
+    var pgDb = builder.Configuration[$"{activeSection}:database"] 
+        ?? builder.Configuration["production:database"] 
+        ?? builder.Configuration["development:database"] 
+        ?? builder.Configuration["PostgreSQL:Database"] ?? "fashionstore_1y94";
+        
+    var pgPort = builder.Configuration[$"{activeSection}:port"] 
+        ?? builder.Configuration["production:port"] 
+        ?? builder.Configuration["development:port"] 
+        ?? builder.Configuration["PostgreSQL:Port"] ?? "5432";
+        
+    defaultConnStr = $"Host={pgHost};Port={pgPort};Database={pgDb};Username={pgUser};Password={pgPass};SSL Mode=Require;Trust Server Certificate=true;";
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (defaultConnStr.Contains("Host=", StringComparison.OrdinalIgnoreCase) || 
+        defaultConnStr.Contains("Postgres", StringComparison.OrdinalIgnoreCase) || 
+        defaultConnStr.Contains("postgres://", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseNpgsql(defaultConnStr);
+    }
+    else
+    {
+        options.UseSqlServer(defaultConnStr);
+    }
+});
 
 // HTTP CLIENT & SERVICES
 builder.Services.AddHttpClient();
@@ -85,38 +130,41 @@ if (!app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    try
+    if (db.Database.IsSqlServer())
     {
-        db.Database.ExecuteSqlRaw(@"
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DeviceType')
-                ALTER TABLE [UserBehaviorLogs] ADD [DeviceType] NVARCHAR(20) NULL;
+        try
+        {
+            db.Database.ExecuteSqlRaw(@"
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DeviceType')
+                    ALTER TABLE [UserBehaviorLogs] ADD [DeviceType] NVARCHAR(20) NULL;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DwellTimeSeconds')
-                ALTER TABLE [UserBehaviorLogs] ADD [DwellTimeSeconds] FLOAT NOT NULL DEFAULT 0;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DwellTimeSeconds')
+                    ALTER TABLE [UserBehaviorLogs] ADD [DwellTimeSeconds] FLOAT NOT NULL DEFAULT 0;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IpAddress')
-                ALTER TABLE [UserBehaviorLogs] ADD [IpAddress] NVARCHAR(50) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IpAddress')
+                    ALTER TABLE [UserBehaviorLogs] ADD [IpAddress] NVARCHAR(50) NULL;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IsRageClick')
-                ALTER TABLE [UserBehaviorLogs] ADD [IsRageClick] BIT NOT NULL DEFAULT 0;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IsRageClick')
+                    ALTER TABLE [UserBehaviorLogs] ADD [IsRageClick] BIT NOT NULL DEFAULT 0;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'PageUrl')
-                ALTER TABLE [UserBehaviorLogs] ADD [PageUrl] NVARCHAR(255) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'PageUrl')
+                    ALTER TABLE [UserBehaviorLogs] ADD [PageUrl] NVARCHAR(255) NULL;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationBlockId')
-                ALTER TABLE [UserBehaviorLogs] ADD [RecommendationBlockId] NVARCHAR(50) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationBlockId')
+                    ALTER TABLE [UserBehaviorLogs] ADD [RecommendationBlockId] NVARCHAR(50) NULL;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationSource')
-                ALTER TABLE [UserBehaviorLogs] ADD [RecommendationSource] NVARCHAR(50) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationSource')
+                    ALTER TABLE [UserBehaviorLogs] ADD [RecommendationSource] NVARCHAR(50) NULL;
 
-            IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'SearchQuery')
-                ALTER TABLE [UserBehaviorLogs] ADD [SearchQuery] NVARCHAR(200) NULL;
+                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'SearchQuery')
+                    ALTER TABLE [UserBehaviorLogs] ADD [SearchQuery] NVARCHAR(200) NULL;
 
-            IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'ProductId' AND is_nullable = 0)
-                ALTER TABLE [UserBehaviorLogs] ALTER COLUMN [ProductId] INT NULL;
-        ");
+                IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'ProductId' AND is_nullable = 0)
+                    ALTER TABLE [UserBehaviorLogs] ALTER COLUMN [ProductId] INT NULL;
+            ");
+        }
+        catch { }
     }
-    catch { }
 }
 
 app.UseHttpsRedirection();
@@ -134,6 +182,21 @@ app.MapAreaControllerRoute(
     name: "admin",
     areaName: "Admin",
     pattern: "sys-admin-management/{controller=Dashboard}/{action=Index}/{id?}");
+
+// ROUTE TỰ ĐỘNG KHỞI TẠO BẢNG CSDL (Tương đương Express router.get('/createTables'))
+app.MapGet("/createTables", async (ApplicationDbContext context) =>
+{
+    try
+    {
+        await context.Database.EnsureCreatedAsync();
+        await DbInitializer.SeedAsync(context);
+        return Results.Text("tables created!");
+    }
+    catch (Exception ex)
+    {
+        return Results.Text($"Error creating tables: {ex.Message}");
+    }
+});
 
 // Route chuẩn cho Khách hàng
 app.MapControllerRoute(

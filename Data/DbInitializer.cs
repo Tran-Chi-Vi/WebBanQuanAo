@@ -9,27 +9,19 @@ public static class DbInitializer
 {
     public static async Task SeedAsync(ApplicationDbContext context)
     {
-        bool isDbReady = false;
         try
         {
-            if (await context.Database.CanConnectAsync())
+            // Auto update database schema for PostgreSQL / SQL Server
+            try
             {
-                await context.Products.Select(p => p.ProductGuid).FirstOrDefaultAsync();
-                await context.Users.Select(u => u.FacebookId).FirstOrDefaultAsync();
-                isDbReady = true;
+                await context.Database.MigrateAsync();
+            }
+            catch
+            {
+                await context.Database.EnsureCreatedAsync();
             }
         }
         catch
-        {
-            isDbReady = false;
-        }
-
-        if (!isDbReady)
-        {
-            await context.Database.EnsureDeletedAsync();
-            await context.Database.EnsureCreatedAsync();
-        }
-        else
         {
             await context.Database.EnsureCreatedAsync();
         }

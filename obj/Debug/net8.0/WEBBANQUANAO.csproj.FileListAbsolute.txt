@@ -37,6 +37,8 @@ D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Mono.TextTemplating.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Npgsql.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\System.CodeDom.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\System.Composition.AttributedModel.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\System.Composition.Convention.dll
@@ -133,6 +135,7 @@ D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.development.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQU.A27C28BB.Up2Date
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\refint\WEBBANQUANAO.dll
