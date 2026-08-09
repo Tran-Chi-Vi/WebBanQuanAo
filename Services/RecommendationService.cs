@@ -80,40 +80,54 @@ public class RecommendationService : IRecommendationService
 
     public async Task<List<Product>> GetTrendingAndTopSearchProductsAsync(int limit = 8)
     {
-        var startDate = DateTime.Now.AddDays(-30);
-
-        // Fetch top search queries
-        var topSearchQueries = await _context.UserBehaviorLogs
-            .Where(l => l.Timestamp >= startDate && !string.IsNullOrEmpty(l.SearchQuery))
-            .GroupBy(l => l.SearchQuery.ToLower())
-            .OrderByDescending(g => g.Count())
-            .Select(g => g.Key)
-            .Take(3)
-            .ToListAsync();
-
-        // Fetch products matching top search keywords or top ordered
-        IQueryable<Product> query = _context.Products
-            .Where(p => p.Status == ProductStatus.Active && p.Variants.Any(v => v.StockQuantity > 0));
-
-        if (topSearchQueries.Any())
+        try
         {
-            var firstQuery = topSearchQueries.First();
-            query = query.OrderByDescending(p => p.ProductName.Contains(firstQuery) || p.Category.CategoryName.Contains(firstQuery))
-                         .ThenByDescending(p => p.CreatedAt);
+            var startDate = DateTime.Now.AddDays(-30);
+
+            // Fetch top search queries safely
+            var topSearchQueries = await _context.UserBehaviorLogs
+                .Where(l => l.Timestamp >= startDate && l.SearchQuery != null && l.SearchQuery != "")
+                .GroupBy(l => l.SearchQuery)
+                .OrderByDescending(g => g.Count())
+                .Select(g => g.Key!)
+                .Take(3)
+                .ToListAsync();
+
+            // Fetch products matching top search keywords or top ordered
+            IQueryable<Product> query = _context.Products
+                .Where(p => p.Status == ProductStatus.Active && p.Variants.Any(v => v.StockQuantity > 0));
+
+            if (topSearchQueries.Any())
+            {
+                var firstQuery = topSearchQueries.First();
+                query = query.OrderByDescending(p => p.ProductName.Contains(firstQuery) || p.Category.CategoryName.Contains(firstQuery))
+                             .ThenByDescending(p => p.CreatedAt);
+            }
+            else
+            {
+                query = query.OrderByDescending(p => p.CreatedAt);
+            }
+
+            var results = await query
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .Take(limit)
+                .ToListAsync();
+
+            return results;
         }
-        else
+        catch
         {
-            query = query.OrderByDescending(p => p.CreatedAt);
+            // Fallback product list if any DB error occurs
+            return await _context.Products
+                .Where(p => p.Status == ProductStatus.Active)
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .Take(limit)
+                .ToListAsync();
         }
-
-        var results = await query
-            .Include(p => p.Images)
-            .Include(p => p.Category)
-            .Include(p => p.Variants)
-            .Take(limit)
-            .ToListAsync();
-
-        return results;
     }
 
     public async Task<List<Product>> GetFrequentlyBoughtTogetherAsync(int productId, int limit = 4)

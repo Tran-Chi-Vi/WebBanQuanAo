@@ -29,40 +29,69 @@ public class HomeController : Controller
 
         ViewBag.FavoriteProductIds = favIds;
 
-        ViewBag.Categories = await _context.Categories
-            .Where(c => c.ParentCategoryId == null)
-            .Include(c => c.SubCategories)
-            .Take(8)
-            .ToListAsync();
+        try
+        {
+            ViewBag.Categories = await _context.Categories
+                .Where(c => c.ParentCategoryId == null)
+                .Include(c => c.SubCategories)
+                .Take(8)
+                .ToListAsync();
+        }
+        catch
+        {
+            ViewBag.Categories = new List<Category>();
+        }
 
-        ViewBag.Brands = await _context.Brands
-            .Take(6)
-            .ToListAsync();
+        try
+        {
+            ViewBag.Brands = await _context.Brands
+                .Take(6)
+                .ToListAsync();
+        }
+        catch
+        {
+            ViewBag.Brands = new List<Brand>();
+        }
 
         // Sản phẩm mới nhất
-        var newArrivals = await _context.Products
-            .Where(p => p.Status == ProductStatus.Active)
-            .Include(p => p.Images)
-            .Include(p => p.Category)
-            .Include(p => p.Variants)
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(12)
-            .ToListAsync();
+        List<Product> newArrivals = new List<Product>();
+        try
+        {
+            newArrivals = await _context.Products
+                .Where(p => p.Status == ProductStatus.Active)
+                .Include(p => p.Images)
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(12)
+                .ToListAsync();
+        }
+        catch { }
 
         // Sản phẩm bán chạy (dựa trên tổng số lượng đặt mua)
-        var bestsellerProductIds = await _context.OrderDetails
-            .GroupBy(od => od.Variant.ProductId)
-            .OrderByDescending(g => g.Sum(od => od.Quantity))
-            .Select(g => g.Key)
-            .Take(8)
-            .ToListAsync();
+        List<Product> bestsellers = new List<Product>();
+        try
+        {
+            var bestsellerProductIds = await _context.OrderDetails
+                .Include(od => od.Variant)
+                .Where(od => od.Variant != null)
+                .GroupBy(od => od.Variant!.ProductId)
+                .OrderByDescending(g => g.Sum(od => od.Quantity))
+                .Select(g => g.Key)
+                .Take(8)
+                .ToListAsync();
 
-        var bestsellers = await _context.Products
-            .Where(p => bestsellerProductIds.Contains(p.ProductId) && p.Status == ProductStatus.Active)
-            .Include(p => p.Images)
-            .Include(p => p.Category)
-            .Include(p => p.Variants)
-            .ToListAsync();
+            if (bestsellerProductIds.Any())
+            {
+                bestsellers = await _context.Products
+                    .Where(p => bestsellerProductIds.Contains(p.ProductId) && p.Status == ProductStatus.Active)
+                    .Include(p => p.Images)
+                    .Include(p => p.Category)
+                    .Include(p => p.Variants)
+                    .ToListAsync();
+            }
+        }
+        catch { }
 
         if (bestsellers.Count < 4)
         {
@@ -77,18 +106,34 @@ public class HomeController : Controller
         }
 
         // Khuyến mãi đang hoạt động
-        ViewBag.ActivePromotions = await _context.Promotions
-            .Where(p => p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now)
-            .Take(3)
-            .ToListAsync();
+        try
+        {
+            var now = DateTime.Now;
+            ViewBag.ActivePromotions = await _context.Promotions
+                .Where(p => p.StartDate <= now && p.EndDate >= now)
+                .Take(3)
+                .ToListAsync();
+        }
+        catch
+        {
+            ViewBag.ActivePromotions = new List<Promotion>();
+        }
 
         int? userId = null;
         var uIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (int.TryParse(uIdStr, out int uId) && uId > 0) userId = uId;
         string? sessionId = HttpContext.Session.GetString("fs_behavior_sid");
 
-        ViewBag.PersonalizedRecommendations = await _recommendationService.GetPersonalizedRecommendationsAsync(userId, sessionId, 8);
-        ViewBag.TopSearchRecommendations = await _recommendationService.GetTrendingAndTopSearchProductsAsync(8);
+        try
+        {
+            ViewBag.PersonalizedRecommendations = await _recommendationService.GetPersonalizedRecommendationsAsync(userId, sessionId, 8);
+            ViewBag.TopSearchRecommendations = await _recommendationService.GetTrendingAndTopSearchProductsAsync(8);
+        }
+        catch
+        {
+            ViewBag.PersonalizedRecommendations = newArrivals.Take(8).ToList();
+            ViewBag.TopSearchRecommendations = newArrivals.Take(8).ToList();
+        }
 
         ViewBag.NewArrivals = newArrivals;
         ViewBag.Bestsellers = bestsellers;
