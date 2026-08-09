@@ -135,7 +135,6 @@ D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.development.json
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQU.A27C28BB.Up2Date
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\refint\WEBBANQUANAO.dll

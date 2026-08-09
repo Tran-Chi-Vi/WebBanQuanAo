@@ -10,10 +10,12 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB CONTEXT (AUTO DETECT POSTGRESQL VS SQL SERVER)
+// =========================================================================
+// 1. CẤU HÌNH CƠ SỞ DỮ LIỆU (POSTGRESQL HOẶC SQL SERVER)
+// =========================================================================
 var defaultConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 
-// Hỗ trợ cả 2 khối JSON "development" và "production"
+// Tự động đọc cấu hình JSON khối "production" / "development" / "PostgreSQL" nếu có
 var activeSection = builder.Environment.IsDevelopment() ? "development" : "production";
 var pgHost = builder.Configuration[$"{activeSection}:host"] 
     ?? builder.Configuration["production:host"] 
@@ -25,7 +27,7 @@ if (!string.IsNullOrEmpty(pgHost))
     var pgUser = builder.Configuration[$"{activeSection}:username"] 
         ?? builder.Configuration["production:username"] 
         ?? builder.Configuration["development:username"] 
-        ?? builder.Configuration["PostgreSQL:Username"] ?? "v1";
+        ?? builder.Configuration["PostgreSQL:Username"] ?? "vi";
         
     var pgPass = builder.Configuration[$"{activeSection}:password"] 
         ?? builder.Configuration["production:password"] 
@@ -59,7 +61,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     }
 });
 
-// HTTP CLIENT & SERVICES
+// =========================================================================
+// 2. DỊCH VỤ DỰ ÁN (SERVICES)
+// =========================================================================
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IAprioriService, AprioriService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
@@ -67,7 +71,9 @@ builder.Services.AddScoped<IChatbotService, ChatbotService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
-// AUTHENTICATION (COOKIE, GOOGLE & FACEBOOK)
+// =========================================================================
+// 3. XÁC THỰC NGƯỜI DÙNG (AUTHENTICATION - COOKIE, GOOGLE & FACEBOOK)
+// =========================================================================
 var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -110,64 +116,57 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// MVC & SIGNALR
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
+// =========================================================================
+// 4. KHỞI TẠO PIPELINE & MIDDLEWARE
+// =========================================================================
 var app = builder.Build();
 
-// AUTO SEED DATA & DATABASE INITIALIZATION
+// Auto Database Initialization & Migration Check
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await DbInitializer.SeedAsync(context);
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await DbInitializer.SeedAsync(context);
+
+        if (context.Database.IsSqlServer())
+        {
+            try
+            {
+                await context.Database.ExecuteSqlRawAsync(@"
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DeviceType')
+                        ALTER TABLE [UserBehaviorLogs] ADD [DeviceType] NVARCHAR(20) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DwellTimeSeconds')
+                        ALTER TABLE [UserBehaviorLogs] ADD [DwellTimeSeconds] FLOAT NOT NULL DEFAULT 0;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IpAddress')
+                        ALTER TABLE [UserBehaviorLogs] ADD [IpAddress] NVARCHAR(50) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IsRageClick')
+                        ALTER TABLE [UserBehaviorLogs] ADD [IsRageClick] BIT NOT NULL DEFAULT 0;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'PageUrl')
+                        ALTER TABLE [UserBehaviorLogs] ADD [PageUrl] NVARCHAR(255) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationBlockId')
+                        ALTER TABLE [UserBehaviorLogs] ADD [RecommendationBlockId] NVARCHAR(50) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationSource')
+                        ALTER TABLE [UserBehaviorLogs] ADD [RecommendationSource] NVARCHAR(50) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'SearchQuery')
+                        ALTER TABLE [UserBehaviorLogs] ADD [SearchQuery] NVARCHAR(200) NULL;
+                    IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'ProductId' AND is_nullable = 0)
+                        ALTER TABLE [UserBehaviorLogs] ALTER COLUMN [ProductId] INT NULL;
+                ");
+            }
+            catch { }
+        }
+    }
+    catch { }
 }
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-}
-
-// Auto Schema Migration for UserBehaviorLogs columns
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    if (db.Database.IsSqlServer())
-    {
-        try
-        {
-            db.Database.ExecuteSqlRaw(@"
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DeviceType')
-                    ALTER TABLE [UserBehaviorLogs] ADD [DeviceType] NVARCHAR(20) NULL;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'DwellTimeSeconds')
-                    ALTER TABLE [UserBehaviorLogs] ADD [DwellTimeSeconds] FLOAT NOT NULL DEFAULT 0;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IpAddress')
-                    ALTER TABLE [UserBehaviorLogs] ADD [IpAddress] NVARCHAR(50) NULL;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'IsRageClick')
-                    ALTER TABLE [UserBehaviorLogs] ADD [IsRageClick] BIT NOT NULL DEFAULT 0;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'PageUrl')
-                    ALTER TABLE [UserBehaviorLogs] ADD [PageUrl] NVARCHAR(255) NULL;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationBlockId')
-                    ALTER TABLE [UserBehaviorLogs] ADD [RecommendationBlockId] NVARCHAR(50) NULL;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'RecommendationSource')
-                    ALTER TABLE [UserBehaviorLogs] ADD [RecommendationSource] NVARCHAR(50) NULL;
-
-                IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'SearchQuery')
-                    ALTER TABLE [UserBehaviorLogs] ADD [SearchQuery] NVARCHAR(200) NULL;
-
-                IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'ProductId' AND is_nullable = 0)
-                    ALTER TABLE [UserBehaviorLogs] ALTER COLUMN [ProductId] INT NULL;
-            ");
-        }
-        catch { }
-    }
 }
 
 app.UseHttpsRedirection();
@@ -180,13 +179,17 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Route biệt lập 100% cho Admin Area
+// =========================================================================
+// 5. ĐỊNH TUYẾN (ROUTES)
+// =========================================================================
+
+// Route biệt lập cho Admin Area
 app.MapAreaControllerRoute(
     name: "admin",
     areaName: "Admin",
     pattern: "sys-admin-management/{controller=Dashboard}/{action=Index}/{id?}");
 
-// ROUTE TỰ ĐỘNG KHỞI TẠO BẢNG CSDL (Tương đương Express router.get('/createTables'))
+// Route tự động tạo CSDL nếu gọi /createTables
 app.MapGet("/createTables", async (ApplicationDbContext context) =>
 {
     try
@@ -201,7 +204,7 @@ app.MapGet("/createTables", async (ApplicationDbContext context) =>
     }
 });
 
-// Route chuẩn cho Khách hàng
+// Route mặc định cho Khách hàng
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
