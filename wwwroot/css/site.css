@@ -1806,54 +1806,54 @@ body.user-dark-mode .contact-info-card small {
   --glow-trail: #06b6d4;
 }
 
-/* Aspect-Ratio Weighted Keyframes & Fixed Length 50px Directional Tail Tracking */
+/* Aspect-Ratio Weighted Keyframes & Fixed Length 100px Directional Tail Tracking */
 @keyframes ledDotPathRun {
-  /* Top Edge (A -> B): Moving Right, Tail extends 50px to Left */
+  /* Top Edge (A -> B): Moving Right, Tail extends 100px to Left */
   0% {
     top: 3px;
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -20px 0 18px var(--glow-trail), -50px 0 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), -35px 0 22px var(--glow-trail), -70px 0 30px var(--glow-trail), -100px 0 40px var(--glow-trail);
   }
   40% {
     top: 3px;
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -20px 0 18px var(--glow-trail), -50px 0 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), -35px 0 22px var(--glow-trail), -70px 0 30px var(--glow-trail), -100px 0 40px var(--glow-trail);
   }
 
-  /* Right Edge (B -> C): Moving Down, Tail extends 50px to Top */
+  /* Right Edge (B -> C): Moving Down, Tail extends 100px to Top */
   41% {
     top: 3px;
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -20px 18px var(--glow-trail), 0 -50px 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 0 -35px 22px var(--glow-trail), 0 -70px 30px var(--glow-trail), 0 -100px 40px var(--glow-trail);
   }
   49% {
     top: calc(100% - 3px);
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -20px 18px var(--glow-trail), 0 -50px 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 0 -35px 22px var(--glow-trail), 0 -70px 30px var(--glow-trail), 0 -100px 40px var(--glow-trail);
   }
 
-  /* Bottom Edge (C -> D): Moving Left, Tail extends 50px to Right */
+  /* Bottom Edge (C -> D): Moving Left, Tail extends 100px to Right */
   50% {
     top: calc(100% - 3px);
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 20px 0 18px var(--glow-trail), 50px 0 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 35px 0 22px var(--glow-trail), 70px 0 30px var(--glow-trail), 100px 0 40px var(--glow-trail);
   }
   90% {
     top: calc(100% - 3px);
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 20px 0 18px var(--glow-trail), 50px 0 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 35px 0 22px var(--glow-trail), 70px 0 30px var(--glow-trail), 100px 0 40px var(--glow-trail);
   }
 
-  /* Left Edge (D -> A): Moving Up, Tail extends 50px to Bottom */
+  /* Left Edge (D -> A): Moving Up, Tail extends 100px to Bottom */
   91% {
     top: calc(100% - 3px);
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 20px 18px var(--glow-trail), 0 50px 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 0 35px 22px var(--glow-trail), 0 70px 30px var(--glow-trail), 0 100px 40px var(--glow-trail);
   }
   100% {
     top: 3px;
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 20px 18px var(--glow-trail), 0 50px 28px var(--glow-trail);
+    box-shadow: 0 0 12px #ffffff, 0 0 20px var(--glow-core), 0 35px 22px var(--glow-trail), 0 70px 30px var(--glow-trail), 0 100px 40px var(--glow-trail);
   }
 }
 
