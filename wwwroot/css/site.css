@@ -1477,3 +1477,77 @@ body {
     gap: 1.5rem;
   }
 }
+
+/* ==========================================================================
+   IMPECCABLE PAGE TRANSITION & ZERO-FLICKER CONTRAST SYSTEM
+   ========================================================================== */
+.page-transition-wrapper {
+  animation: pageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tooltip Universal High-Contrast Styling */
+.tooltip-inner {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px !important;
+}
+
+/* SweetAlert2 & Toast Dark Mode Overrides */
+body.user-dark-mode .swal2-popup,
+body.admin-dark-mode .swal2-popup {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border: 1.5px solid #334155 !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.user-dark-mode .swal2-title,
+body.user-dark-mode .swal2-html-container,
+body.user-dark-mode .swal2-content,
+body.admin-dark-mode .swal2-title,
+body.admin-dark-mode .swal2-html-container,
+body.admin-dark-mode .swal2-content {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .swal2-timer-progress-bar,
+body.admin-dark-mode .swal2-timer-progress-bar {
+  background: linear-gradient(90deg, #6366f1, #ec4899) !important;
+}
+
+/* Contact Cards Dark Mode Specific Overrides */
+body.user-dark-mode .contact-info-card {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.user-dark-mode .contact-info-card h5,
+body.user-dark-mode .contact-info-card strong,
+body.user-dark-mode .contact-info-card a:not(.btn) {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .contact-info-card p,
+body.user-dark-mode .contact-info-card small {
+  color: #cbd5e1 !important;
+}

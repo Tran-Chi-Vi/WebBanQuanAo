@@ -8,6 +8,27 @@
     <meta name="theme-color" content="#6366f1" />
     <title>@ViewData["Title"] - FASHION STORE</title>
 
+    <!-- Instant Dark Mode Zero-Flicker Anti-Flash (IMPECCABLE CRAFT) -->
+    <script>
+        (function() {
+            var theme = localStorage.getItem('fs_user_theme') || localStorage.getItem('fs_admin_theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('user-dark-mode');
+                document.documentElement.style.backgroundColor = '#0b0f19';
+                document.documentElement.style.colorScheme = 'dark';
+            }
+        })();
+    </script>
+    <style id="themeAntiFlicker">
+        html.user-dark-mode, html.user-dark-mode body,
+        html.admin-dark-mode, html.admin-dark-mode body {
+            background-color: #0b0f19 !important;
+            background: #0b0f19 !important;
+            color: #ffffff !important;
+            color-scheme: dark;
+        }
+    </style>
+
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,19 +42,6 @@
 
     <!-- Site CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <!-- Theme Initialization (Zero Flicker) -->
-    <script>
-        (function() {
-            var theme = localStorage.getItem('fs_user_theme');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('user-dark-mode');
-                document.addEventListener('DOMContentLoaded', function() {
-                    document.body.classList.add('user-dark-mode');
-                });
-            }
-        })();
-    </script>
 </head>
 <body>
     <!-- ====== SCROLL PROGRESS INDICATOR BAR ====== -->
