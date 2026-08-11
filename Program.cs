@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using FashionStore.Web.Services;
 using WEBBANQUANAO.Data;
@@ -9,6 +10,14 @@ using WEBBANQUANAO.Services;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cấu hình Forwarded Headers cho Reverse Proxy (Render/Cloudflare/Nginx) để OAuth Google/Facebook nhận diện đúng HTTPS
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // =========================================================================
 // 1. CẤU HÌNH CƠ SỞ DỮ LIỆU (POSTGRESQL HOẶC SQL SERVER)
@@ -185,6 +194,8 @@ using (var scope = app.Services.CreateScope())
     }
     catch { }
 }
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
