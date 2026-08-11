@@ -159,8 +159,8 @@
                         <div id="liveSearchResults" class="dropdown-menu shadow-lg border-0 rounded-4 p-2" style="display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:1050;max-height:420px;overflow-y:auto;min-width:340px;"></div>
                     </form>
 
-                    <!-- Cart & User Actions -->
-                    <div class="d-flex align-items-center gap-2 my-2 my-lg-0">
+                    <!-- DESKTOP Cart & User Actions (Hidden on Mobile Drawer) -->
+                    <div class="d-none d-lg-flex align-items-center gap-2">
                         @{
                             int layoutCartCount = 0;
                             try
@@ -259,6 +259,79 @@
                         {
                             <a asp-controller="Account" asp-action="Login" class="btn btn-outline-custom py-2 px-3" style="font-size:0.88rem;">Đăng Nhập</a>
                             <a asp-controller="Account" asp-action="Register" class="btn btn-primary-gradient py-2 px-3" style="font-size:0.88rem;">Đăng Ký</a>
+                        }
+                    </div>
+
+                    <!-- MOBILE Action Toolbar (d-lg-none) -->
+                    <div class="d-lg-none mt-3 pt-3 border-top mobile-nav-actions-wrapper">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="small fw-bold text-uppercase tracking-wider text-muted ms-1" style="font-size:0.75rem;">Tiện ích nhanh</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <button onclick="toggleUserStoreTheme()" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width:42px;height:42px;flex-shrink:0;" title="Đổi Giao Diện">
+                                    <i class="bi bi-moon-stars-fill text-indigo fs-6"></i>
+                                </button>
+                                <a href="/Cart" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm position-relative" style="width:42px;height:42px;flex-shrink:0;">
+                                    <i class="bi bi-cart3 text-dark fs-6"></i>
+                                    @if (layoutCartCount > 0)
+                                    {
+                                        <span class="position-absolute bg-danger text-white rounded-circle fw-bold d-flex align-items-center justify-content-center" style="top:-3px;right:-3px;width:18px;height:18px;font-size:0.65rem;">@layoutCartCount</span>
+                                    }
+                                </a>
+                            </div>
+                        </div>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var mAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
+                            var mFullName = User.FindFirst("FullName")?.Value ?? "Người dùng";
+
+                            <!-- Mobile User Profile Card -->
+                            <div class="mobile-user-card p-3 rounded-4 mb-3 border">
+                                <div class="d-flex align-items-center gap-3">
+                                    @if (!string.IsNullOrEmpty(mAvatarUrl))
+                                    {
+                                        <img src="@mAvatarUrl" alt="Avatar" class="rounded-circle shadow-sm" style="width:44px;height:44px;object-fit:cover;border:2px solid #6366f1;flex-shrink:0;" />
+                                    }
+                                    else
+                                    {
+                                        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;font-weight:700;flex-shrink:0;">
+                                            @(mFullName.Substring(0,1).ToUpper())
+                                        </div>
+                                    }
+                                    <div style="min-width:0;">
+                                        <div class="fw-bold fs-6 text-truncate mobile-user-name">@mFullName</div>
+                                        <small class="text-muted text-truncate d-block">@User.Identity.Name</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Direct Mobile Quick Action Links -->
+                            <div class="mobile-user-menu-links d-flex flex-column gap-1">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="nav-link rounded-3 py-2 px-3 fw-bold d-flex align-items-center gap-2 text-indigo mb-1" href="/sys-admin-management/Dashboard/Index" style="background:rgba(99,102,241,0.1);">
+                                        <i class="bi bi-speedometer2 text-warning fs-5"></i> Bảng Quản Trị Hệ Thống
+                                    </a>
+                                }
+                                <a class="nav-link rounded-3 py-2 px-3 d-flex align-items-center gap-2" asp-controller="Account" asp-action="Profile">
+                                    <i class="bi bi-person-badge text-primary fs-5"></i> Hồ sơ cá nhân
+                                </a>
+                                <a class="nav-link rounded-3 py-2 px-3 d-flex align-items-center gap-2" asp-controller="Account" asp-action="MyOrders">
+                                    <i class="bi bi-box-seam text-success fs-5"></i> Đơn hàng của tôi
+                                </a>
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="mt-1">
+                                    <button type="submit" class="nav-link w-100 text-start text-danger rounded-3 py-2 px-3 border-0 bg-transparent d-flex align-items-center gap-2">
+                                        <i class="bi bi-box-arrow-right fs-5"></i> Đăng xuất tài khoản
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-grid gap-2 grid-cols-2">
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary rounded-3 py-2 fw-bold">Đăng Nhập</a>
+                                <a asp-controller="Account" asp-action="Register" class="btn btn-primary-gradient rounded-3 py-2 fw-bold">Đăng Ký</a>
+                            </div>
                         }
                     </div>
                 </div>

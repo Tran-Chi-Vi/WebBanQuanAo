@@ -194,27 +194,30 @@ input:focus::placeholder, textarea:focus::placeholder {
   align-items: center;
   justify-content: center;
 }
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0px;
-  left: 0.85rem;
-  right: 0.85rem;
-  height: 2.5px;
-  background: var(--primary);
-  border-radius: 2px;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+/* Restrict desktop bottom underline indicator to desktop viewports */
+@media (min-width: 992px) {
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    left: 0.85rem;
+    right: 0.85rem;
+    height: 2.5px;
+    background: var(--primary);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after,
+  .nav-item:hover > .nav-link::after {
+    transform: scaleX(1);
+  }
 }
 .nav-link:hover,
 .nav-item:hover > .nav-link {
   color: var(--primary) !important;
-}
-.nav-link:hover::after,
-.nav-link.active::after,
-.nav-item:hover > .nav-link::after {
-  transform: scaleX(1);
 }
 .nav-link.active {
   color: var(--primary) !important;
@@ -261,44 +264,166 @@ input:focus::placeholder, textarea:focus::placeholder {
   line-height: 1;
 }
 
-/* Mobile Navbar Collapse */
-@media (max-width: 991px) {
+/* Ensure Circular Buttons Stay 100% Perfect Circles on Mobile (Fixes Issue 2) */
+.btn-add-cart,
+.btn-favorite,
+.btn-icon,
+.cart-btn-circle,
+.rounded-circle.btn,
+a.rounded-circle.btn,
+button.rounded-circle {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hero Title Typewriter Mobile Responsiveness (Fixes Issue 1) */
+.hero-main-heading {
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  line-height: 1.2;
+}
+.hero-typewriter-wrapper {
+  min-height: 52px;
+  margin-top: 0.25rem;
+  width: 100%;
+  max-width: 580px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.hero-typewriter-text {
+  display: inline-block;
+  line-height: 1.25;
+  white-space: nowrap;
+  font-size: clamp(1.4rem, 5.5vw, 2.85rem);
+}
+@media (max-width: 767.98px) {
+  .hero-typewriter-wrapper {
+    min-height: 40px !important;
+    max-width: 100% !important;
+  }
+  #heroTypewriter, .hero-typewriter-text {
+    min-width: unset !important;
+    max-width: 100% !important;
+    font-size: 1.45rem !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+}
+
+/* Mobile Navbar Collapse Overhaul (Fixes Issue 3, 4, 5) */
+@media (max-width: 991.98px) {
   .navbar-collapse {
-    background: white;
-    border-radius: var(--radius-md);
-    padding: 0.75rem;
-    margin-top: 0.5rem;
-    border: 1.5px solid var(--gray-200);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    max-height: 80vh;
-    overflow-y: auto;
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    padding: 1.25rem !important;
+    margin-top: 0.75rem !important;
+    border: 1.5px solid #e2e8f0 !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    transition: all 0.3s ease !important;
   }
   .navbar-nav .nav-item { width: 100%; }
   .navbar-nav .nav-link {
-    padding: 0.7rem 1rem !important;
-    border-radius: var(--radius-sm);
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    font-size: 0.98rem !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: all 0.2s ease !important;
+  }
+  .navbar-nav .nav-link.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(236, 72, 153, 0.12)) !important;
+    border-left: 4px solid #6366f1 !important;
+    border-radius: 12px !important;
+    color: #6366f1 !important;
+    font-weight: 700 !important;
+    padding-left: 1.25rem !important;
+  }
+  .navbar-nav .nav-link::after {
+    display: none !important;
   }
   .navbar-nav .dropdown-menu {
     position: static !important;
     box-shadow: none !important;
-    border: 1px solid var(--gray-100) !important;
+    border: 1px solid #e2e8f0 !important;
     margin: 0.25rem 0 0.5rem !important;
-    border-radius: var(--radius-sm) !important;
-    background: var(--gray-50) !important;
+    border-radius: 14px !important;
+    background: #f8fafc !important;
   }
-  /* Search on mobile */
-  .navbar-search-form { width: 100% !important; }
-  /* Cart + User buttons row */
-  .navbar-actions-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--gray-100);
-    margin-top: 0.5rem;
+  .mobile-user-card {
+    background: #f8fafc;
+    border-color: #e2e8f0 !important;
+  }
+  .mobile-user-name {
+    color: #0f172a !important;
+  }
+  .navbar-search-input {
+    width: 100% !important;
+    background: #f8fafc !important;
+    border: 1.5px solid #e2e8f0 !important;
+    color: #0f172a !important;
+    border-radius: 14px !important;
+  }
+
+  /* DARK MODE OVERRIDES FOR MOBILE NAVBAR DRAWER (Fixes Issue 5) */
+  body.user-dark-mode .navbar-collapse {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6) !important;
+    color: #ffffff !important;
+  }
+  body.user-dark-mode .navbar-custom .nav-link {
+    color: #cbd5e1 !important;
+  }
+  body.user-dark-mode .navbar-custom .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+  body.user-dark-mode .navbar-custom .nav-link.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(236, 72, 153, 0.25)) !important;
+    border-left: 4px solid #818cf8 !important;
+    color: #ffffff !important;
+  }
+  body.user-dark-mode .navbar-search-input {
+    background: #0f172a !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+  }
+  body.user-dark-mode .navbar-search-input::placeholder {
+    color: #94a3b8 !important;
+  }
+  body.user-dark-mode .mobile-user-card {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+  }
+  body.user-dark-mode .mobile-user-name {
+    color: #ffffff !important;
+  }
+  body.user-dark-mode .mobile-nav-actions-wrapper {
+    border-top-color: #334155 !important;
+  }
+  body.user-dark-mode .navbar-nav .dropdown-menu {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+  }
+  body.user-dark-mode .dropdown-item {
+    color: #cbd5e1 !important;
+  }
+  body.user-dark-mode .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
   }
 }
 .navbar-search-input {
@@ -1681,54 +1806,54 @@ body.user-dark-mode .contact-info-card small {
   --glow-trail: #06b6d4;
 }
 
-/* Aspect-Ratio Weighted Keyframes & Fixed Length Directional Tail Tracking */
+/* Aspect-Ratio Weighted Keyframes & Fixed Length 50px Directional Tail Tracking */
 @keyframes ledDotPathRun {
-  /* Top Edge (A -> B): Moving Right, Tail extends 35px to Left */
+  /* Top Edge (A -> B): Moving Right, Tail extends 50px to Left */
   0% {
     top: 3px;
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -15px 0 15px var(--glow-trail), -32px 0 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -20px 0 18px var(--glow-trail), -50px 0 28px var(--glow-trail);
   }
   40% {
     top: 3px;
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -15px 0 15px var(--glow-trail), -32px 0 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), -20px 0 18px var(--glow-trail), -50px 0 28px var(--glow-trail);
   }
 
-  /* Right Edge (B -> C): Moving Down, Tail extends 35px to Top */
+  /* Right Edge (B -> C): Moving Down, Tail extends 50px to Top */
   41% {
     top: 3px;
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -15px 15px var(--glow-trail), 0 -32px 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -20px 18px var(--glow-trail), 0 -50px 28px var(--glow-trail);
   }
   49% {
     top: calc(100% - 3px);
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -15px 15px var(--glow-trail), 0 -32px 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 -20px 18px var(--glow-trail), 0 -50px 28px var(--glow-trail);
   }
 
-  /* Bottom Edge (C -> D): Moving Left, Tail extends 35px to Right */
+  /* Bottom Edge (C -> D): Moving Left, Tail extends 50px to Right */
   50% {
     top: calc(100% - 3px);
     left: calc(100% - 3px);
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 15px 0 15px var(--glow-trail), 32px 0 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 20px 0 18px var(--glow-trail), 50px 0 28px var(--glow-trail);
   }
   90% {
     top: calc(100% - 3px);
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 15px 0 15px var(--glow-trail), 32px 0 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 20px 0 18px var(--glow-trail), 50px 0 28px var(--glow-trail);
   }
 
-  /* Left Edge (D -> A): Moving Up, Tail extends 35px to Bottom */
+  /* Left Edge (D -> A): Moving Up, Tail extends 50px to Bottom */
   91% {
     top: calc(100% - 3px);
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 15px 15px var(--glow-trail), 0 32px 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 20px 18px var(--glow-trail), 0 50px 28px var(--glow-trail);
   }
   100% {
     top: 3px;
     left: 3px;
-    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 15px 15px var(--glow-trail), 0 32px 25px var(--glow-trail);
+    box-shadow: 0 0 10px #ffffff, 0 0 16px var(--glow-core), 0 20px 18px var(--glow-trail), 0 50px 28px var(--glow-trail);
   }
 }
 
