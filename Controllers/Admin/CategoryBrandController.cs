@@ -22,6 +22,7 @@ public class CategoryBrandController : Controller
     public async Task<IActionResult> Categories()
     {
         var categories = await _context.Categories
+            .AsNoTracking()
             .Include(c => c.ParentCategory)
             .Include(c => c.Products)
             .Include(c => c.SubCategories)

@@ -29,6 +29,7 @@ public class ProductManagementController : Controller
     {
         int pageSize = 10;
         var query = _context.Products
+            .AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.Brand)
             .Include(p => p.Images)
@@ -162,6 +163,7 @@ public class ProductManagementController : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var product = await _context.Products
+            .AsNoTracking()
             .Include(p => p.Images)
             .Include(p => p.Variants)
             .FirstOrDefaultAsync(p => p.ProductId == id);
@@ -179,8 +181,8 @@ public class ProductManagementController : Controller
             BasePrice = product.BasePrice,
             Status = product.Status,
             MainImageUrl = product.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? product.Images.FirstOrDefault()?.ImageUrl,
-            AvailableCategories = await _context.Categories.ToListAsync(),
-            AvailableBrands = await _context.Brands.ToListAsync(),
+            AvailableCategories = await _context.Categories.AsNoTracking().ToListAsync(),
+            AvailableBrands = await _context.Brands.AsNoTracking().ToListAsync(),
             Images = product.Images.ToList(),
             Variants = product.Variants.Select(v => new AdminVariantViewModel
             {

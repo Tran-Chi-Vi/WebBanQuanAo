@@ -307,7 +307,7 @@ public class OrderController : Controller
                 Amount = finalTotal,
                 Status = PaymentStatus.WaitingForPayment,
                 PayOSTransactionId = payMethod != "COD" ? $"PAYOS_{order.OrderGuid.ToString().Substring(0, 8).ToUpper()}" : null,
-                QRCodeUrl = payMethod == "QR" ? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)finalTotal}&addInfo={order.OrderNumber}" : null
+                QRCodeUrl = payMethod != "COD" ? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)finalTotal}&addInfo={order.OrderNumber}" : null
             };
 
             _context.Payments.Add(payment);
@@ -317,15 +317,19 @@ public class OrderController : Controller
 
             await _context.SaveChangesAsync();
 
-            // Gửi Hóa Đơn Đặt Hàng Qua Gmail Người Dùng
-            try
+            // Gửi Hóa Đơn Đặt Hàng Qua Gmail (Fire & Forget Task - Phản hồi khách hàng ngay lập tức trong 50ms)
+            int targetOrderId = order.OrderId;
+            _ = Task.Run(async () =>
             {
-                await _emailService.SendOrderInvoiceEmailAsync(order.OrderId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Lỗi gửi email hóa đơn: " + ex.Message);
-            }
+                try
+                {
+                    await _emailService.SendOrderInvoiceEmailAsync(targetOrderId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Lỗi gửi email hóa đơn nền: " + ex.Message);
+                }
+            });
 
             if (payMethod == "PayOS" || payMethod == "QR")
             {

@@ -7,7 +7,7 @@
 <div class="container my-4">
     <h2 class="fw-bold font-heading mb-4"><i class="bi bi-credit-card-2-front text-primary me-2"></i> THÔNG TIN THANH TOÁN & ĐẶT HÀNG</h2>
 
-    <form asp-controller="Order" asp-action="Checkout" method="post">
+    <form asp-controller="Order" asp-action="Checkout" method="post" id="checkoutForm">
         @Html.AntiForgeryToken()
 
         <div class="row g-4 position-relative">
@@ -190,7 +190,7 @@
                         <span class="fw-bold text-primary">@Model.Cart.FinalTotal.ToString("N0")đ</span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg">
+                    <button type="submit" id="btnSubmitCheckout" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg">
                         <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN ĐẶT HÀNG
                     </button>
                 </div>
@@ -228,7 +228,7 @@
                                 </div>
                                 @if (firstVar != null)
                                 {
-                                    <button type="button" onclick="addToCartAjax(@firstVar.VariantId, 1, this)" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold mt-2">
+                                    <button type="button" onclick="addRecommendationToCart(@firstVar.VariantId, this)" class="btn btn-sm btn-outline-primary rounded-pill w-100 fw-bold mt-2">
                                         + Thêm Vào Giỏ
                                     </button>
                                 }
@@ -276,5 +276,41 @@
             })
             .catch(err => console.error(err));
         }
+
+        function addRecommendationToCart(variantId, btnElem) {
+            if (btnElem) btnElem.disabled = true;
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': getCsrfToken()
+                },
+                body: JSON.stringify({ variantId: parseInt(variantId), quantity: 1 })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Đã thêm sản phẩm mua kèm vào đơn hàng!', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 350);
+                } else {
+                    showToast(data.message, 'error');
+                    if (btnElem) btnElem.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (btnElem) btnElem.disabled = false;
+            });
+        }
+
+        document.getElementById('checkoutForm')?.addEventListener('submit', function () {
+            const btn = document.getElementById('btnSubmitCheckout');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> ĐANG XỬ LÝ ĐẶT HÀNG...`;
+            }
+        });
     </script>
 }

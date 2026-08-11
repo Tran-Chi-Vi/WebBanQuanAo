@@ -1,43 +1,87 @@
 @model Order
 @{
-    ViewData["Title"] = "Thanh Toán Đơn Hàng #" + Model.OrderId;
+    ViewData["Title"] = "Thanh Toán Đơn Hàng #" + Model.OrderNumber;
+    var qrUrl = Model.Payment?.QRCodeUrl ?? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)Model.TotalAmount}&addInfo={Model.OrderNumber}";
 }
 
 <div class="container my-5">
-    <div class="card p-5 border-0 shadow-lg rounded-4 bg-white max-w-650 mx-auto" style="max-width: 650px;">
+    <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 bg-white mx-auto" style="max-width: 650px;">
+        <!-- Header -->
         <div class="text-center mb-4">
-            <span class="badge bg-warning text-dark mb-2 px-3 py-2 rounded-pill font-monospace">PAYMENT GATEWAY SIMULATOR</span>
-            <h3 class="fw-bold font-heading m-0">THANH TOÁN ĐƠN HÀNG #@Model.OrderId</h3>
-            <p class="text-muted small">Vui lòng thực hiện chuyển khoản hoặc quét mã QR bên dưới để hoàn tất đơn hàng</p>
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-1.5 rounded-pill font-monospace fw-bold">
+                <i class="bi bi-shield-check me-1"></i> CỔNG THANH TOÁN AN TOÀN
+            </span>
+            <h3 class="fw-bold font-heading m-0 text-dark">THANH TOÁN ĐƠN HÀNG #@Model.OrderNumber</h3>
+            <p class="text-muted small mt-1">Vui lòng quét mã VietQR hoặc chuyển khoản theo thông tin bên dưới để hoàn tất đơn hàng</p>
         </div>
 
-        <div class="text-center p-4 bg-light rounded-4 mb-4">
-            <h4 class="text-primary fw-bold mb-3">Số tiền cần thanh toán: @Model.TotalAmount.ToString("N0")đ</h4>
+        <!-- QR Code & Payment Info Container -->
+        <div class="p-4 rounded-4 border bg-light mb-4 text-center">
+            <div class="text-primary fw-bold fs-4 mb-3">
+                Tổng Tiền: <span class="font-monospace">@Model.TotalAmount.ToString("N0")đ</span>
+            </div>
 
-            @if (!string.IsNullOrEmpty(Model.Payment?.QRCodeUrl))
-            {
-                <div class="mb-3">
-                    <img src="@Model.Payment.QRCodeUrl" alt="VietQR" class="img-fluid rounded-3 border shadow-sm" style="max-width: 250px;" />
+            <!-- VietQR Code Image -->
+            <div class="d-inline-block p-3 bg-white rounded-4 shadow-sm border mb-3">
+                <img src="@qrUrl" alt="Mã VietQR Thanh Toán" class="img-fluid rounded-3" style="max-width: 240px; width: 100%; height: auto;" />
+            </div>
+
+            <!-- Bank Account Info Grid -->
+            <div class="bg-white p-3 rounded-3 border text-start fs-6">
+                <div class="d-flex justify-content-between align-items-center py-1.5 border-bottom">
+                    <span class="text-muted small">Ngân hàng:</span>
+                    <span class="fw-bold text-dark">MB Bank (Ngân Hàng Quân Đội)</span>
                 </div>
-            }
-
-            <div class="small text-muted font-monospace">
-                Nội dung chuyển khoản: <strong>DH @Model.OrderId</strong>
+                <div class="d-flex justify-content-between align-items-center py-1.5 border-bottom">
+                    <span class="text-muted small">Chủ tài khoản:</span>
+                    <span class="fw-bold text-dark">FASHION STORE CO.</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-1.5 border-bottom">
+                    <span class="text-muted small">Số tài khoản:</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-primary font-monospace" id="accNumber">0359876543</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('0359876543')">Copy</button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-1.5">
+                    <span class="text-muted small">Nội dung CK:</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-danger font-monospace" id="orderNote">@Model.OrderNumber</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('@Model.OrderNumber')">Copy</button>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- Confirm / Cancel Actions -->
         <div class="d-flex flex-column gap-2">
             <form asp-controller="Payment" asp-action="ConfirmPayment" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
-                <button type="submit" class="btn btn-primary-gradient btn-lg w-100 font-heading fw-bold shadow-lg">
-                    <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN ĐÃ THANH TOÁN (DEMO)
+                <button type="submit" class="btn btn-primary-gradient btn-lg w-100 font-heading fw-bold shadow-lg py-3 rounded-3">
+                    <i class="bi bi-check-circle-fill me-2"></i> TÔI ĐÃ CHUYỂN KHOẢN HOÀN TẤT
                 </button>
             </form>
 
             <form asp-controller="Payment" asp-action="CancelPayment" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
-                <button type="submit" class="btn btn-link text-danger w-100 text-decoration-none small">Hủy giao dịch thanh toán</button>
+                <button type="submit" class="btn btn-link text-danger w-100 text-decoration-none small py-2">
+                    <i class="bi bi-x-circle me-1"></i> Hủy giao dịch thanh toán
+                </button>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Đã sao chép: ' + text, 'success');
+            }).catch(() => {
+                showToast('Không thể sao chép!', 'error');
+            });
+        }
+    </script>
+}
