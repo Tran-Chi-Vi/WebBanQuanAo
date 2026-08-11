@@ -1879,3 +1879,113 @@ body.user-dark-mode .contact-info-card small {
   overflow: hidden;
   color: #ffffff !important;
 }
+
+/* ==========================================================================
+   AI CHATBOT WIDGET STYLING & DARK MODE OVERHAUL
+   ========================================================================== */
+
+/* Strict Circle Enforcer for AI Send Button on PC & Mobile */
+#aiSendBtn,
+.ai-send-button,
+.ai-send-btn-circle {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+/* Light Mode AI Chat Body defaults */
+.ai-chat-body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+.bot-msg {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+.ai-product-card-link {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1 !important;
+}
+.ai-input-container {
+  background: #ffffff;
+}
+.ai-input-field {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* AI Chatbot Dark Mode Overrides */
+body.user-dark-mode #aiChatWindow,
+body.user-dark-mode .ai-chat-window-card {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.user-dark-mode .ai-chat-body,
+body.user-dark-mode #aiChatMessages {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+body.user-dark-mode .bot-msg {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .user-msg {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .ai-product-card-link {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+body.user-dark-mode .ai-product-card-link .fw-bold {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .ai-pills-bar {
+  background: #0f172a !important;
+  border-top-color: #334155 !important;
+}
+
+body.user-dark-mode .ai-suggestion-pill {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+body.user-dark-mode .ai-suggestion-pill:hover {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
+}
+
+body.user-dark-mode .ai-input-container {
+  background: #1e293b !important;
+  border-top-color: #334155 !important;
+}
+
+body.user-dark-mode .ai-input-field {
+  background: #0f172a !important;
+  border: 1px solid #475569 !important;
+  color: #ffffff !important;
+}
+body.user-dark-mode .ai-input-field::placeholder {
+  color: #94a3b8 !important;
+}

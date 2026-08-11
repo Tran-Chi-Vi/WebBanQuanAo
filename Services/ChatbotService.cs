@@ -290,9 +290,62 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
 
     private async Task<string> GenerateLocalDatabaseReplyAsync(string lowerMessage, int userId)
     {
-        bool isNam = lowerMessage.Contains("nam") || lowerMessage.Contains("đàn ông");
-        bool isNu = lowerMessage.Contains("nữ") || lowerMessage.Contains("phụ nữ");
+        bool isNam = lowerMessage.Contains("nam") || lowerMessage.Contains("đàn ông") || lowerMessage.Contains("trai");
+        bool isNu = lowerMessage.Contains("nữ") || lowerMessage.Contains("phụ nữ") || lowerMessage.Contains("gái");
 
+        // 1. CHÍNH SÁCH ĐỔI TRẢ & HẬU MÃI
+        if (lowerMessage.Contains("đổi") || lowerMessage.Contains("trả") || lowerMessage.Contains("bảo hành") || lowerMessage.Contains("hậu mãi") || lowerMessage.Contains("lỗi"))
+        {
+            return "👑 **CHÍNH SÁCH ĐỔI TRẢ & BẢO HÀNH CHUẨN VIP TẠI FASHION STORE**:\n" +
+                   "• **Đổi trả 7 ngày miễn phí**: Áp dụng cho mọi sản phẩm nguyên tem mác, chưa qua sử dụng.\n" +
+                   "• **Bảo hành 1 đổi 1**: Nếu phát hiện lỗi từ nhà sản xuất hoặc giao sai size/màu, FASHION STORE sẽ cho shipper mang hàng mới đổi tận nhà hoàn toàn miễn phí!\n" +
+                   "• **Hỗ trợ sửa đồ/Đổi size**: Hỗ trợ đổi size tận nơi nhanh chóng trong 48h.\n" +
+                   "Bạn cần đổi trả sản phẩm nào, hãy cho tôi biết mã đơn hàng để hỗ trợ ngay nhé!";
+        }
+
+        // 2. CHÍNH SÁCH GIAO HÀNG & PHÍ SHIP
+        if (lowerMessage.Contains("giao hàng") || lowerMessage.Contains("ship") || lowerMessage.Contains("vận chuyển") || lowerMessage.Contains("bao lâu") || lowerMessage.Contains("phí"))
+        {
+            return "🚚 **CHÍNH SÁCH VẬN CHUYỂN TOÀN QUỐC**:\n" +
+                   "• **Miễn phí vận chuyển**: Cho tất cả đơn hàng từ **500.000đ** trở lên.\n" +
+                   "• **Giao hỏa tốc 2H**: Áp dụng tại khu vực nội thành TP. Hồ Chí Minh.\n" +
+                   "• **Giao tiêu chuẩn 2 - 3 ngày**: Áp dụng cho tất cả các tỉnh thành trên toàn quốc.\n" +
+                   "• Bạn được mở hàng kiểm tra thoải mái trước khi thanh toán cho shipper!";
+        }
+
+        // 3. TƯ VẤN CHỌN SIZE THEO CHIỀU CAO & CÂN NẶNG
+        if (lowerMessage.Contains("size") || lowerMessage.Contains("kích thước") || lowerMessage.Contains("chiều cao") || lowerMessage.Contains("cân nặng") || lowerMessage.Contains("mặc vừ"))
+        {
+            return "📏 **BẢNG QUY ĐỔI SIZE CHUẨN TẠI FASHION STORE**:\n" +
+                   "• **Size S**: Dưới 52kg | Cao 1m50 - 1m60\n" +
+                   "• **Size M**: 53kg - 62kg | Cao 1m61 - 1m70\n" +
+                   "• **Size L**: 63kg - 72kg | Cao 1m71 - 1m78\n" +
+                   "• **Size XL**: 73kg - 85kg | Cao 1m79 - 1m85\n" +
+                   "• **Size XXL**: Trên 85kg | Dành cho phom rộng Oversize\n\n" +
+                   "👉 Bạn có thể nhắn cho tôi: *Cân nặng và Chiều cao* của bạn để tôi tư vấn chuẩn xác nhất!";
+        }
+
+        // 4. PHƯƠNG THỨC THANH TOÁN
+        if (lowerMessage.Contains("thanh toán") || lowerMessage.Contains("chuyển khoản") || lowerMessage.Contains("cod") || lowerMessage.Contains("vnpay"))
+        {
+            return "💳 **PHƯƠNG THỨC THANH TOÁN AN TOÀN**:\n" +
+                   "• **Thanh toán COD**: Nhận hàng, kiểm tra rồi mới trả tiền mặt.\n" +
+                   "• **VNPAY QR Code**: Quét mã nhận ngay ưu đãi giảm giá.\n" +
+                   "• **Chuyển khoản Ngân hàng**: Tự động xác nhận đơn hàng sau 10 giây qua QR Code!";
+        }
+
+        // 5. ĐẶC QUYỀN THÀNH VIÊN VIP
+        if (lowerMessage.Contains("vip") || lowerMessage.Contains("hạng") || lowerMessage.Contains("thành viên") || lowerMessage.Contains("tích lũy"))
+        {
+            return "🌟 **ĐẶC QUYỀN TÍCH LŨY HẠNG THÀNH VIÊN VIP**:\n" +
+                   "• **Hạng Đồng (< 2 triệu)**: Tích điểm ưu đãi tiêu chuẩn.\n" +
+                   "• **Hạng Bạc (≥ 2 triệu)**: Tự động GIẢM 5% cho mọi đơn hàng.\n" +
+                   "• **Hạng Vàng (≥ 5 triệu)**: Tự động GIẢM 10% mọi đơn + Quà sinh nhật.\n" +
+                   "• **Hạng Kim Cương (≥ 10 triệu)**: Tự động GIẢM 15% trọn đời + Chăm sóc VIP riêng!\n" +
+                   "Đăng nhập tài khoản để xem hạng của bạn ngay trên Thanh Menu nhé!";
+        }
+
+        // 6. GỢI Ý ĐỒ NAM
         if (isNam && !isNu)
         {
             var maleProducts = await _context.Products
@@ -300,15 +353,16 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
                 .Take(5)
                 .ToListAsync();
 
-            var sb = new StringBuilder("Dưới đây là các sản phẩm thời trang cao cấp **DÀNH RIÊNG CHO NAM** tại FASHION STORE:\n");
+            var sb = new StringBuilder("👔 **BỘ SỰ TẬP THỜI TRANG NAM CAO CẤP BÁN CHẠY NHẤT**:\n");
             foreach (var p in maleProducts)
             {
                 sb.AppendLine($"• **{p.ProductName}**: {p.BasePrice:N0}đ");
             }
-            sb.AppendLine("\nBạn có thể nhấp vào các thẻ sản phẩm gợi ý bên dưới để xem chi tiết nhé!");
+            sb.AppendLine("\nBạn có thể nhấp vào các thẻ sản phẩm bên dưới để xem chi tiết ảnh và đặt mua nhé!");
             return sb.ToString();
         }
 
+        // 7. GỢI Ý ĐỒ NỮ
         if (isNu && !isNam)
         {
             var femaleProducts = await _context.Products
@@ -316,16 +370,17 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
                 .Take(5)
                 .ToListAsync();
 
-            var sb = new StringBuilder("Dưới đây là các mẫu thời trang quyến rũ **DÀNH RIÊNG CHO NỮ** tại FASHION STORE:\n");
+            var sb = new StringBuilder("👗 **BỘ SỰ TẬP THỜI TRANG NỮ QUYẾN RŨ MỚI VỀ**:\n");
             foreach (var p in femaleProducts)
             {
                 sb.AppendLine($"• **{p.ProductName}**: {p.BasePrice:N0}đ");
             }
-            sb.AppendLine("\nBạn có thể nhấp vào các thẻ sản phẩm gợi ý bên dưới để xem chi tiết nhé!");
+            sb.AppendLine("\nBạn có thể nhấp vào các thẻ sản phẩm bên dưới để xem chi tiết ảnh và đặt mua nhé!");
             return sb.ToString();
         }
 
-        if (lowerMessage.Contains("đơn hàng") || lowerMessage.Contains("trạng thái") || lowerMessage.Contains("giao hàng") || lowerMessage.Contains("tra cứu"))
+        // 8. TRA CỨU ĐƠN HÀNG
+        if (lowerMessage.Contains("đơn hàng") || lowerMessage.Contains("trạng thái") || lowerMessage.Contains("tra cứu"))
         {
             if (userId > 0)
             {
@@ -345,13 +400,18 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
                         _ => "Không xác định"
                     };
 
-                    return $"Đơn hàng gần nhất của bạn mã **#{recentOrder.OrderNumber}** (ID: #{recentOrder.OrderId}) đặt ngày {recentOrder.OrderDate:dd/MM/yyyy HH:mm}.\n- Trạng thái: **{statusText}**\n- Tổng thanh toán: **{recentOrder.TotalAmount:N0}đ**.";
+                    return $"📦 **ĐƠN HÀNG GẦN NHẤT CỦA BẠN**:\n" +
+                           $"• Mã đơn: **#{recentOrder.OrderNumber}**\n" +
+                           $"• Ngày đặt: {recentOrder.OrderDate:dd/MM/yyyy HH:mm}\n" +
+                           $"• Trạng thái: **{statusText}**\n" +
+                           $"• Tổng thanh toán: **{recentOrder.TotalAmount:N0}đ**";
                 }
                 return "Bạn chưa có đơn hàng nào trong hệ thống. Hãy dạo quanh cửa hàng và chọn cho mình bộ trang phục ưng ý nhé!";
             }
             return "Bạn vui lòng **Đăng nhập** tài khoản để tôi trợ giúp tra cứu lịch sử đơn hàng cá nhân nhé!";
         }
 
+        // 9. MÃ GIẢM GIÁ
         if (lowerMessage.Contains("mã") || lowerMessage.Contains("khuyến mãi") || lowerMessage.Contains("voucher") || lowerMessage.Contains("giảm giá"))
         {
             var promos = await _context.Promotions
@@ -360,7 +420,7 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
 
             if (promos.Any())
             {
-                var sb = new StringBuilder("Các mã giảm giá đang hoạt động tại FASHION STORE:\n");
+                var sb = new StringBuilder("🎁 **DANH SÁCH MÃ GIẢM GIÁ ĐANG HOẠT ĐỘNG**:\n");
                 foreach (var pr in promos)
                 {
                     string val = pr.DiscountType == DiscountType.Percentage ? $"{pr.DiscountValue}%" : $"{pr.DiscountValue:N0}đ";
@@ -368,15 +428,20 @@ CÂU HỎI CỦA KHÁCH HÀNG: ""{userQuery}""";
                 }
                 return sb.ToString();
             }
-            return "Hiện tại cửa hàng đang áp dụng ưu đãi Miễn phí vận chuyển cho đơn hàng từ 500.000đ!";
+            return "🎁 Hiện tại cửa hàng đang áp dụng ưu đãi **Miễn phí vận chuyển** cho đơn hàng từ 500.000đ!";
         }
 
-        if (lowerMessage.Contains("size") || lowerMessage.Contains("kích thước") || lowerMessage.Contains("chiều cao") || lowerMessage.Contains("cân nặng"))
+        // 10. THÔNG TIN CỬA HÀNG
+        if (lowerMessage.Contains("địa chỉ") || lowerMessage.Contains("cửa hàng") || lowerMessage.Contains("hotline") || lowerMessage.Contains("liên hệ"))
         {
-            return "Bảng quy đổi Size chuẩn tại cửa hàng:\n- **Size S**: Dưới 52kg | Cao 1m50 - 1m60\n- **Size M**: 53kg - 62kg | Cao 1m61 - 1m70\n- **Size L**: 63kg - 72kg | Cao 1m71 - 1m78\n- **Size XL**: 73kg - 85kg | Cao 1m79 - 1m85\n\nBạn có thể cho tôi biết Chiều cao & Cân nặng để tôi tư vấn chuẩn nhất!";
+            return "🏪 **FASHION STORE - COMMAND CENTER**:\n" +
+                   "• **Địa chỉ**: 123 Đường Thời Trang, Quận 1, TP. Hồ Chí Minh\n" +
+                   "• **Hotline**: 1900 6789 (8:00 - 22:00 hàng ngày)\n" +
+                   "• **Email**: support@fashionstore.vn\n" +
+                   "Rất hân hạnh được đón tiếp và tư vấn cho bạn!";
         }
 
-        return "Cảm ơn bạn đã liên hệ! Tôi là Trợ Lý AI của FASHION STORE. Bạn muốn tìm thời trang **Cho Nam** hay **Cho Nữ** để tôi tư vấn chuẩn nhất nhé!";
+        return "Xin chào! Tôi là Trợ Lý AI của FASHION STORE. Bạn muốn tìm thời trang **Cho Nam** hay **Cho Nữ**, tư vấn **Chọn Size**, **Chính sách đổi trả** hay **Tra cứu đơn hàng** hãy nhắn cho tôi ngay nhé!";
     }
 
     #endregion
