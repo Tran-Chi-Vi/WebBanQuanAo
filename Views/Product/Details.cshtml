@@ -258,17 +258,20 @@
             <div class="row g-3 g-md-4">
                 @foreach (var p in personalizedRecs)
                 {
-                    var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                    var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=80";
                     <div class="col-6 col-md-3">
                         <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden bg-white">
-                            <div style="aspect-ratio:3/4;overflow:hidden;" class="position-relative">
-                                <img src="@img" class="w-100 h-100 object-fit-cover" alt="@p.ProductName" />
+                            <div style="aspect-ratio:3/4;overflow:hidden;" class="position-relative bg-light">
+                                <img src="@img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=80';" class="w-100 h-100 object-fit-cover" alt="@p.ProductName" />
                             </div>
                             <div class="p-3 d-flex flex-column flex-grow-1">
-                                <small class="text-muted mb-1" style="font-size:0.75rem;">@p.Category?.CategoryName</small>
+                                <small class="text-muted mb-1 text-truncate d-block" style="font-size:0.75rem;">@(p.Category?.CategoryName ?? "Thời trang")</small>
                                 <h6 class="fw-bold text-dark text-truncate mb-2" style="font-size:0.9rem;">@p.ProductName</h6>
                                 <div class="fw-bold text-primary font-monospace mt-auto" style="color:#6366f1;">@p.BasePrice.ToString("N0")đ</div>
-                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-primary w-100 rounded-3 mt-2 fw-semibold" style="font-size:0.8rem;">Xem chi tiết</a>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-primary w-100 rounded-3 mt-2 fw-semibold d-flex align-items-center justify-content-center gap-1 py-2" style="font-size:0.82rem;">
+                                    <span>Xem chi tiết</span>
+                                    <i class="bi bi-arrow-right-short fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -287,18 +290,23 @@
             <div class="row g-3 g-md-4">
                 @foreach (var p in aprioriRecs)
                 {
-                    var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                    var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=80";
                     <div class="col-6 col-md-3">
                         <div class="card h-100 border-0 shadow-sm rounded-4 product-card overflow-hidden bg-white">
-                            <div style="aspect-ratio:3/4;overflow:hidden;" class="position-relative">
-                                <span class="badge bg-primary text-white position-absolute top-0 start-0 m-2 fw-semibold" style="font-size:0.7rem;z-index:2;">Gợi ý sản phẩm</span>
-                                <img src="@img" class="w-100 h-100 object-fit-cover" alt="@p.ProductName" />
+                            <div style="aspect-ratio:3/4;overflow:hidden;" class="position-relative bg-light">
+                                <span class="badge bg-primary bg-gradient text-white position-absolute top-0 start-0 m-2 rounded-pill px-2.5 py-1 small fw-bold shadow-sm text-truncate" style="font-size:0.68rem; z-index:3; max-width: calc(100% - 16px);">
+                                    <i class="bi bi-sparkles me-1"></i>Gợi ý mua kèm
+                                </span>
+                                <img src="@img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=80';" class="w-100 h-100 object-fit-cover" alt="@p.ProductName" />
                             </div>
                             <div class="p-3 d-flex flex-column flex-grow-1">
-                                <small class="text-muted mb-1" style="font-size:0.75rem;">@p.Category?.CategoryName</small>
+                                <small class="text-muted mb-1 text-truncate d-block" style="font-size:0.75rem;">@(p.Category?.CategoryName ?? "Thời trang")</small>
                                 <h6 class="fw-bold text-dark text-truncate mb-2" style="font-size:0.9rem;">@p.ProductName</h6>
                                 <div class="fw-bold text-primary font-monospace mt-auto" style="color:#6366f1;">@p.BasePrice.ToString("N0")đ</div>
-                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-primary-gradient w-100 rounded-3 mt-2 fw-bold" style="font-size:0.8rem;">Xem ngay</a>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-primary-gradient w-100 rounded-3 mt-2 fw-bold d-flex align-items-center justify-content-center gap-1 py-2" style="font-size:0.82rem;">
+                                    <span>Xem ngay</span>
+                                    <i class="bi bi-arrow-right-short fs-6"></i>
+                                </a>
                             </div>
                         </div>
                     </div>

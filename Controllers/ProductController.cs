@@ -194,10 +194,22 @@ public class ProductController : Controller
             var aprioriRules = await _aprioriService.GetRecommendationsAsync(id, topN: 4);
             if (aprioriRules != null)
             {
-                aprioriRecommendations = aprioriRules
-                    .Select(r => r.ConsequentProduct)
-                    .Where(p => p != null && p.Status == ProductStatus.Active)
+                var targetIds = aprioriRules
+                    .Where(r => r.ConsequentProduct != null && r.ConsequentProduct.Status == ProductStatus.Active)
+                    .Select(r => r.ConsequentProductId)
+                    .Distinct()
                     .ToList();
+
+                if (targetIds.Any())
+                {
+                    aprioriRecommendations = await _context.Products
+                        .AsNoTracking()
+                        .Where(p => targetIds.Contains(p.ProductId))
+                        .Include(p => p.Images)
+                        .Include(p => p.Category)
+                        .Include(p => p.Variants)
+                        .ToListAsync();
+                }
             }
         }
         catch (Exception ex)
