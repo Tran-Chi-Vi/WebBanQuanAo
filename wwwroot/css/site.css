@@ -1366,6 +1366,71 @@ body.user-dark-mode .table th {
   border-color: #334155 !important;
 }
 
+/* Alerts & Policy Cards Dark Mode Overrides (Screenshot 3 Fix) */
+body.user-dark-mode .alert,
+body.admin-dark-mode .alert {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .alert-success,
+body.admin-dark-mode .alert-success {
+  background-color: rgba(6, 95, 70, 0.35) !important;
+  border: 1.5px solid #059669 !important;
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .alert-success h1,
+body.user-dark-mode .alert-success h2,
+body.user-dark-mode .alert-success h3,
+body.user-dark-mode .alert-success h4,
+body.user-dark-mode .alert-success h5,
+body.user-dark-mode .alert-success h6,
+body.user-dark-mode .alert-success p,
+body.user-dark-mode .alert-success small,
+body.user-dark-mode .alert-success strong,
+body.admin-dark-mode .alert-success h1,
+body.admin-dark-mode .alert-success h2,
+body.admin-dark-mode .alert-success h3,
+body.admin-dark-mode .alert-success h4,
+body.admin-dark-mode .alert-success h5,
+body.admin-dark-mode .alert-success h6,
+body.admin-dark-mode .alert-success p,
+body.admin-dark-mode .alert-success small,
+body.admin-dark-mode .alert-success strong {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .alert-info,
+body.admin-dark-mode .alert-info {
+  background-color: rgba(2, 132, 199, 0.35) !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #ffffff !important;
+}
+body.user-dark-mode .alert-info *,
+body.admin-dark-mode .alert-info * {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .alert-warning,
+body.admin-dark-mode .alert-warning {
+  background-color: rgba(217, 119, 6, 0.35) !important;
+  border: 1.5px solid #d97706 !important;
+  color: #ffffff !important;
+}
+body.user-dark-mode .alert-warning *,
+body.admin-dark-mode .alert-warning * {
+  color: #ffffff !important;
+}
+
+body.user-dark-mode .breadcrumb-item.active {
+  color: #818cf8 !important;
+}
+body.user-dark-mode .breadcrumb-item a {
+  color: #cbd5e1 !important;
+}
+
 /* ==========================================================================
    IMPECCABLE BOLDER ENHANCEMENTS (VIBRANT GLOW, RICH GRADIENTS, MICRO-ANIMATIONS)
    ========================================================================== */

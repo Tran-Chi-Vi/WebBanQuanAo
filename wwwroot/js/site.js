@@ -11,12 +11,18 @@ function applyUserThemeUI(isDark) {
   if (isDark) {
     document.body.classList.add('user-dark-mode');
     document.documentElement.classList.add('user-dark-mode');
+    document.documentElement.style.backgroundColor = '#0b0f19';
+    document.body.style.backgroundColor = '#0b0f19';
+    document.documentElement.style.colorScheme = 'dark';
     if (icon) {
       icon.className = 'bi bi-sun-fill fs-5 text-warning';
     }
   } else {
     document.body.classList.remove('user-dark-mode');
     document.documentElement.classList.remove('user-dark-mode');
+    document.documentElement.style.backgroundColor = '';
+    document.body.style.backgroundColor = '';
+    document.documentElement.style.colorScheme = 'light';
     if (icon) {
       icon.className = 'bi bi-moon-stars-fill fs-5 text-indigo';
       icon.style.color = '#6366f1';
@@ -25,9 +31,10 @@ function applyUserThemeUI(isDark) {
 }
 
 function toggleUserStoreTheme() {
-  const isDark = document.body.classList.contains('user-dark-mode');
+  const isDark = document.body.classList.contains('user-dark-mode') || document.documentElement.classList.contains('user-dark-mode');
   const nextMode = isDark ? 'light' : 'dark';
   localStorage.setItem('fs_user_theme', nextMode);
+  localStorage.setItem('fs_admin_theme', nextMode);
   applyUserThemeUI(!isDark);
 }
 
