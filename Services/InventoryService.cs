@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Data;
@@ -28,34 +28,33 @@ public class InventoryService : IInventoryService
 
     public async Task<bool> TryDeductStockAsync(int variantId, int quantity)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            // Khóa dòng (SQL Server: UPDLOCK, ROWLOCK) để tránh 2 giao dịch cùng đọc số lượng cũ
             var variant = await _context.ProductVariants
-                .FromSqlInterpolated($"SELECT * FROM ProductVariants WITH (UPDLOCK, ROWLOCK) WHERE VariantId = {variantId}")
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(v => v.VariantId == variantId);
 
-            if (variant is null || variant.StockQuantity < quantity)
+            if (variant == null || variant.StockQuantity < quantity)
             {
-                await transaction.RollbackAsync();
                 return false;
             }
 
             variant.StockQuantity -= quantity;
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
 
-            // Đẩy trạng thái mới tới các client đang xem trang sản phẩm này
-            await _hub.Clients.Group($"variant-{variantId}")
-                .SendAsync("StockUpdated", variantId, variant.StockQuantity);
+            try
+            {
+                // Push updated stock to clients via SignalR
+                await _hub.Clients.Group($"variant-{variantId}")
+                    .SendAsync("StockUpdated", variantId, variant.StockQuantity);
+            }
+            catch {}
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            await transaction.RollbackAsync();
-            throw;
+            System.Diagnostics.Debug.WriteLine($"TryDeductStockAsync Error: {ex.Message}");
+            return false;
         }
     }
 }

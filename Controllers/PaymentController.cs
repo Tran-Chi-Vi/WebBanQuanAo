@@ -77,6 +77,6 @@ public class PaymentController : Controller
         await _context.SaveChangesAsync();
 
         TempData["ErrorMessage"] = "Giao dịch thanh toán không hoàn tất.";
-        return RedirectToAction("Details", "Order", new { id = orderId });
+        return RedirectToAction("MyOrders", "Account");
     }
 }

@@ -142,166 +142,205 @@ public class OrderController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Checkout(CheckoutViewModel model)
     {
-        int userId = GetCurrentUserId();
-
-        var cartItems = await _context.CartItems
-            .Where(ci => ci.Cart.UserId == userId)
-            .Include(ci => ci.Variant)
-                .ThenInclude(v => v.Product)
-            .ToListAsync();
-
-        if (!cartItems.Any())
-        {
-            TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
-            return RedirectToAction("Index", "Cart");
-        }
-
-        int addressId = 0;
-        if (model.CreateNewAddress)
-        {
-            if (string.IsNullOrWhiteSpace(model.NewAddress.RecipientName) ||
-                string.IsNullOrWhiteSpace(model.NewAddress.Phone) ||
-                string.IsNullOrWhiteSpace(model.NewAddress.StreetAddress) ||
-                string.IsNullOrWhiteSpace(model.NewAddress.City) ||
-                string.IsNullOrWhiteSpace(model.NewAddress.District) ||
-                string.IsNullOrWhiteSpace(model.NewAddress.Ward))
-            {
-                TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng mới.";
-                return await RebindCheckoutViewAsync(userId, cartItems, model);
-            }
-
-            var newAddress = new Address
-            {
-                UserId = userId,
-                RecipientName = model.NewAddress.RecipientName,
-                Phone = model.NewAddress.Phone,
-                DetailAddress = model.NewAddress.StreetAddress,
-                Province = model.NewAddress.City,
-                District = model.NewAddress.District,
-                Ward = model.NewAddress.Ward,
-                IsDefault = !await _context.Addresses.AnyAsync(a => a.UserId == userId)
-            };
-
-            _context.Addresses.Add(newAddress);
-            await _context.SaveChangesAsync();
-            addressId = newAddress.AddressId;
-        }
-        else
-        {
-            if (!model.SelectedAddressId.HasValue || !await _context.Addresses.AnyAsync(a => a.AddressId == model.SelectedAddressId.Value && a.UserId == userId))
-            {
-                TempData["ErrorMessage"] = "Vui lòng chọn địa chỉ giao hàng hợp lệ.";
-                return await RebindCheckoutViewAsync(userId, cartItems, model);
-            }
-            addressId = model.SelectedAddressId.Value;
-        }
-
-        foreach (var item in cartItems)
-        {
-            bool stockDeducted = await _inventoryService.TryDeductStockAsync(item.VariantId, item.Quantity);
-            if (!stockDeducted)
-            {
-                TempData["ErrorMessage"] = $"Sản phẩm {item.Variant.Product.ProductName} ({item.Variant.Size} - {item.Variant.Color}) đã hết hàng hoặc không đủ số lượng.";
-                return await RebindCheckoutViewAsync(userId, cartItems, model);
-            }
-        }
-
-        decimal subTotal = cartItems.Sum(i => i.Variant.Price * i.Quantity);
-
-        decimal totalSpent = await _context.Orders
-            .Where(o => o.UserId == userId && o.Status != OrderStatus.Cancelled)
-            .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
-
-        var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
-        decimal tierDiscountAmount = (subTotal * tierInfo.DiscountPercent) / 100m;
-
-        decimal promoDiscount = 0;
-        int? promotionId = null;
-
-        string? promoCode = HttpContext.Session.GetString(SESSION_PROMO_KEY);
-        if (!string.IsNullOrEmpty(promoCode))
-        {
-            var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
-            if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
-            {
-                promotionId = promo.PromotionId;
-                promoDiscount = promo.DiscountType == DiscountType.Percentage ? (subTotal * promo.DiscountValue) / 100m : promo.DiscountValue;
-            }
-        }
-
-        decimal totalDiscount = tierDiscountAmount + promoDiscount;
-        decimal finalTotal = Math.Max(0, subTotal - totalDiscount);
-
-        var orderGuid = Guid.NewGuid();
-        var orderNumber = $"ORD-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 5).ToUpper()}";
-
-        var order = new Order
-        {
-            OrderGuid = orderGuid,
-            OrderNumber = orderNumber,
-            UserId = userId,
-            AddressId = addressId,
-            PromotionId = promotionId,
-            OrderDate = DateTime.Now,
-            Status = OrderStatus.Pending,
-            TotalAmount = finalTotal
-        };
-
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-
-        foreach (var item in cartItems)
-        {
-            _context.OrderDetails.Add(new OrderDetail
-            {
-                OrderId = order.OrderId,
-                VariantId = item.VariantId,
-                UnitPrice = item.Variant.Price,
-                Quantity = item.Quantity
-            });
-
-            _context.UserBehaviorLogs.Add(new UserBehaviorLog
-            {
-                UserId = userId,
-                ProductId = item.Variant.ProductId,
-                ActionType = BehaviorActionType.Purchase,
-                Timestamp = DateTime.Now
-            });
-        }
-
-        var payment = new Payment
-        {
-            OrderId = order.OrderId,
-            Amount = finalTotal,
-            Status = PaymentStatus.WaitingForPayment,
-            PayOSTransactionId = model.PaymentMethod != "COD" ? $"PAYOS_{order.OrderGuid.ToString().Substring(0, 8).ToUpper()}" : null,
-            QRCodeUrl = model.PaymentMethod == "QR" ? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)finalTotal}&addInfo={order.OrderNumber}" : null
-        };
-
-        _context.Payments.Add(payment);
-
-        _context.CartItems.RemoveRange(cartItems);
-        HttpContext.Session.Remove(SESSION_PROMO_KEY);
-
-        await _context.SaveChangesAsync();
-
-        // Gửi Hóa Đơn Đặt Hàng Qua Gmail Người Dùng
         try
         {
-            await _emailService.SendOrderInvoiceEmailAsync(order.OrderId);
+            int userId = GetCurrentUserId();
+            if (userId == 0)
+            {
+                TempData["InfoMessage"] = "Vui lòng đăng nhập tài khoản để tiến hành thanh toán đơn hàng.";
+                return RedirectToAction("Login", "Account", new { returnUrl = "/Order/Checkout" });
+            }
+
+            // Ensure any guest session items are merged into DB
+            await MergeGuestSessionCartToUserDbCartAsync(userId);
+
+            var cartItems = await _context.CartItems
+                .Where(ci => ci.Cart != null && ci.Cart.UserId == userId && ci.Variant != null && ci.Variant.Product != null)
+                .Include(ci => ci.Variant)
+                    .ThenInclude(v => v.Product)
+                .ToListAsync();
+
+            if (!cartItems.Any())
+            {
+                TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            int addressId = 0;
+            if (model.CreateNewAddress && model.NewAddress != null)
+            {
+                if (string.IsNullOrWhiteSpace(model.NewAddress.RecipientName) ||
+                    string.IsNullOrWhiteSpace(model.NewAddress.Phone) ||
+                    string.IsNullOrWhiteSpace(model.NewAddress.StreetAddress) ||
+                    string.IsNullOrWhiteSpace(model.NewAddress.City) ||
+                    string.IsNullOrWhiteSpace(model.NewAddress.District) ||
+                    string.IsNullOrWhiteSpace(model.NewAddress.Ward))
+                {
+                    TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng mới.";
+                    return await RebindCheckoutViewAsync(userId, cartItems, model);
+                }
+
+                var newAddress = new Address
+                {
+                    UserId = userId,
+                    RecipientName = model.NewAddress.RecipientName,
+                    Phone = model.NewAddress.Phone,
+                    DetailAddress = model.NewAddress.StreetAddress,
+                    Province = model.NewAddress.City,
+                    District = model.NewAddress.District,
+                    Ward = model.NewAddress.Ward,
+                    IsDefault = !await _context.Addresses.AnyAsync(a => a.UserId == userId)
+                };
+
+                _context.Addresses.Add(newAddress);
+                await _context.SaveChangesAsync();
+                addressId = newAddress.AddressId;
+            }
+            else
+            {
+                // Fallback: If SelectedAddressId is missing or invalid, pick default or first address in DB!
+                if (model.SelectedAddressId.HasValue && await _context.Addresses.AnyAsync(a => a.AddressId == model.SelectedAddressId.Value && a.UserId == userId))
+                {
+                    addressId = model.SelectedAddressId.Value;
+                }
+                else
+                {
+                    var defaultAddr = await _context.Addresses
+                        .Where(a => a.UserId == userId)
+                        .OrderByDescending(a => a.IsDefault)
+                        .FirstOrDefaultAsync();
+
+                    if (defaultAddr != null)
+                    {
+                        addressId = defaultAddr.AddressId;
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Vui lòng chọn hoặc nhập địa chỉ giao hàng hợp lệ.";
+                        return await RebindCheckoutViewAsync(userId, cartItems, model);
+                    }
+                }
+            }
+
+            foreach (var item in cartItems)
+            {
+                bool stockDeducted = await _inventoryService.TryDeductStockAsync(item.VariantId, item.Quantity);
+                if (!stockDeducted)
+                {
+                    TempData["ErrorMessage"] = $"Sản phẩm {item.Variant?.Product?.ProductName ?? "này"} ({item.Variant?.Size} - {item.Variant?.Color}) đã hết hàng hoặc không đủ số lượng.";
+                    return await RebindCheckoutViewAsync(userId, cartItems, model);
+                }
+            }
+
+            decimal subTotal = cartItems.Sum(i => i.Variant.Price * i.Quantity);
+
+            decimal totalSpent = await _context.Orders
+                .Where(o => o.UserId == userId && o.Status != OrderStatus.Cancelled)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+
+            var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
+            decimal tierDiscountAmount = (subTotal * tierInfo.DiscountPercent) / 100m;
+
+            decimal promoDiscount = 0;
+            int? promotionId = null;
+
+            string? promoCode = HttpContext.Session.GetString(SESSION_PROMO_KEY);
+            if (!string.IsNullOrEmpty(promoCode))
+            {
+                var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
+                if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
+                {
+                    promotionId = promo.PromotionId;
+                    promoDiscount = promo.DiscountType == DiscountType.Percentage ? (subTotal * promo.DiscountValue) / 100m : promo.DiscountValue;
+                }
+            }
+
+            decimal totalDiscount = tierDiscountAmount + promoDiscount;
+            decimal finalTotal = Math.Max(0, subTotal - totalDiscount);
+
+            var orderGuid = Guid.NewGuid();
+            var orderNumber = $"ORD-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 5).ToUpper()}";
+
+            var order = new Order
+            {
+                OrderGuid = orderGuid,
+                OrderNumber = orderNumber,
+                UserId = userId,
+                AddressId = addressId,
+                PromotionId = promotionId,
+                OrderDate = DateTime.Now,
+                Status = OrderStatus.Pending,
+                TotalAmount = finalTotal
+            };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            foreach (var item in cartItems)
+            {
+                _context.OrderDetails.Add(new OrderDetail
+                {
+                    OrderId = order.OrderId,
+                    VariantId = item.VariantId,
+                    UnitPrice = item.Variant.Price,
+                    Quantity = item.Quantity
+                });
+
+                try
+                {
+                    _context.UserBehaviorLogs.Add(new UserBehaviorLog
+                    {
+                        UserId = userId,
+                        ProductId = item.Variant.ProductId,
+                        ActionType = BehaviorActionType.Purchase,
+                        Timestamp = DateTime.Now
+                    });
+                }
+                catch {}
+            }
+
+            string payMethod = model.PaymentMethod ?? "COD";
+
+            var payment = new Payment
+            {
+                OrderId = order.OrderId,
+                Amount = finalTotal,
+                Status = PaymentStatus.WaitingForPayment,
+                PayOSTransactionId = payMethod != "COD" ? $"PAYOS_{order.OrderGuid.ToString().Substring(0, 8).ToUpper()}" : null,
+                QRCodeUrl = payMethod == "QR" ? $"https://img.vietqr.io/image/MB-0359876543-compact.png?amount={(long)finalTotal}&addInfo={order.OrderNumber}" : null
+            };
+
+            _context.Payments.Add(payment);
+
+            _context.CartItems.RemoveRange(cartItems);
+            HttpContext.Session.Remove(SESSION_PROMO_KEY);
+
+            await _context.SaveChangesAsync();
+
+            // Gửi Hóa Đơn Đặt Hàng Qua Gmail Người Dùng
+            try
+            {
+                await _emailService.SendOrderInvoiceEmailAsync(order.OrderId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi gửi email hóa đơn: " + ex.Message);
+            }
+
+            if (payMethod == "PayOS" || payMethod == "QR")
+            {
+                return RedirectToAction("ProcessPayment", "Payment", new { orderId = order.OrderId });
+            }
+
+            TempData["SuccessMessage"] = $"Đặt hàng thành công! Bạn nhận được ưu đãi {tierInfo.TierName} giảm {tierInfo.DiscountPercent}%. Cảm ơn bạn đã mua sắm.";
+            return RedirectToAction("Success", new { id = order.OrderId });
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Lỗi gửi email hóa đơn: " + ex.Message);
+            System.Diagnostics.Debug.WriteLine($"Checkout POST Error: {ex.Message}");
+            TempData["ErrorMessage"] = "Có lỗi xảy ra trong quá trình đặt hàng: " + ex.Message;
+            return RedirectToAction("Index", "Cart");
         }
-
-        if (model.PaymentMethod == "PayOS" || model.PaymentMethod == "QR")
-        {
-            return RedirectToAction("ProcessPayment", "Payment", new { orderId = order.OrderId });
-        }
-
-        TempData["SuccessMessage"] = $"Đặt hàng thành công! Bạn nhận được ưu đãi {tierInfo.TierName} giảm {tierInfo.DiscountPercent}%. Cảm ơn bạn đã mua sắm.";
-        return RedirectToAction("Success", new { id = order.OrderId });
     }
 
     [HttpGet]
