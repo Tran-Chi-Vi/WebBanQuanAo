@@ -1634,20 +1634,20 @@ body.user-dark-mode .contact-info-card small {
   transform: translateY(-4px) scale(1.005);
 }
 
-/* Continuously Rotating SINGLE LED Laser Light Beam */
+/* True LED Chaser / Running Dot Frame Animation */
 .led-vip-card-wrapper::before {
   content: '';
   position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
-  animation: rotateLedBeam 4.5s linear infinite;
+  top: -120%;
+  left: -120%;
+  width: 340%;
+  height: 340%;
+  animation: ledChaserRun 4s linear infinite;
   z-index: 0;
   pointer-events: none;
 }
 
-@keyframes rotateLedBeam {
+@keyframes ledChaserRun {
   0% {
     transform: rotate(0deg);
   }
@@ -1656,60 +1656,64 @@ body.user-dark-mode .contact-info-card small {
   }
 }
 
-/* Tier Single LED Beam Colors */
-/* Bronze (Đồng): Single Amber Copper Light Beam */
+/* LED Chaser Colors - A single sharp glowing dot (28deg arc) with dark tail & all LEDs behind OFF */
+/* Bronze LED Chaser (Running Amber Copper Dot) */
 .led-vip-card-wrapper.tier-bronze::before {
   background: conic-gradient(
     from 0deg,
-    #f59e0b 0deg,
-    #fbbf24 30deg,
-    #d97706 65deg,
-    transparent 70deg,
+    #ffffff 0deg,
+    #fbbf24 8deg,
+    #f59e0b 16deg,
+    #d97706 24deg,
+    transparent 28deg,
     transparent 360deg
   );
 }
 .led-vip-card-wrapper.tier-bronze {
-  box-shadow: 0 0 26px rgba(245, 158, 11, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
 }
 
-/* Silver (Bạc): Single Platinum Silver Light Beam */
+/* Silver LED Chaser (Running Platinum Silver Dot) */
 .led-vip-card-wrapper.tier-silver::before {
   background: conic-gradient(
     from 0deg,
-    #e2e8f0 0deg,
-    #ffffff 30deg,
-    #94a3b8 65deg,
-    transparent 70deg,
+    #ffffff 0deg,
+    #e2e8f0 8deg,
+    #cbd5e1 16deg,
+    #94a3b8 24deg,
+    transparent 28deg,
     transparent 360deg
   );
 }
 .led-vip-card-wrapper.tier-silver {
-  box-shadow: 0 0 26px rgba(203, 213, 225, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 24px rgba(203, 213, 225, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
 }
 
-/* Gold (Vàng): Single Intense Gold Light Beam */
+/* Gold LED Chaser (Running Golden Dot) */
 .led-vip-card-wrapper.tier-gold::before {
   background: conic-gradient(
     from 0deg,
-    #eab308 0deg,
-    #fff7ed 30deg,
-    #fbbf24 65deg,
-    transparent 70deg,
+    #ffffff 0deg,
+    #fff7ed 8deg,
+    #eab308 16deg,
+    #f59e0b 24deg,
+    transparent 28deg,
     transparent 360deg
   );
 }
 .led-vip-card-wrapper.tier-gold {
-  box-shadow: 0 0 30px rgba(234, 179, 8, 0.55), 0 12px 36px rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 28px rgba(234, 179, 8, 0.55), 0 12px 36px rgba(15, 23, 42, 0.6);
 }
 
-/* Diamond (Kim Cương): Single Cyber Cyan/Magenta Light Beam */
+/* Diamond LED Chaser (Running Cyan Sparkle Dot) */
 .led-vip-card-wrapper.tier-diamond::before {
   background: conic-gradient(
     from 0deg,
-    #06b6d4 0deg,
-    #ec4899 30deg,
-    #a855f7 65deg,
-    transparent 70deg,
+    #ffffff 0deg,
+    #38bdf8 8deg,
+    #06b6d4 16deg,
+    #ec4899 24deg,
+    transparent 28deg,
     transparent 360deg
   );
 }

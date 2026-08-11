@@ -240,9 +240,9 @@ public class AccountController : Controller
 
         if (user == null) return NotFound();
 
-        // 1. Tính tổng tiêu dùng & Phân hạng khách hàng (Chỉ tính đơn đã Giao Thành Công & Đã Thanh Toán)
+        // 1. Tính tổng tiêu dùng & Phân hạng khách hàng (Tính tất cả các đơn hàng hợp lệ chưa bị hủy)
         decimal totalSpent = await _context.Orders
-            .Where(o => o.UserId == userId && o.Status == OrderStatus.Completed && o.Payment != null && o.Payment.Status == PaymentStatus.Success)
+            .Where(o => o.UserId == userId && o.Status != OrderStatus.Cancelled)
             .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 
         var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
