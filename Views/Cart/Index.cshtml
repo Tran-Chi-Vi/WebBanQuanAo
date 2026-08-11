@@ -18,18 +18,19 @@
     else
     {
         <div class="row g-4">
-            <!-- Items Table -->
+            <!-- Items Container -->
             <div class="col-lg-8">
-                <div class="card p-3 border-0 shadow-sm rounded-4 bg-white">
-                    <div class="table-responsive">
-                        <table class="table align-middle">
+                <div class="card p-3 p-md-4 border-0 shadow-sm rounded-4 bg-white">
+                    <!-- Desktop Table View -->
+                    <div class="d-none d-md-block table-responsive">
+                        <table class="table align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Sản Phẩm</th>
-                                    <th>Giá</th>
-                                    <th style="width: 140px;">Số Lượng</th>
-                                    <th>Tổng</th>
-                                    <th></th>
+                                    <th>Đơn Giá</th>
+                                    <th style="width: 130px;">Số Lượng</th>
+                                    <th>Thành Tiền</th>
+                                    <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -38,9 +39,9 @@
                                     <tr id="cart-row-@item.VariantId">
                                         <td>
                                             <div class="d-flex align-items-center gap-3">
-                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;" />
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 shadow-sm flex-shrink-0" style="width: 60px; height: 60px; object-fit: cover;" />
                                                 <div>
-                                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="fw-bold text-dark text-decoration-none d-block">@item.ProductName</a>
+                                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="fw-bold text-dark text-decoration-none d-block text-truncate" style="max-width:220px;">@item.ProductName</a>
                                                     <small class="text-muted">Size: @item.Size | Màu: @item.Color</small>
                                                     <div class="small text-info font-monospace" id="stock-hint-@item.VariantId">(Tồn kho: @item.AvailableStock SP)</div>
                                                 </div>
@@ -61,7 +62,7 @@
                                         </td>
                                         <td class="fw-bold text-primary" id="item-total-@item.VariantId">@item.TotalPrice.ToString("N0")đ</td>
                                         <td>
-                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm btn-outline-danger border-0 rounded-circle">
+                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Xóa">
                                                 <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </td>
@@ -69,6 +70,45 @@
                                 }
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Cards View -->
+                    <div class="d-md-none d-flex flex-column gap-3">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div id="cart-card-@item.VariantId" class="card p-3 border rounded-4 shadow-sm bg-white position-relative">
+                                <div class="d-flex gap-3">
+                                    <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 shadow-sm flex-shrink-0" style="width: 76px; height: 76px; object-fit: cover;" />
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div class="d-flex justify-content-between align-items-start gap-2">
+                                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="fw-bold text-dark text-decoration-none lh-sm mb-1 d-block pe-2" style="font-size: 0.95rem;">@item.ProductName</a>
+                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm text-danger p-0 border-0 flex-shrink-0" title="Xóa">
+                                                <i class="bi bi-trash-fill fs-5"></i>
+                                            </button>
+                                        </div>
+                                        <div class="small text-muted mb-1">Size: <strong>@item.Size</strong> | Màu: <strong>@item.Color</strong></div>
+                                        <div class="small text-info font-monospace mb-2">(Tồn kho: @item.AvailableStock SP)</div>
+                                        
+                                        <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                                            <div>
+                                                <span class="small text-muted d-block" style="font-size:0.75rem;">Đơn giá: @item.Price.ToString("N0")đ</span>
+                                                <span class="fw-bold text-primary fs-6" id="item-total-mob-@item.VariantId">@item.TotalPrice.ToString("N0")đ</span>
+                                            </div>
+                                            <div class="input-group input-group-sm" style="width: 105px;">
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)">-</button>
+                                                <input type="number" id="qty-mob-@item.VariantId" 
+                                                       class="form-control text-center font-monospace fw-bold px-1" 
+                                                       value="@item.Quantity" 
+                                                       min="1" 
+                                                       max="@item.AvailableStock" 
+                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" />
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -120,7 +160,7 @@
 @section Scripts {
     <script>
         function adjustCartQty(variantId, delta, maxStock) {
-            const input = document.getElementById(`qty-${variantId}`);
+            const input = document.getElementById(`qty-${variantId}`) || document.getElementById(`qty-mob-${variantId}`);
             if (!input) return;
             let currentVal = parseInt(input.value) || 1;
             let newVal = currentVal + delta;
@@ -137,7 +177,11 @@
 
             if (targetVal < 1) targetVal = 1;
 
-            document.getElementById(`qty-${variantId}`).value = targetVal;
+            const deskInput = document.getElementById(`qty-${variantId}`);
+            const mobInput = document.getElementById(`qty-mob-${variantId}`);
+            if (deskInput) deskInput.value = targetVal;
+            if (mobInput) mobInput.value = targetVal;
+
             sendUpdateQuantity(variantId, targetVal);
         }
 
@@ -159,11 +203,23 @@
                 if (data.success) {
                     if (newQty <= 0) {
                         document.getElementById(`cart-row-${variantId}`)?.remove();
+                        document.getElementById(`cart-card-${variantId}`)?.remove();
                     } else {
-                        document.getElementById(`qty-${variantId}`).value = newQty;
-                        document.getElementById(`item-total-${variantId}`).textContent = data.itemTotal.toLocaleString('vi-VN') + 'đ';
+                        const deskInput = document.getElementById(`qty-${variantId}`);
+                        const mobInput = document.getElementById(`qty-mob-${variantId}`);
+                        if (deskInput) deskInput.value = newQty;
+                        if (mobInput) mobInput.value = newQty;
+
+                        const formattedTotal = data.itemTotal.toLocaleString('vi-VN') + 'đ';
+                        const deskTotal = document.getElementById(`item-total-${variantId}`);
+                        const mobTotal = document.getElementById(`item-total-mob-${variantId}`);
+                        if (deskTotal) deskTotal.textContent = formattedTotal;
+                        if (mobTotal) mobTotal.textContent = formattedTotal;
                     }
                     updateTotals(data.subTotal, data.discount, data.finalTotal);
+                    if (typeof updateCartCountBadge === 'function') {
+                        updateCartCountBadge(data.cartCount);
+                    }
                 } else {
                     showToast(data.message, 'error');
                 }
@@ -184,7 +240,11 @@
             .then(data => {
                 if (data.success) {
                     document.getElementById(`cart-row-${variantId}`)?.remove();
+                    document.getElementById(`cart-card-${variantId}`)?.remove();
                     updateTotals(data.subTotal, data.discount, data.finalTotal);
+                    if (typeof updateCartCountBadge === 'function') {
+                        updateCartCountBadge(data.cartCount);
+                    }
                     showToast(data.message, 'info');
                     if (data.cartCount === 0) location.reload();
                 }

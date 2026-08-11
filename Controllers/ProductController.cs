@@ -171,40 +171,67 @@ public class ProductController : Controller
         int userId = GetCurrentUserId();
         string sessionId = HttpContext.Session.Id;
 
-        _context.UserBehaviorLogs.Add(new UserBehaviorLog
+        try
         {
-            UserId = userId > 0 ? userId : null,
-            SessionId = sessionId,
-            ProductId = id,
-            ActionType = BehaviorActionType.View,
-            Timestamp = DateTime.Now
-        });
-        await _context.SaveChangesAsync();
+            _context.UserBehaviorLogs.Add(new UserBehaviorLog
+            {
+                UserId = userId > 0 ? userId : null,
+                SessionId = sessionId,
+                ProductId = id,
+                ActionType = BehaviorActionType.View,
+                Timestamp = DateTime.Now
+            });
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"UserBehaviorLog error: {ex.Message}");
+        }
 
-        var aprioriRules = await _aprioriService.GetRecommendationsAsync(id, topN: 4);
-        var aprioriRecommendations = aprioriRules
-            .Select(r => r.ConsequentProduct)
-            .Where(p => p != null && p.Status == ProductStatus.Active)
-            .ToList();
+        List<Product> aprioriRecommendations = new List<Product>();
+        try
+        {
+            var aprioriRules = await _aprioriService.GetRecommendationsAsync(id, topN: 4);
+            if (aprioriRules != null)
+            {
+                aprioriRecommendations = aprioriRules
+                    .Select(r => r.ConsequentProduct)
+                    .Where(p => p != null && p.Status == ProductStatus.Active)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Apriori error: {ex.Message}");
+        }
 
         List<Product> personalizedRecommendations = new List<Product>();
         if (userId > 0)
         {
-            var viewedCategoryIds = await _context.UserBehaviorLogs
-                .Where(l => l.UserId == userId && l.ProductId != id)
-                .OrderByDescending(l => l.Timestamp)
-                .Select(l => l.Product.CategoryId)
-                .Take(10)
-                .ToListAsync();
-
-            if (viewedCategoryIds.Any())
+            try
             {
-                personalizedRecommendations = await _context.Products
-                    .Where(p => p.ProductId != id && p.Status == ProductStatus.Active && viewedCategoryIds.Contains(p.CategoryId))
-                    .Include(p => p.Images)
-                    .Include(p => p.Category)
-                    .Take(4)
+                var viewedCategoryIds = await _context.UserBehaviorLogs
+                    .Include(l => l.Product)
+                    .Where(l => l.UserId == userId && l.ProductId != id && l.Product != null)
+                    .OrderByDescending(l => l.Timestamp)
+                    .Select(l => l.Product.CategoryId)
+                    .Distinct()
+                    .Take(10)
                     .ToListAsync();
+
+                if (viewedCategoryIds.Any())
+                {
+                    personalizedRecommendations = await _context.Products
+                        .Where(p => p.ProductId != id && p.Status == ProductStatus.Active && viewedCategoryIds.Contains(p.CategoryId))
+                        .Include(p => p.Images)
+                        .Include(p => p.Category)
+                        .Take(4)
+                        .ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Personalized error: {ex.Message}");
             }
         }
 

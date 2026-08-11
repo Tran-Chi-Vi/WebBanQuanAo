@@ -251,17 +251,25 @@ input:focus::placeholder, textarea:focus::placeholder {
 
 /* Hamburger Menu */
 .navbar-toggler {
-  border: none !important;
-  padding: 6px 8px !important;
-  border-radius: var(--radius-sm) !important;
-  background: var(--gray-100) !important;
+  border: 1px solid #e2e8f0 !important;
+  padding: 6px 10px !important;
+  border-radius: 12px !important;
+  background: #f8fafc !important;
+  transition: all 0.2s ease !important;
 }
 .navbar-toggler:focus { box-shadow: none !important; }
 .navbar-toggler .bi-list {
-  font-size: 1.6rem;
-  color: var(--dark);
-  display: block;
-  line-height: 1;
+  font-size: 1.65rem !important;
+  color: #0f172a !important;
+  display: block !important;
+  line-height: 1 !important;
+}
+body.user-dark-mode .navbar-toggler {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+body.user-dark-mode .navbar-toggler .bi-list {
+  color: #ffffff !important;
 }
 
 /* Ensure Circular Buttons Stay 100% Perfect Circles on Mobile (Fixes Issue 2) */

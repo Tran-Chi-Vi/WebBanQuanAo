@@ -270,13 +270,12 @@
                                 <button onclick="toggleUserStoreTheme()" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width:42px;height:42px;flex-shrink:0;" title="Đổi Giao Diện">
                                     <i class="bi bi-moon-stars-fill text-indigo fs-6"></i>
                                 </button>
-                                <a href="/Cart" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm position-relative" style="width:42px;height:42px;flex-shrink:0;">
-                                    <i class="bi bi-cart3 text-dark fs-6"></i>
-                                    @if (layoutCartCount > 0)
-                                    {
-                                        <span class="position-absolute bg-danger text-white rounded-circle fw-bold d-flex align-items-center justify-content-center" style="top:-3px;right:-3px;width:18px;height:18px;font-size:0.65rem;">@layoutCartCount</span>
-                                    }
-                                </a>
+                                <div class="position-relative d-inline-flex align-items-center" style="z-index:50;">
+                                    <a href="/Cart" class="btn btn-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width:42px;height:42px;flex-shrink:0;" title="Giỏ Hàng Của Bạn">
+                                        <i class="bi bi-cart3 text-dark fs-6"></i>
+                                    </a>
+                                    <span class="cart-count-badge position-absolute bg-danger text-white fw-bold d-flex align-items-center justify-content-center shadow" style="top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:50px;font-size:0.72rem;line-height:1;border:2px solid #ffffff;z-index:1000;box-shadow:0 3px 8px rgba(239,68,68,0.5);pointer-events:none;@(layoutCartCount > 0 ? "display:flex !important;" : "display:none !important;")">@layoutCartCount</span>
+                                </div>
                             </div>
                         </div>
 
