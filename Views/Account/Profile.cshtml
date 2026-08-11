@@ -14,8 +14,13 @@
 <div class="container my-4">
     <h2 class="fw-bold font-heading mb-4"><i class="bi bi-person-badge text-primary me-2"></i> QUẢN LÝ TÀI KHOẢN CÁ NHÂN</h2>
 
-    <!-- VIP MEMBERSHIP CARD WITH CONTINUOUS SINGLE LED LASER BEAM -->
+    <!-- VIP MEMBERSHIP CARD WITH RECTANGULAR PATH LED CHASER (A -> B -> C -> D -> A) -->
     <div class="led-vip-card-wrapper @tierLedClass">
+        <!-- LED Running Dot Chaser Track (100% Constant & Smooth Speed along A -> B -> C -> D -> A) -->
+        <div class="led-chaser-track">
+            <div class="led-running-dot"></div>
+        </div>
+
         <div class="led-vip-card-inner p-4 p-md-5 position-relative">
             <!-- Animated Particle Constellation Canvas & Floating Hero Orbs Matching Home Banner -->
             <canvas id="profileParticleCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0.65;"></canvas>
