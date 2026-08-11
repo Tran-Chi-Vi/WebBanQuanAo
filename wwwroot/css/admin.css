@@ -474,3 +474,211 @@ body.admin-body {
   box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important;
 }
 
+/* ==========================================================================
+   BULLETPROOF DARK & LIGHT MODE TEXT CONTRAST SYSTEM FOR ADMIN & SITE
+   ========================================================================== */
+
+/* Dark Mode Overrides (Triggered by .admin-dark-mode or .user-dark-mode) */
+body.admin-dark-mode,
+body.user-dark-mode,
+html.admin-dark-mode,
+html.user-dark-mode {
+  --admin-bg: #0b0f19;
+  --admin-card-bg: #1e293b;
+  --admin-text: #f8fafc;
+  --admin-muted: #94a3b8;
+  --admin-border: #334155;
+  background-color: #0b0f19 !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .admin-topbar,
+body.user-dark-mode .admin-topbar {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Headings & Title Colors in Dark Mode */
+body.admin-dark-mode h1, body.admin-dark-mode h2, body.admin-dark-mode h3,
+body.admin-dark-mode h4, body.admin-dark-mode h5, body.admin-dark-mode h6,
+body.user-dark-mode h1, body.user-dark-mode h2, body.user-dark-mode h3,
+body.user-dark-mode h4, body.user-dark-mode h5, body.user-dark-mode h6,
+body.admin-dark-mode .admin-page-title h4,
+body.user-dark-mode .admin-page-title h4,
+body.admin-dark-mode .admin-user-name,
+body.user-dark-mode .admin-user-name,
+body.admin-dark-mode .admin-card-title,
+body.user-dark-mode .admin-card-title,
+body.admin-dark-mode .font-heading,
+body.user-dark-mode .font-heading {
+  color: #f8fafc !important;
+}
+
+/* Utility Text Overrides in Dark Mode */
+body.admin-dark-mode .text-dark,
+body.user-dark-mode .text-dark,
+body.admin-dark-mode .text-black,
+body.user-dark-mode .text-black,
+body.admin-dark-mode [style*="color:#0f172a"],
+body.user-dark-mode [style*="color:#0f172a"],
+body.admin-dark-mode [style*="color: #0f172a"],
+body.user-dark-mode [style*="color: #0f172a"] {
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .text-muted,
+body.user-dark-mode .text-muted,
+body.admin-dark-mode .text-secondary,
+body.user-dark-mode .text-secondary,
+body.admin-dark-mode small:not(.text-danger):not(.text-success):not(.text-warning):not(.text-primary),
+body.user-dark-mode small:not(.text-danger):not(.text-success):not(.text-warning):not(.text-primary) {
+  color: #cbd5e1 !important;
+}
+
+/* Cards & Containers in Dark Mode */
+body.admin-dark-mode .bg-white,
+body.user-dark-mode .bg-white,
+body.admin-dark-mode .bg-light,
+body.user-dark-mode .bg-light,
+body.admin-dark-mode .card,
+body.user-dark-mode .card,
+body.admin-dark-mode .stat-card,
+body.user-dark-mode .stat-card,
+body.admin-dark-mode .admin-card,
+body.user-dark-mode .admin-card,
+body.admin-dark-mode .modal-content,
+body.user-dark-mode .modal-content,
+body.admin-dark-mode .dropdown-menu,
+body.user-dark-mode .dropdown-menu {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .dropdown-item,
+body.user-dark-mode .dropdown-item {
+  color: #e2e8f0 !important;
+}
+body.admin-dark-mode .dropdown-item:hover,
+body.user-dark-mode .dropdown-item:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+body.admin-dark-mode .border,
+body.user-dark-mode .border,
+body.admin-dark-mode .border-bottom,
+body.user-dark-mode .border-bottom,
+body.admin-dark-mode .border-top,
+body.user-dark-mode .border-top,
+body.admin-dark-mode .border-light,
+body.user-dark-mode .border-light {
+  border-color: #334155 !important;
+}
+
+/* Tables in Dark Mode */
+body.admin-dark-mode .table,
+body.user-dark-mode .table,
+body.admin-dark-mode .table-admin,
+body.user-dark-mode .table-admin {
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .table th,
+body.user-dark-mode .table th,
+body.admin-dark-mode .table-admin thead th,
+body.user-dark-mode .table-admin thead th {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .table td,
+body.user-dark-mode .table td,
+body.admin-dark-mode .table-admin tbody td,
+body.user-dark-mode .table-admin tbody td {
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .table-admin tbody tr,
+body.user-dark-mode .table-admin tbody tr,
+body.admin-dark-mode .table-striped > tbody > tr:nth-of-type(odd) > *,
+body.user-dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .table-hover > tbody > tr:hover > *,
+body.user-dark-mode .table-hover > tbody > tr:hover > * {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* Form Controls & Inputs in Dark Mode */
+body.admin-dark-mode .form-control,
+body.user-dark-mode .form-control,
+body.admin-dark-mode .form-select,
+body.user-dark-mode .form-select {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.admin-dark-mode .form-label,
+body.user-dark-mode .form-label,
+body.admin-dark-mode label,
+body.user-dark-mode label {
+  color: #e2e8f0 !important;
+}
+
+body.admin-dark-mode input::placeholder,
+body.user-dark-mode input::placeholder,
+body.admin-dark-mode textarea::placeholder,
+body.user-dark-mode textarea::placeholder {
+  color: #64748b !important;
+  opacity: 0.85 !important;
+}
+
+/* Buttons & Badges in Dark Mode */
+body.admin-dark-mode .btn-light,
+body.user-dark-mode .btn-light,
+body.admin-dark-mode .btn-outline-secondary,
+body.user-dark-mode .btn-outline-secondary {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+body.admin-dark-mode .badge.bg-light,
+body.user-dark-mode .badge.bg-light,
+body.admin-dark-mode .badge.bg-white,
+body.user-dark-mode .badge.bg-white {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+
+body.admin-dark-mode .admin-user-badge,
+body.user-dark-mode .admin-user-badge {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+/* Pagination in Dark Mode */
+body.admin-dark-mode .page-link,
+body.user-dark-mode .page-link {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.admin-dark-mode .page-item.active .page-link,
+body.user-dark-mode .page-item.active .page-link {
+  background-color: #6366f1 !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
