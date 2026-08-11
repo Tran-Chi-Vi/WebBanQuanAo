@@ -197,7 +197,7 @@ public class OrderController : Controller
         decimal subTotal = cartItems.Sum(i => i.Variant.Price * i.Quantity);
 
         decimal totalSpent = await _context.Orders
-            .Where(o => o.UserId == userId && o.Status == OrderStatus.Completed && o.Payment != null && o.Payment.Status == PaymentStatus.Success)
+            .Where(o => o.UserId == userId && o.Status != OrderStatus.Cancelled)
             .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 
         var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);
@@ -405,9 +405,9 @@ public class OrderController : Controller
 
         decimal subTotal = items.Sum(i => i.TotalPrice);
 
-        // Tính ưu đãi phân hạng thành viên (Chỉ tính đơn đã Giao Thành Công & Đã Thanh Toán)
+        // Tính ưu đãi phân hạng thành viên (Tính tất cả các đơn hàng hợp lệ chưa bị hủy)
         decimal totalSpent = await _context.Orders
-            .Where(o => o.UserId == userId && o.Status == OrderStatus.Completed && o.Payment != null && o.Payment.Status == PaymentStatus.Success)
+            .Where(o => o.UserId == userId && o.Status != OrderStatus.Cancelled)
             .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
 
         var tierInfo = MembershipTierHelper.CalculateTier(totalSpent);

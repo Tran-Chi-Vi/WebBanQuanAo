@@ -1997,3 +1997,36 @@ body.user-dark-mode .ai-input-field {
 body.user-dark-mode .ai-input-field::placeholder {
   color: #94a3b8 !important;
 }
+
+/* Sticky Sidebar & Footer Overlay Protection */
+@media (min-width: 992px) {
+  .sticky-cart-summary,
+  .checkout-summary-sticky {
+    position: sticky !important;
+    top: 100px !important;
+    z-index: 10 !important;
+  }
+}
+
+footer {
+  position: relative !important;
+  z-index: 20 !important;
+}
+
+/* Payment Method Selection Card Hover & Active State */
+.checkout-pm-card {
+  transition: all 0.22s ease !important;
+  border: 1.5px solid #e2e8f0 !important;
+}
+.checkout-pm-card:hover {
+  border-color: #6366f1 !important;
+  background: #f8fafc !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.08);
+}
+.checkout-pm-card.active,
+.checkout-pm-card:has(input[type="radio"]:checked) {
+  border: 2px solid #6366f1 !important;
+  background: rgba(99, 102, 241, 0.04) !important;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+}
