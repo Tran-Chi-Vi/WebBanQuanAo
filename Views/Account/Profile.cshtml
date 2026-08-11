@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Hồ Sơ Cá Nhân";
     var tierInfo = ViewBag.TierInfo as TierInfo ?? MembershipTierHelper.CalculateTier(0);
+    var userAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
 
     string tierLedClass = "tier-bronze";
     if (tierInfo.TierName.Contains("Bạc") || tierInfo.TierName.Contains("Silver")) tierLedClass = "tier-silver";
@@ -13,20 +14,36 @@
 <div class="container my-4">
     <h2 class="fw-bold font-heading mb-4"><i class="bi bi-person-badge text-primary me-2"></i> QUẢN LÝ TÀI KHOẢN CÁ NHÂN</h2>
 
-    <!-- VIP MEMBERSHIP CARD WITH CONTINUOUS ROTATING LED GLOW BORDER -->
+    <!-- VIP MEMBERSHIP CARD WITH CONTINUOUS SINGLE LED LASER BEAM -->
     <div class="led-vip-card-wrapper @tierLedClass">
         <div class="led-vip-card-inner p-4 p-md-5 position-relative">
-            <!-- Background Orbs & SVG Mesh Matching Home Banner -->
-            <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%236366f1\' fill-opacity=\'0.06\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'4\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');pointer-events:none;"></div>
-            <div style="position:absolute;top:-40px;right:-40px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,0.22) 0%,rgba(0,0,0,0) 70%);filter:blur(30px);pointer-events:none;"></div>
-            <div style="position:absolute;bottom:-50px;left:10%;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.25) 0%,rgba(0,0,0,0) 70%);filter:blur(40px);pointer-events:none;"></div>
+            <!-- Animated Particle Constellation Canvas & Floating Hero Orbs Matching Home Banner -->
+            <canvas id="profileParticleCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;opacity:0.65;"></canvas>
+            <div class="hero-orb hero-orb-1" style="z-index:2;top:10%;right:10%;"></div>
+            <div class="hero-orb hero-orb-2" style="z-index:2;bottom:15%;left:15%;"></div>
+            <div class="hero-orb hero-orb-3" style="z-index:2;top:35%;right:25%;"></div>
 
-            <div class="row align-items-center position-relative z-1">
+            <div class="row align-items-center position-relative z-3">
                 <div class="col-md-7">
-                    <span class="badge @tierInfo.BadgeClass px-3 py-2 fs-6 rounded-pill fw-bold mb-2">
-                        <i class="bi bi-shield-shaded me-1"></i> @tierInfo.TierName
-                    </span>
-                    <h3 class="fw-bold font-heading text-white m-0" style="font-size:1.8rem;">@Model.FullName</h3>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        @if (!string.IsNullOrEmpty(userAvatarUrl))
+                        {
+                            <img src="@userAvatarUrl" alt="Avatar" class="rounded-circle shadow-lg" style="width:64px;height:64px;object-fit:cover;border:2.5px solid #ffffff;flex-shrink:0;" />
+                        }
+                        else
+                        {
+                            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-size:1.6rem;font-weight:700;flex-shrink:0;border:2.5px solid #ffffff;box-shadow:0 6px 16px rgba(0,0,0,0.3);">
+                                @(Model.FullName?.Substring(0,1)?.ToUpper() ?? "U")
+                            </div>
+                        }
+                        <div>
+                            <span class="badge @tierInfo.BadgeClass px-3 py-1.5 fs-6 rounded-pill fw-bold mb-1">
+                                <i class="bi bi-shield-shaded me-1"></i> @tierInfo.TierName
+                            </span>
+                            <h3 class="fw-bold font-heading text-white m-0" style="font-size:1.85rem;">@Model.FullName</h3>
+                        </div>
+                    </div>
+
                     <p class="text-white-50 small mb-3">Tích lũy chi tiêu: <strong class="text-warning fs-5">@tierInfo.TotalSpent.ToString("N0")đ</strong></p>
 
                     <!-- Progress Bar to Next Tier -->
@@ -197,3 +214,64 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('profileParticleCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = canvas.offsetWidth;
+                let height = canvas.height = canvas.offsetHeight;
+
+                window.addEventListener('resize', () => {
+                    width = canvas.width = canvas.offsetWidth;
+                    height = canvas.height = canvas.offsetHeight;
+                });
+
+                const particles = Array.from({ length: 35 }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.7,
+                    vy: (Math.random() - 0.5) * 0.7,
+                    radius: Math.random() * 2.2 + 1,
+                    baseAlpha: Math.random() * 0.5 + 0.2
+                }));
+
+                function renderParticles() {
+                    ctx.clearRect(0, 0, width, height);
+                    particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        if (p.x < 0 || p.x > width) p.vx *= -1;
+                        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255, 255, 255, ${p.baseAlpha})`;
+                        ctx.fill();
+                    });
+
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            if (dist < 100) {
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.strokeStyle = `rgba(255, 255, 255, ${0.16 * (1 - dist / 100)})`;
+                                ctx.lineWidth = 0.7;
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    requestAnimationFrame(renderParticles);
+                }
+                renderParticles();
+            }
+        });
+    </script>
+}
