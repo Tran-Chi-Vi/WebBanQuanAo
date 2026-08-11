@@ -127,14 +127,18 @@ if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientS
     });
 }
 
-string fbAppId = builder.Configuration["FacebookAuth:AppId"] ?? "";
-string fbAppSecret = builder.Configuration["FacebookAuth:AppSecret"] ?? "";
+string fbAppId = builder.Configuration["FacebookAuth:AppId"] ?? builder.Configuration["FacebookAuth__AppId"] ?? "1012325755176051";
+string fbAppSecret = builder.Configuration["FacebookAuth:AppSecret"] ?? builder.Configuration["FacebookAuth__AppSecret"] ?? "c3b3d89372c0c4e893e05db40955afc6";
+
 if (!string.IsNullOrEmpty(fbAppId) && !string.IsNullOrEmpty(fbAppSecret))
 {
     authBuilder.AddFacebook(options =>
     {
         options.AppId = fbAppId;
         options.AppSecret = fbAppSecret;
+        options.AuthorizationEndpoint = "https://www.facebook.com/v20.0/dialog/oauth";
+        options.TokenEndpoint = "https://graph.facebook.com/v20.0/oauth/access_token";
+        options.UserInformationEndpoint = "https://graph.facebook.com/v20.0/me";
         options.Fields.Add("email");
         options.Fields.Add("name");
         options.Fields.Add("picture");
