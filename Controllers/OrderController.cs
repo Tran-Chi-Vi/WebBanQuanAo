@@ -31,9 +31,14 @@ public class OrderController : Controller
     public async Task<IActionResult> Checkout()
     {
         int userId = GetCurrentUserId();
+        if (userId == 0)
+        {
+            TempData["InfoMessage"] = "Vui lòng đăng nhập tài khoản để tiến hành thanh toán đơn hàng.";
+            return RedirectToAction("Login", "Account", new { returnUrl = "/Order/Checkout" });
+        }
 
         var cartItems = await _context.CartItems
-            .Where(ci => ci.Cart.UserId == userId)
+            .Where(ci => ci.Cart != null && ci.Cart.UserId == userId && ci.Variant != null && ci.Variant.Product != null)
             .Include(ci => ci.Variant)
                 .ThenInclude(v => v.Product)
                     .ThenInclude(p => p.Images)
@@ -52,49 +57,61 @@ public class OrderController : Controller
 
         var cartVM = await BuildCartViewModelAsync(userId, cartItems);
 
-        // APRIORI CROSS-SELLING RECOMMENDATIONS FOR CHECKOUT
-        var cartProductIds = cartItems.Select(ci => ci.Variant.ProductId).Distinct().ToList();
-        var aprioriRecommendations = new List<Product>();
-
-        foreach (var pId in cartProductIds)
+        List<Product> aprioriRecommendations = new List<Product>();
+        try
         {
-            var rules = await _aprioriService.GetRecommendationsAsync(pId, topN: 4);
-            foreach (var rule in rules)
+            var cartProductIds = cartItems
+                .Where(ci => ci.Variant != null && ci.Variant.Product != null)
+                .Select(ci => ci.Variant.ProductId)
+                .Distinct()
+                .ToList();
+
+            foreach (var pId in cartProductIds)
             {
-                if (rule.ConsequentProduct != null &&
-                    rule.ConsequentProduct.Status == ProductStatus.Active &&
-                    !cartProductIds.Contains(rule.ConsequentProductId) &&
-                    !aprioriRecommendations.Any(p => p.ProductId == rule.ConsequentProductId))
+                var rules = await _aprioriService.GetRecommendationsAsync(pId, topN: 4);
+                if (rules != null)
                 {
-                    aprioriRecommendations.Add(rule.ConsequentProduct);
+                    foreach (var rule in rules)
+                    {
+                        if (rule.ConsequentProduct != null &&
+                            rule.ConsequentProduct.Status == ProductStatus.Active &&
+                            !cartProductIds.Contains(rule.ConsequentProductId) &&
+                            !aprioriRecommendations.Any(p => p.ProductId == rule.ConsequentProductId))
+                        {
+                            aprioriRecommendations.Add(rule.ConsequentProduct);
+                        }
+                    }
                 }
             }
+
+            if (aprioriRecommendations.Count < 4)
+            {
+                var existingIds = aprioriRecommendations.Select(ar => ar.ProductId).ToList();
+                var additionalProducts = await _context.Products
+                    .Where(p => p.Status == ProductStatus.Active && !cartProductIds.Contains(p.ProductId) && !existingIds.Contains(p.ProductId))
+                    .Include(p => p.Images)
+                    .Include(p => p.Category)
+                    .Include(p => p.Variants)
+                    .Take(4 - aprioriRecommendations.Count)
+                    .ToListAsync();
+
+                aprioriRecommendations.AddRange(additionalProducts);
+            }
+
+            var finalRecIds = aprioriRecommendations.Select(p => p.ProductId).Distinct().ToList();
+            if (finalRecIds.Any())
+            {
+                aprioriRecommendations = await _context.Products
+                    .Where(p => finalRecIds.Contains(p.ProductId))
+                    .Include(p => p.Images)
+                    .Include(p => p.Category)
+                    .Include(p => p.Variants)
+                    .ToListAsync();
+            }
         }
-
-        if (aprioriRecommendations.Count < 4)
+        catch (Exception ex)
         {
-            var existingIds = aprioriRecommendations.Select(ar => ar.ProductId).ToList();
-            var additionalProducts = await _context.Products
-                .Where(p => p.Status == ProductStatus.Active && !cartProductIds.Contains(p.ProductId) && !existingIds.Contains(p.ProductId))
-                .Include(p => p.Images)
-                .Include(p => p.Category)
-                .Include(p => p.Variants)
-                .Take(4 - aprioriRecommendations.Count)
-                .ToListAsync();
-
-            aprioriRecommendations.AddRange(additionalProducts);
-        }
-
-        // Re-query full entities with Images & Variants included so product images are never missing
-        var finalRecIds = aprioriRecommendations.Select(p => p.ProductId).Distinct().ToList();
-        if (finalRecIds.Any())
-        {
-            aprioriRecommendations = await _context.Products
-                .Where(p => finalRecIds.Contains(p.ProductId))
-                .Include(p => p.Images)
-                .Include(p => p.Category)
-                .Include(p => p.Variants)
-                .ToListAsync();
+            System.Diagnostics.Debug.WriteLine($"Apriori Checkout error: {ex.Message}");
         }
 
         ViewBag.AprioriRecommendations = aprioriRecommendations;

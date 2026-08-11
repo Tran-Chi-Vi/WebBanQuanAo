@@ -137,34 +137,36 @@
                     <span>Tồn kho: <strong id="stockCount" class="text-primary font-monospace fs-6">@(firstVariant?.StockQuantity ?? 0)</strong> sản phẩm có sẵn</span>
                 </div>
 
-                <!-- Quantity & Action Buttons -->
-                <div class="d-flex align-items-center gap-3 flex-wrap">
-                    <!-- Quantity Input -->
-                    <div style="width:110px;flex-shrink:0;">
-                        <label class="form-label fw-semibold small text-muted mb-1 d-block">Số lượng</label>
-                        <div class="input-group">
-                            <button type="button" class="btn btn-outline-secondary px-2" onclick="changeQty(-1)"><i class="bi bi-dash"></i></button>
+                <!-- Quantity & Action Buttons Container (Exact 48px Height Alignment) -->
+                <div class="mb-2">
+                    <label class="form-label fw-bold small text-dark mb-2 d-block">3. CHỌN SỐ LƯỢNG & ĐẶT HÀNG:</label>
+                    <div class="d-flex align-items-stretch gap-3 flex-wrap flex-sm-nowrap">
+                        <!-- Quantity Input Stepper (48px Height) -->
+                        <div class="input-group" style="width: 125px; height: 48px; flex-shrink: 0;">
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px;" onclick="changeQty(-1)"><i class="bi bi-dash-lg"></i></button>
                             <input type="number" id="purchaseQuantity" name="quantity"
-                                   class="form-control text-center fw-bold px-1"
-                                   style="font-size:0.95rem;"
+                                   class="form-control text-center fw-bold px-1 font-monospace"
+                                   style="font-size: 1.05rem; height: 48px; border-color: #cbd5e1;"
                                    value="1" min="1" max="@(firstVariant?.StockQuantity ?? 100)" />
-                            <button type="button" class="btn btn-outline-secondary px-2" onclick="changeQty(1)"><i class="bi bi-plus"></i></button>
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" onclick="changeQty(1)"><i class="bi bi-plus-lg"></i></button>
                         </div>
+
+                        <!-- Add to Cart Button (48px Height) -->
+                        <button type="button" id="btnAddToCartDetails" onclick="addToCartFromDetails(this)"
+                                class="btn btn-outline-primary fw-bold d-inline-flex align-items-center justify-content-center gap-2 flex-fill rounded-3"
+                                style="height: 48px; font-size: 0.95rem; border-radius: 12px !important; border-width: 1.5px;">
+                            <i class="bi bi-cart-plus-fill fs-5"></i>
+                            <span>Thêm Vào Giỏ</span>
+                        </button>
+
+                        <!-- Buy Now Button (48px Height) -->
+                        <button type="button" id="btnBuyNowDetails" onclick="buyNowFromDetails(this)"
+                                class="btn btn-primary-gradient fw-bold d-inline-flex align-items-center justify-content-center gap-2 flex-fill rounded-3 shadow-lg"
+                                style="height: 48px; font-size: 0.95rem; border-radius: 12px !important;">
+                            <i class="bi bi-lightning-charge-fill fs-5"></i>
+                            <span>MUA NGAY</span>
+                        </button>
                     </div>
-
-                    <!-- Add to Cart Button -->
-                    <button type="button" onclick="addToCartFromDetails()"
-                            class="btn btn-outline-primary fw-bold d-flex align-items-center justify-content-center gap-2 flex-grow-1 py-2.5 rounded-3"
-                            style="font-size:0.95rem;min-width:140px;">
-                        <i class="bi bi-cart-plus fs-5"></i> Thêm Vào Giỏ
-                    </button>
-
-                    <!-- Buy Now Button -->
-                    <button type="button" onclick="buyNowFromDetails()"
-                            class="btn btn-primary-gradient fw-bold d-flex align-items-center justify-content-center gap-2 flex-grow-1 py-2.5 rounded-3 shadow-lg"
-                            style="font-size:0.95rem;min-width:140px;">
-                        <i class="bi bi-lightning-charge-fill fs-5"></i> MUA NGAY
-                    </button>
                 </div>
             </form>
 
@@ -441,22 +443,57 @@
             return variantId;
         }
 
-        function addToCartFromDetails() {
-            const variantId = getValidVariantId();
-            if (!variantId) return;
+        let isDetailsActionPending = false;
+        let lastDetailsClickTime = 0;
+        let detailsRageClickCount = 0;
 
-            const qtyInput = document.getElementById('purchaseQuantity');
-            const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+        function checkRageClickSpam() {
+            const now = Date.now();
+            if (now - lastDetailsClickTime < 600) {
+                detailsRageClickCount++;
+            } else {
+                detailsRageClickCount = 1;
+            }
+            lastDetailsClickTime = now;
 
-            addToCartAjax(variantId, qty);
+            if (detailsRageClickCount >= 3) {
+                showToast('Hệ thống đã nhận lệnh xử lý của bạn, vui lòng không click liên tục!', 'info');
+                return true;
+            }
+            return false;
         }
 
-        function buyNowFromDetails() {
+        function addToCartFromDetails(btnElem) {
+            if (isDetailsActionPending || checkRageClickSpam()) return;
+
             const variantId = getValidVariantId();
             if (!variantId) return;
 
             const qtyInput = document.getElementById('purchaseQuantity');
             const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+
+            isDetailsActionPending = true;
+            if (btnElem) btnElem.disabled = true;
+
+            addToCartAjax(variantId, qty, btnElem);
+
+            setTimeout(() => {
+                isDetailsActionPending = false;
+                if (btnElem) btnElem.disabled = false;
+            }, 1200);
+        }
+
+        function buyNowFromDetails(btnElem) {
+            if (isDetailsActionPending || checkRageClickSpam()) return;
+
+            const variantId = getValidVariantId();
+            if (!variantId) return;
+
+            const qtyInput = document.getElementById('purchaseQuantity');
+            const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+
+            isDetailsActionPending = true;
+            if (btnElem) btnElem.disabled = true;
 
             const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
             fetch('/Cart/AddToCart', {
@@ -473,9 +510,15 @@
                     window.location.href = '/Order/Checkout';
                 } else {
                     showToast(data.message, 'error');
+                    isDetailsActionPending = false;
+                    if (btnElem) btnElem.disabled = false;
                 }
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                isDetailsActionPending = false;
+                if (btnElem) btnElem.disabled = false;
+            });
         }
     </script>
 }

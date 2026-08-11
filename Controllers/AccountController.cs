@@ -392,6 +392,18 @@ public class AccountController : Controller
 
     private async Task SignInUserAsync(User user, bool isPersistent)
     {
+        // Generate new UserGuid for single active device session validation
+        user.UserGuid = Guid.NewGuid();
+        try
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Update UserGuid error: {ex.Message}");
+        }
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
