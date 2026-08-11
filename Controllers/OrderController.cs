@@ -30,100 +30,112 @@ public class OrderController : Controller
     [HttpGet]
     public async Task<IActionResult> Checkout()
     {
-        int userId = GetCurrentUserId();
-        if (userId == 0)
-        {
-            TempData["InfoMessage"] = "Vui lòng đăng nhập tài khoản để tiến hành thanh toán đơn hàng.";
-            return RedirectToAction("Login", "Account", new { returnUrl = "/Order/Checkout" });
-        }
-
-        var cartItems = await _context.CartItems
-            .Where(ci => ci.Cart != null && ci.Cart.UserId == userId && ci.Variant != null && ci.Variant.Product != null)
-            .Include(ci => ci.Variant)
-                .ThenInclude(v => v.Product)
-                    .ThenInclude(p => p.Images)
-            .ToListAsync();
-
-        if (!cartItems.Any())
-        {
-            TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
-            return RedirectToAction("Index", "Cart");
-        }
-
-        var addresses = await _context.Addresses
-            .Where(a => a.UserId == userId)
-            .OrderByDescending(a => a.IsDefault)
-            .ToListAsync();
-
-        var cartVM = await BuildCartViewModelAsync(userId, cartItems);
-
-        List<Product> aprioriRecommendations = new List<Product>();
         try
         {
-            var cartProductIds = cartItems
-                .Where(ci => ci.Variant != null && ci.Variant.Product != null)
-                .Select(ci => ci.Variant.ProductId)
-                .Distinct()
-                .ToList();
-
-            foreach (var pId in cartProductIds)
+            int userId = GetCurrentUserId();
+            if (userId == 0)
             {
-                var rules = await _aprioriService.GetRecommendationsAsync(pId, topN: 4);
-                if (rules != null)
+                TempData["InfoMessage"] = "Vui lòng đăng nhập tài khoản để tiến hành thanh toán đơn hàng.";
+                return RedirectToAction("Login", "Account", new { returnUrl = "/Order/Checkout" });
+            }
+
+            // Automatically merge any guest session cart items into User DB Cart
+            await MergeGuestSessionCartToUserDbCartAsync(userId);
+
+            var cartItems = await _context.CartItems
+                .Where(ci => ci.Cart != null && ci.Cart.UserId == userId && ci.Variant != null && ci.Variant.Product != null)
+                .Include(ci => ci.Variant)
+                    .ThenInclude(v => v.Product)
+                        .ThenInclude(p => p.Images)
+                .ToListAsync();
+
+            if (!cartItems.Any())
+            {
+                TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+                return RedirectToAction("Index", "Cart");
+            }
+
+            var addresses = await _context.Addresses
+                .Where(a => a.UserId == userId)
+                .OrderByDescending(a => a.IsDefault)
+                .ToListAsync();
+
+            var cartVM = await BuildCartViewModelAsync(userId, cartItems);
+
+            List<Product> aprioriRecommendations = new List<Product>();
+            try
+            {
+                var cartProductIds = cartItems
+                    .Where(ci => ci.Variant != null && ci.Variant.Product != null)
+                    .Select(ci => ci.Variant.ProductId)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var pId in cartProductIds)
                 {
-                    foreach (var rule in rules)
+                    var rules = await _aprioriService.GetRecommendationsAsync(pId, topN: 4);
+                    if (rules != null)
                     {
-                        if (rule.ConsequentProduct != null &&
-                            rule.ConsequentProduct.Status == ProductStatus.Active &&
-                            !cartProductIds.Contains(rule.ConsequentProductId) &&
-                            !aprioriRecommendations.Any(p => p.ProductId == rule.ConsequentProductId))
+                        foreach (var rule in rules)
                         {
-                            aprioriRecommendations.Add(rule.ConsequentProduct);
+                            if (rule.ConsequentProduct != null &&
+                                rule.ConsequentProduct.Status == ProductStatus.Active &&
+                                !cartProductIds.Contains(rule.ConsequentProductId) &&
+                                !aprioriRecommendations.Any(p => p.ProductId == rule.ConsequentProductId))
+                            {
+                                aprioriRecommendations.Add(rule.ConsequentProduct);
+                            }
                         }
                     }
                 }
-            }
 
-            if (aprioriRecommendations.Count < 4)
+                if (aprioriRecommendations.Count < 4)
+                {
+                    var existingIds = aprioriRecommendations.Select(ar => ar.ProductId).ToList();
+                    var additionalProducts = await _context.Products
+                        .Where(p => p.Status == ProductStatus.Active && !cartProductIds.Contains(p.ProductId) && !existingIds.Contains(p.ProductId))
+                        .Include(p => p.Images)
+                        .Include(p => p.Category)
+                        .Include(p => p.Variants)
+                        .Take(4 - aprioriRecommendations.Count)
+                        .ToListAsync();
+
+                    aprioriRecommendations.AddRange(additionalProducts);
+                }
+
+                var finalRecIds = aprioriRecommendations.Select(p => p.ProductId).Distinct().ToList();
+                if (finalRecIds.Any())
+                {
+                    aprioriRecommendations = await _context.Products
+                        .Where(p => finalRecIds.Contains(p.ProductId))
+                        .Include(p => p.Images)
+                        .Include(p => p.Category)
+                        .Include(p => p.Variants)
+                        .ToListAsync();
+                }
+            }
+            catch (Exception ex)
             {
-                var existingIds = aprioriRecommendations.Select(ar => ar.ProductId).ToList();
-                var additionalProducts = await _context.Products
-                    .Where(p => p.Status == ProductStatus.Active && !cartProductIds.Contains(p.ProductId) && !existingIds.Contains(p.ProductId))
-                    .Include(p => p.Images)
-                    .Include(p => p.Category)
-                    .Include(p => p.Variants)
-                    .Take(4 - aprioriRecommendations.Count)
-                    .ToListAsync();
-
-                aprioriRecommendations.AddRange(additionalProducts);
+                System.Diagnostics.Debug.WriteLine($"Apriori Checkout error: {ex.Message}");
             }
 
-            var finalRecIds = aprioriRecommendations.Select(p => p.ProductId).Distinct().ToList();
-            if (finalRecIds.Any())
+            ViewBag.AprioriRecommendations = aprioriRecommendations;
+
+            var viewModel = new CheckoutViewModel
             {
-                aprioriRecommendations = await _context.Products
-                    .Where(p => finalRecIds.Contains(p.ProductId))
-                    .Include(p => p.Images)
-                    .Include(p => p.Category)
-                    .Include(p => p.Variants)
-                    .ToListAsync();
-            }
+                Cart = cartVM,
+                UserAddresses = addresses,
+                SelectedAddressId = addresses.FirstOrDefault(a => a.IsDefault)?.AddressId ?? addresses.FirstOrDefault()?.AddressId
+            };
+
+            return View(viewModel);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Apriori Checkout error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Checkout GET Error: {ex.Message}");
+            TempData["ErrorMessage"] = "Có lỗi xảy ra khi nạp trang thanh toán. Vui lòng thử lại!";
+            return RedirectToAction("Index", "Cart");
         }
-
-        ViewBag.AprioriRecommendations = aprioriRecommendations;
-
-        var viewModel = new CheckoutViewModel
-        {
-            Cart = cartVM,
-            UserAddresses = addresses,
-            SelectedAddressId = addresses.FirstOrDefault(a => a.IsDefault)?.AddressId ?? addresses.FirstOrDefault()?.AddressId
-        };
-
-        return View(viewModel);
     }
 
     [HttpPost]
@@ -438,6 +450,63 @@ public class OrderController : Controller
         model.Cart = await BuildCartViewModelAsync(userId, cartItems);
         model.UserAddresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
         return View(model);
+    }
+
+    private async Task MergeGuestSessionCartToUserDbCartAsync(int userId)
+    {
+        if (userId <= 0) return;
+        var gCartJson = HttpContext.Session.GetString("GUEST_CART");
+        if (string.IsNullOrEmpty(gCartJson)) return;
+
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(gCartJson);
+            if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+            {
+                var userCart = await _context.Carts
+                    .Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+
+                if (userCart == null)
+                {
+                    userCart = new Cart { UserId = userId };
+                    _context.Carts.Add(userCart);
+                    await _context.SaveChangesAsync();
+                }
+
+                foreach (var el in doc.RootElement.EnumerateArray())
+                {
+                    if (el.TryGetProperty("VariantId", out var vProp) && el.TryGetProperty("Quantity", out var qProp))
+                    {
+                        int vId = vProp.GetInt32();
+                        int qty = qProp.GetInt32();
+
+                        var variant = await _context.ProductVariants.FindAsync(vId);
+                        if (variant != null && variant.StockQuantity > 0)
+                        {
+                            var existingItem = userCart.Items.FirstOrDefault(i => i.VariantId == vId);
+                            if (existingItem != null)
+                            {
+                                existingItem.Quantity += qty;
+                            }
+                            else
+                            {
+                                userCart.Items.Add(new CartItem { VariantId = vId, Quantity = qty });
+                            }
+                        }
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Merge cart error: {ex.Message}");
+        }
+        finally
+        {
+            HttpContext.Session.Remove("GUEST_CART");
+        }
     }
 
     #endregion

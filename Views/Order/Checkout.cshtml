@@ -79,42 +79,56 @@
                     </div>
                 </div>
 
-                <!-- Payment Method Card -->
+                <!-- Payment Method Card (IMPECCABLE CRAFT DESIGN) -->
                 <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
-                    <h5 class="fw-bold font-heading mb-3"><i class="bi bi-wallet2 text-primary me-2"></i> 2. PHƯƠNG THỨC THANH TOÁN</h5>
+                    <h5 class="fw-bold font-heading mb-3.5 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                            <i class="bi bi-wallet2"></i>
+                        </span>
+                        <span>2. PHƯƠNG THỨC THANH TOÁN</span>
+                    </h5>
 
                     <div class="d-flex flex-column gap-3">
-                        <!-- COD -->
-                        <label class="checkout-pm-card p-3.5 rounded-4 border d-flex align-items-start gap-3 cursor-pointer bg-white mb-0" for="pm_cod">
-                            <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="PaymentMethod" id="pm_cod" value="COD" checked />
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center gap-2 fw-bold text-dark fs-6">
-                                    <i class="bi bi-cash-stack fs-5 text-success"></i>
-                                    <span>Thanh toán khi nhận hàng (COD)</span>
+                        <!-- COD Option -->
+                        <label class="checkout-pm-card p-3.5 px-4 rounded-4 border d-flex align-items-center gap-3 cursor-pointer bg-white mb-0 shadow-sm transition-all position-relative overflow-hidden" for="pm_cod">
+                            <input class="form-check-input my-0 flex-shrink-0" style="width: 22px; height: 22px; cursor: pointer; accent-color: #6366f1;" type="radio" name="PaymentMethod" id="pm_cod" value="COD" checked />
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-success bg-opacity-10 text-success flex-shrink-0" style="width: 44px; height: 44px;">
+                                <i class="bi bi-cash-stack fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <span class="fw-bold text-dark fs-6">Thanh toán khi nhận hàng (COD)</span>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1 small fw-bold">Phổ biến</span>
                                 </div>
                                 <div class="small text-muted mt-1 lh-sm">Thanh toán bằng tiền mặt trực tiếp cho nhân viên giao hàng khi nhận sản phẩm.</div>
                             </div>
                         </label>
 
-                        <!-- VietQR -->
-                        <label class="checkout-pm-card p-3.5 rounded-4 border d-flex align-items-start gap-3 cursor-pointer bg-white mb-0" for="pm_qr">
-                            <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="PaymentMethod" id="pm_qr" value="QR" />
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center gap-2 fw-bold text-dark fs-6">
-                                    <i class="bi bi-qr-code-scan fs-5 text-primary"></i>
-                                    <span>Chuyển khoản Ngân hàng qua Mã VietQR</span>
+                        <!-- VietQR Option -->
+                        <label class="checkout-pm-card p-3.5 px-4 rounded-4 border d-flex align-items-center gap-3 cursor-pointer bg-white mb-0 shadow-sm transition-all position-relative overflow-hidden" for="pm_qr">
+                            <input class="form-check-input my-0 flex-shrink-0" style="width: 22px; height: 22px; cursor: pointer; accent-color: #6366f1;" type="radio" name="PaymentMethod" id="pm_qr" value="QR" />
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary flex-shrink-0" style="width: 44px; height: 44px;">
+                                <i class="bi bi-qr-code-scan fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <span class="fw-bold text-dark fs-6">Chuyển khoản Ngân hàng (VietQR)</span>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2.5 py-1 small fw-bold">Nhanh chóng</span>
                                 </div>
                                 <div class="small text-muted mt-1 lh-sm">Quét mã QR chuyển khoản tự động qua ứng dụng Mobile Banking.</div>
                             </div>
                         </label>
 
-                        <!-- PayOS -->
-                        <label class="checkout-pm-card p-3.5 rounded-4 border d-flex align-items-start gap-3 cursor-pointer bg-white mb-0" for="pm_payos">
-                            <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="PaymentMethod" id="pm_payos" value="PayOS" />
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center gap-2 fw-bold text-dark fs-6">
-                                    <i class="bi bi-credit-card-fill fs-5 text-warning"></i>
-                                    <span>Cổng Thanh Toán Trực Tuyến PayOS</span>
+                        <!-- PayOS Option -->
+                        <label class="checkout-pm-card p-3.5 px-4 rounded-4 border d-flex align-items-center gap-3 cursor-pointer bg-white mb-0 shadow-sm transition-all position-relative overflow-hidden" for="pm_payos">
+                            <input class="form-check-input my-0 flex-shrink-0" style="width: 22px; height: 22px; cursor: pointer; accent-color: #6366f1;" type="radio" name="PaymentMethod" id="pm_payos" value="PayOS" />
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-warning bg-opacity-10 text-warning flex-shrink-0" style="width: 44px; height: 44px;">
+                                <i class="bi bi-credit-card-fill fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1" style="min-width: 0;">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <span class="fw-bold text-dark fs-6">Cổng Thanh Toán Trực Tuyến PayOS</span>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2.5 py-1 small fw-bold">Tự động</span>
                                 </div>
                                 <div class="small text-muted mt-1 lh-sm">Thanh toán bằng thẻ ATM, Visa, MasterCard hoặc Ví điện tử.</div>
                             </div>
