@@ -1253,15 +1253,22 @@ body.page-transitioning {
 /* ==========================================================================
    GLOBAL STORE FRONT DARK MODE SYSTEM (IMPECCABLE CRAFT)
    ========================================================================== */
-body.user-dark-mode {
-  background-color: #0f172a !important;
-  color: #f8fafc !important;
+/* ==========================================================================
+   GLOBAL STORE FRONT DARK MODE SYSTEM (IMPECCABLE CRAFT)
+   ========================================================================== */
+body.user-dark-mode, html.user-dark-mode {
+  background-color: #0b0f19 !important;
+  color: #ffffff !important;
+  --bs-body-bg: #0b0f19 !important;
+  --bs-body-color: #ffffff !important;
 }
 
 body.user-dark-mode .navbar-custom,
 body.user-dark-mode header,
-body.user-dark-mode footer {
+body.user-dark-mode footer,
+body.user-dark-mode #mainNavbar {
   background-color: #1e293b !important;
+  background: #1e293b !important;
   border-color: #334155 !important;
 }
 
@@ -1277,15 +1284,23 @@ body.user-dark-mode .nav-link.active {
 body.user-dark-mode .bg-white,
 body.user-dark-mode .bg-light,
 body.user-dark-mode .product-card,
+body.user-dark-mode .category-card,
+body.user-dark-mode .promo-card,
 body.user-dark-mode .card,
 body.user-dark-mode .dropdown-menu,
 body.user-dark-mode .modal-content {
   background-color: #1e293b !important;
-  color: #f8fafc !important;
+  background: #1e293b !important;
+  color: #ffffff !important;
   border-color: #334155 !important;
 }
 
+body.user-dark-mode .product-card-img-wrapper {
+  background: #0f172a !important;
+}
+
 body.user-dark-mode .text-dark,
+body.user-dark-mode .text-black,
 body.user-dark-mode .text-slate-800,
 body.user-dark-mode .text-slate-900,
 body.user-dark-mode h1,
@@ -1293,30 +1308,36 @@ body.user-dark-mode h2,
 body.user-dark-mode h3,
 body.user-dark-mode h4,
 body.user-dark-mode h5,
-body.user-dark-mode h6 {
-  color: #f8fafc !important;
+body.user-dark-mode h6,
+body.user-dark-mode .product-card h6,
+body.user-dark-mode .category-card h6,
+body.user-dark-mode [style*="color:#0f172a"],
+body.user-dark-mode [style*="color: #0f172a"] {
+  color: #ffffff !important;
 }
 
 body.user-dark-mode .text-muted,
-body.user-dark-mode .text-secondary {
-  color: #94a3b8 !important;
+body.user-dark-mode .text-secondary,
+body.user-dark-mode small:not(.text-danger):not(.text-success):not(.text-warning):not(.text-primary) {
+  color: #cbd5e1 !important;
 }
 
 body.user-dark-mode .border,
 body.user-dark-mode .border-bottom,
-body.user-dark-mode .border-top {
+body.user-dark-mode .border-top,
+body.user-dark-mode .border-light {
   border-color: #334155 !important;
 }
 
 body.user-dark-mode .form-control,
 body.user-dark-mode .form-select {
   background-color: #0f172a !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
   border-color: #334155 !important;
 }
 
 body.user-dark-mode .dropdown-item {
-  color: #cbd5e1 !important;
+  color: #f8fafc !important;
 }
 
 body.user-dark-mode .dropdown-item:hover {
@@ -1324,10 +1345,25 @@ body.user-dark-mode .dropdown-item:hover {
   color: #ffffff !important;
 }
 
-body.user-dark-mode .btn-light {
-  background-color: #334155 !important;
-  color: #f8fafc !important;
-  border-color: #475569 !important;
+body.user-dark-mode .btn-light,
+body.user-dark-mode .filter-tab-btn:not(.active) {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .table,
+body.user-dark-mode .table tr,
+body.user-dark-mode .table td {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+
+body.user-dark-mode .table th {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
 }
 
 /* ==========================================================================

@@ -25,106 +25,68 @@
     var recentLogs = ViewBag.RecentLogs as IEnumerable<WEBBANQUANAO.Controllers.Admin.VisitorLogDto> ?? new List<WEBBANQUANAO.Controllers.Admin.VisitorLogDto>();
 }
 
-<!-- Custom Impeccable Dynamic Theme (Light & Dark Mode Switcher) -->
+<!-- Dynamic Theme Styles synced with Global Admin Theme -->
 <style>
-    /* BASE CONTAINER TRANSITION */
     .analytics-container {
         border-radius: 16px;
         transition: background-color 0.3s ease, color 0.3s ease;
-        font-family: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Plus Jakarta Sans', 'Be Vietnam Pro', system-ui, sans-serif;
     }
 
     /* LIGHT THEME (DEFAULT) */
-    .analytics-container.theme-light {
-        background-color: #f8fafc !important;
-        color: #0f172a !important;
-    }
-    .analytics-container.theme-light .analytics-card {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        color: #0f172a !important;
-        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04) !important;
-    }
-    .analytics-container.theme-light .funnel-step-box {
-        background: #ffffff !important;
-        border: 1px solid #e2e8f0 !important;
-        color: #0f172a !important;
-    }
-    .analytics-container.theme-light .light-table th {
-        background: #f1f5f9 !important;
-        color: #0f172a !important;
-        border-bottom: 1.5px solid #cbd5e1 !important;
-    }
-    .analytics-container.theme-light .light-table td {
-        border-bottom: 1px solid #f1f5f9 !important;
-        color: #0f172a !important;
-    }
-    .analytics-container.theme-light .kpi-val-1 { color: #2563eb !important; }
-    .analytics-container.theme-light .kpi-val-2 { color: #059669 !important; }
-    .analytics-container.theme-light .kpi-val-3 { color: #d97706 !important; }
-    .analytics-container.theme-light .kpi-val-4 { color: #be123c !important; }
-    .analytics-container.theme-light .text-adaptive { color: #0f172a !important; }
-    .analytics-container.theme-light .text-muted-adaptive { color: #64748b !important; }
-
-    /* DARK THEME */
-    .analytics-container.theme-dark {
-        background-color: #0b1329 !important;
-        color: #f8fafc !important;
-    }
-    .analytics-container.theme-dark .analytics-card {
-        background: #1e293b !important;
-        border: 1px solid #334155 !important;
-        color: #f8fafc !important;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-    }
-    .analytics-container.theme-dark .funnel-step-box {
-        background: #0f172a !important;
-        border: 1px solid #1e293b !important;
-        color: #f8fafc !important;
-    }
-    .analytics-container.theme-dark .light-table th {
-        background: #0f172a !important;
-        color: #94a3b8 !important;
-        border-bottom: 1px solid #334155 !important;
-    }
-    .analytics-container.theme-dark .light-table td {
-        border-bottom: 1px solid #1e293b !important;
-        color: #f8fafc !important;
-    }
-    .analytics-container.theme-dark .kpi-val-1 { color: #38bdf8 !important; }
-    .analytics-container.theme-dark .kpi-val-2 { color: #34d399 !important; }
-    .analytics-container.theme-dark .kpi-val-3 { color: #fbbf24 !important; }
-    .analytics-container.theme-dark .kpi-val-4 { color: #f43f5e !important; }
-    .analytics-container.theme-dark .text-adaptive { color: #f8fafc !important; }
-    .analytics-container.theme-dark .text-muted-adaptive { color: #94a3b8 !important; }
-    .analytics-container.theme-dark .period-btn {
-        background: #1e293b !important;
-        color: #94a3b8 !important;
-        border-color: #334155 !important;
-    }
-    .analytics-container.theme-dark .period-btn.active {
-        background: #eab308 !important;
-        color: #0f172a !important;
-        border-color: #eab308 !important;
-    }
-
-    /* CARD & BUTTON STYLES */
     .analytics-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
         border-radius: 16px;
         padding: 1.25rem 1.5rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
     }
-    .analytics-card:hover {
-        transform: translateY(-2px);
+    .analytics-card:hover { transform: translateY(-2px); }
+
+    .funnel-step-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        transition: background-color 0.3s ease;
     }
+    .light-table th {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-bottom: 1.5px solid #cbd5e1;
+    }
+    .light-table td {
+        border-bottom: 1px solid #f1f5f9;
+        color: #0f172a;
+    }
+    .kpi-val-1 { color: #2563eb; }
+    .kpi-val-2 { color: #059669; }
+    .kpi-val-3 { color: #d97706; }
+    .kpi-val-4 { color: #be123c; }
+    .text-adaptive { color: #0f172a; }
+    .text-muted-adaptive { color: #64748b; }
+    .funnel-bar-track { background: #cbd5e1; height: 10px; border-radius: 6px; overflow: hidden; }
+
     .period-btn {
         border-radius: 10px;
         padding: 0.5rem 1.25rem;
         font-weight: 700;
         font-size: 0.88rem;
         text-decoration: none;
+        background: #ffffff;
+        color: #64748b;
+        border: 1.5px solid #e2e8f0;
         transition: all 0.2s ease;
     }
+    .period-btn.active {
+        background: #6366f1;
+        color: #ffffff;
+        border-color: #6366f1;
+    }
+
     .kpi-icon-box {
         width: 42px;
         height: 42px;
@@ -146,20 +108,6 @@
         font-weight: 800;
         line-height: 1.25;
         margin: 0.25rem 0;
-    }
-    .funnel-step-box {
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        transition: background-color 0.3s ease;
-    }
-    .funnel-bar-track {
-        background: #cbd5e1;
-        height: 10px;
-        border-radius: 6px;
-        overflow: hidden;
-    }
-    .analytics-container.theme-dark .funnel-bar-track {
-        background: #334155;
     }
     .funnel-bar-fill {
         height: 100%;
@@ -187,21 +135,52 @@
         font-weight: 700 !important;
         border-radius: 50px !important;
     }
-    .theme-toggle-btn {
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
-        font-weight: 700;
-        font-size: 0.88rem;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        border: 1.5px solid #cbd5e1;
+
+    /* AUTOMATIC DARK MODE SYNC WITH GLOBAL ADMIN THEME */
+    body.admin-dark-mode .analytics-card,
+    body.user-dark-mode .analytics-card {
+        background: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4) !important;
     }
-    .theme-toggle-btn:hover {
-        transform: scale(1.03);
+    body.admin-dark-mode .funnel-step-box,
+    body.user-dark-mode .funnel-step-box {
+        background: #0f172a !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    body.admin-dark-mode .light-table th,
+    body.user-dark-mode .light-table th {
+        background: #0f172a !important;
+        color: #cbd5e1 !important;
+        border-color: #334155 !important;
+    }
+    body.admin-dark-mode .light-table td,
+    body.user-dark-mode .light-table td {
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    body.admin-dark-mode .kpi-val-1, body.user-dark-mode .kpi-val-1 { color: #38bdf8 !important; }
+    body.admin-dark-mode .kpi-val-2, body.user-dark-mode .kpi-val-2 { color: #34d399 !important; }
+    body.admin-dark-mode .kpi-val-3, body.user-dark-mode .kpi-val-3 { color: #fbbf24 !important; }
+    body.admin-dark-mode .kpi-val-4, body.user-dark-mode .kpi-val-4 { color: #f43f5e !important; }
+    body.admin-dark-mode .text-adaptive, body.user-dark-mode .text-adaptive { color: #f8fafc !important; }
+    body.admin-dark-mode .text-muted-adaptive, body.user-dark-mode .text-muted-adaptive { color: #cbd5e1 !important; }
+    body.admin-dark-mode .funnel-bar-track, body.user-dark-mode .funnel-bar-track { background: #334155 !important; }
+    body.admin-dark-mode .period-btn, body.user-dark-mode .period-btn {
+        background: #1e293b !important;
+        color: #cbd5e1 !important;
+        border-color: #334155 !important;
+    }
+    body.admin-dark-mode .period-btn.active, body.user-dark-mode .period-btn.active {
+        background: #6366f1 !important;
+        color: #ffffff !important;
+        border-color: #6366f1 !important;
     }
 </style>
 
-<div id="analyticsContainer" class="analytics-container theme-light p-3 p-md-4 my-2">
+<div id="analyticsContainer" class="analytics-container p-2 p-md-3 my-2">
 
     <!-- Top Action Bar Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom border-slate-200 pb-3">
@@ -215,15 +194,8 @@
             </div>
         </div>
         
-        <!-- Controls Bar: Theme Switcher + Period Filters -->
+        <!-- Filter Period Pills -->
         <div class="d-flex align-items-center flex-wrap gap-2">
-            <!-- Light / Dark Theme Switcher Button -->
-            <button id="themeToggleBtn" onclick="toggleAnalyticsTheme()" class="theme-toggle-btn bg-white text-slate-800 shadow-sm d-flex align-items-center gap-2" title="Chuyển chế độ Giao diện Sáng / Tối">
-                <i id="themeIcon" class="bi bi-moon-stars-fill text-primary"></i>
-                <span id="themeLabel">Giao diện Tối</span>
-            </button>
-
-            <!-- Filter Period Pills -->
             <a href="/sys-admin-management/Analytics/Index?period=7d" class="period-btn @(activePeriod == "7d" ? "active" : "")">
                 7 ngày qua
             </a>
@@ -336,7 +308,7 @@
                     <!-- Step 3: Vào thanh toán -->
                     <div class="funnel-step-box">
                         <div class="d-flex justify-content-between align-items-center mb-1 flex-wrap gap-1">
-                            <span class="fw-bold text-purple" style="color:#7c3aed;"><i class="bi bi-credit-card-fill me-1.5"></i> 3. Vào thanh toán</span>
+                            <span class="fw-bold" style="color:#7c3aed;"><i class="bi bi-credit-card-fill me-1.5"></i> 3. Vào thanh toán</span>
                             @{
                                 double checkoutPct = addToCartCount > 0 ? Math.Round((double)checkoutCount / addToCartCount * 100, 1) : 118.8;
                             }
@@ -492,43 +464,10 @@
     </div>
 </div>
 
-<!-- Chart.js Script & Dynamic Light / Dark Theme Switcher Logic -->
+<!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function applyAnalyticsTheme(mode) {
-        const container = document.getElementById('analyticsContainer');
-        const label = document.getElementById('themeLabel');
-        const icon = document.getElementById('themeIcon');
-        const btn = document.getElementById('themeToggleBtn');
-
-        if (mode === 'dark') {
-            container.classList.remove('theme-light');
-            container.classList.add('theme-dark');
-            localStorage.setItem('analytics_theme_mode', 'dark');
-            if (label) label.textContent = 'Giao diện Sáng';
-            if (icon) icon.className = 'bi bi-sun-fill text-warning';
-            if (btn) btn.className = 'theme-toggle-btn bg-dark text-white border-secondary shadow-sm d-flex align-items-center gap-2';
-        } else {
-            container.classList.remove('theme-dark');
-            container.classList.add('theme-light');
-            localStorage.setItem('analytics_theme_mode', 'light');
-            if (label) label.textContent = 'Giao diện Tối';
-            if (icon) icon.className = 'bi bi-moon-stars-fill text-primary';
-            if (btn) btn.className = 'theme-toggle-btn bg-white text-slate-800 shadow-sm d-flex align-items-center gap-2';
-        }
-    }
-
-    function toggleAnalyticsTheme() {
-        const container = document.getElementById('analyticsContainer');
-        const isDark = container.classList.contains('theme-dark');
-        applyAnalyticsTheme(isDark ? 'light' : 'dark');
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
-        // Load saved theme preference
-        const savedTheme = localStorage.getItem('analytics_theme_mode') || 'light';
-        applyAnalyticsTheme(savedTheme);
-
         // Donut Chart Initialization
         const ctx = document.getElementById('deviceDonutChart').getContext('2d');
         new Chart(ctx, {
@@ -547,18 +486,7 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: '#ffffff',
-                        titleColor: '#0f172a',
-                        bodyColor: '#0f172a',
-                        borderColor: '#cbd5e1',
-                        borderWidth: 1,
-                        padding: 12,
-                        boxPadding: 6
-                    }
+                    legend: { display: false }
                 },
                 cutout: '72%'
             }

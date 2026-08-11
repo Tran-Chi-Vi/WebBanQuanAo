@@ -485,18 +485,22 @@ html.admin-dark-mode,
 html.user-dark-mode {
   --admin-bg: #0b0f19;
   --admin-card-bg: #1e293b;
-  --admin-text: #f8fafc;
-  --admin-muted: #94a3b8;
+  --admin-text: #ffffff;
+  --admin-muted: #cbd5e1;
   --admin-border: #334155;
+  --bs-body-bg: #0b0f19 !important;
+  --bs-body-color: #ffffff !important;
+  --bs-table-bg: #1e293b !important;
+  --bs-table-color: #ffffff !important;
   background-color: #0b0f19 !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 body.admin-dark-mode .admin-topbar,
 body.user-dark-mode .admin-topbar {
   background: #1e293b !important;
   border-color: #334155 !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 /* Headings & Title Colors in Dark Mode */
@@ -512,7 +516,7 @@ body.admin-dark-mode .admin-card-title,
 body.user-dark-mode .admin-card-title,
 body.admin-dark-mode .font-heading,
 body.user-dark-mode .font-heading {
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 /* Utility Text Overrides in Dark Mode */
@@ -524,7 +528,7 @@ body.admin-dark-mode [style*="color:#0f172a"],
 body.user-dark-mode [style*="color:#0f172a"],
 body.admin-dark-mode [style*="color: #0f172a"],
 body.user-dark-mode [style*="color: #0f172a"] {
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 body.admin-dark-mode .text-muted,
@@ -552,13 +556,14 @@ body.user-dark-mode .modal-content,
 body.admin-dark-mode .dropdown-menu,
 body.user-dark-mode .dropdown-menu {
   background-color: #1e293b !important;
-  color: #f8fafc !important;
+  background: #1e293b !important;
+  color: #ffffff !important;
   border-color: #334155 !important;
 }
 
 body.admin-dark-mode .dropdown-item,
 body.user-dark-mode .dropdown-item {
-  color: #e2e8f0 !important;
+  color: #f8fafc !important;
 }
 body.admin-dark-mode .dropdown-item:hover,
 body.user-dark-mode .dropdown-item:hover {
@@ -577,13 +582,16 @@ body.user-dark-mode .border-light {
   border-color: #334155 !important;
 }
 
-/* Tables in Dark Mode */
+/* Tables in Dark Mode - COMPLETE CONTRAST FIX */
 body.admin-dark-mode .table,
 body.user-dark-mode .table,
 body.admin-dark-mode .table-admin,
-body.user-dark-mode .table-admin {
-  color: #f8fafc !important;
+body.user-dark-mode .table-admin,
+body.admin-dark-mode .table-responsive,
+body.user-dark-mode .table-responsive {
+  color: #ffffff !important;
   border-color: #334155 !important;
+  background-color: #1e293b !important;
 }
 
 body.admin-dark-mode .table th,
@@ -591,6 +599,7 @@ body.user-dark-mode .table th,
 body.admin-dark-mode .table-admin thead th,
 body.user-dark-mode .table-admin thead th {
   background-color: #0f172a !important;
+  background: #0f172a !important;
   color: #cbd5e1 !important;
   border-color: #334155 !important;
 }
@@ -599,21 +608,34 @@ body.admin-dark-mode .table td,
 body.user-dark-mode .table td,
 body.admin-dark-mode .table-admin tbody td,
 body.user-dark-mode .table-admin tbody td {
-  color: #f8fafc !important;
+  color: #ffffff !important;
   border-color: #334155 !important;
+  background-color: #1e293b !important;
 }
 
 body.admin-dark-mode .table-admin tbody tr,
 body.user-dark-mode .table-admin tbody tr,
+body.admin-dark-mode .table tbody tr,
+body.user-dark-mode .table tbody tr,
 body.admin-dark-mode .table-striped > tbody > tr:nth-of-type(odd) > *,
 body.user-dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
   background-color: #1e293b !important;
-  color: #f8fafc !important;
+  background: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Force all text inside table cells to be 100% visible white (except badges/buttons) */
+body.admin-dark-mode td *:not(.btn):not(.badge):not(.text-danger):not(.text-success):not(.text-warning):not(.text-primary):not(.text-info),
+body.user-dark-mode td *:not(.btn):not(.badge):not(.text-danger):not(.text-success):not(.text-warning):not(.text-primary):not(.text-info) {
+  color: #ffffff !important;
 }
 
 body.admin-dark-mode .table-hover > tbody > tr:hover > *,
-body.user-dark-mode .table-hover > tbody > tr:hover > * {
+body.user-dark-mode .table-hover > tbody > tr:hover > *,
+body.admin-dark-mode .table-admin tbody tr:hover td,
+body.user-dark-mode .table-admin tbody tr:hover td {
   background-color: #334155 !important;
+  background: #334155 !important;
   color: #ffffff !important;
 }
 
@@ -623,7 +645,7 @@ body.user-dark-mode .form-control,
 body.admin-dark-mode .form-select,
 body.user-dark-mode .form-select {
   background-color: #0f172a !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
   border-color: #334155 !important;
 }
 
@@ -631,14 +653,14 @@ body.admin-dark-mode .form-label,
 body.user-dark-mode .form-label,
 body.admin-dark-mode label,
 body.user-dark-mode label {
-  color: #e2e8f0 !important;
+  color: #ffffff !important;
 }
 
 body.admin-dark-mode input::placeholder,
 body.user-dark-mode input::placeholder,
 body.admin-dark-mode textarea::placeholder,
 body.user-dark-mode textarea::placeholder {
-  color: #64748b !important;
+  color: #94a3b8 !important;
   opacity: 0.85 !important;
 }
 
@@ -648,7 +670,7 @@ body.user-dark-mode .btn-light,
 body.admin-dark-mode .btn-outline-secondary,
 body.user-dark-mode .btn-outline-secondary {
   background-color: #334155 !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
   border-color: #475569 !important;
 }
 
@@ -657,7 +679,7 @@ body.user-dark-mode .badge.bg-light,
 body.admin-dark-mode .badge.bg-white,
 body.user-dark-mode .badge.bg-white {
   background-color: #334155 !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
   border-color: #475569 !important;
 }
 
@@ -672,7 +694,7 @@ body.admin-dark-mode .page-link,
 body.user-dark-mode .page-link {
   background-color: #1e293b !important;
   border-color: #334155 !important;
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 body.admin-dark-mode .page-item.active .page-link,
