@@ -86,73 +86,89 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> ExternalLoginCallback(string provider)
     {
-        var scheme = provider == "Google" ? GoogleDefaults.AuthenticationScheme : FacebookDefaults.AuthenticationScheme;
-        var result = await HttpContext.AuthenticateAsync(scheme);
-
-        if (!result.Succeeded || result.Principal == null)
+        try
         {
-            TempData["ErrorMessage"] = $"Đăng nhập qua {provider} thất bại hoặc bị hủy.";
+            var scheme = provider == "Google" ? GoogleDefaults.AuthenticationScheme : FacebookDefaults.AuthenticationScheme;
+            var result = await HttpContext.AuthenticateAsync(scheme);
+
+            if (!result.Succeeded || result.Principal == null)
+            {
+                TempData["ErrorMessage"] = $"Đăng nhập qua {provider} thất bại hoặc bị hủy.";
+                return RedirectToAction("Login");
+            }
+
+            var claims = result.Principal.Claims;
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? $"{provider} User";
+            var providerKey = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var avatarUrl = claims.FirstOrDefault(c => c.Type == "picture" || c.Type == "urn:facebook:picture" || c.Type.EndsWith("picture") || c.Type.Contains("avatar"))?.Value;
+
+            if (provider == "Facebook" && string.IsNullOrEmpty(avatarUrl) && !string.IsNullOrEmpty(providerKey))
+            {
+                avatarUrl = $"https://graph.facebook.com/{providerKey}/picture?type=large";
+            }
+
+            if (string.IsNullOrEmpty(email))
+            {
+                email = $"{providerKey ?? Guid.NewGuid().ToString().Substring(0, 8)}@{provider.ToLower()}.fashionstore.vn";
+            }
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() ||
+                    (provider == "Google" && u.GoogleId == providerKey) ||
+                    (provider == "Facebook" && u.FacebookId == providerKey));
+
+            if (user == null)
+            {
+                var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
+                int roleId = customerRole?.RoleId ?? 2;
+
+                user = new User
+                {
+                    UserGuid = Guid.NewGuid(),
+                    Username = $"{provider.ToLower()}_{Guid.NewGuid().ToString().Substring(0, 6)}",
+                    Email = email,
+                    FullName = name,
+                    RoleId = roleId,
+                    GoogleId = provider == "Google" ? providerKey : null,
+                    FacebookId = provider == "Facebook" ? providerKey : null,
+                    AvatarUrl = avatarUrl,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                try
+                {
+                    if (!await _context.Carts.AnyAsync(c => c.UserId == user.UserId))
+                    {
+                        _context.Carts.Add(new Cart { UserId = user.UserId });
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch { }
+            }
+            else
+            {
+                if (provider == "Google" && string.IsNullOrEmpty(user.GoogleId)) user.GoogleId = providerKey;
+                if (provider == "Facebook" && string.IsNullOrEmpty(user.FacebookId)) user.FacebookId = providerKey;
+                if (!string.IsNullOrEmpty(avatarUrl)) user.AvatarUrl = avatarUrl;
+                await _context.SaveChangesAsync();
+            }
+
+            await SignInUserAsync(user, isPersistent: true);
+            TempData["SuccessMessage"] = $"Đăng nhập thành công bằng {provider}! Chào mừng {user.FullName}.";
+
+            return RedirectUserByRole(user.Role?.RoleName == "Admin", null);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"ExternalLoginCallback Exception ({provider}): {ex.Message}");
+            TempData["ErrorMessage"] = $"Có lỗi xảy ra trong quá trình xử lý đăng nhập bằng {provider}: {ex.Message}";
             return RedirectToAction("Login");
         }
-
-        var claims = result.Principal.Claims;
-        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-        var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? $"{provider} User";
-        var providerKey = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        var avatarUrl = claims.FirstOrDefault(c => c.Type == "picture" || c.Type == "urn:facebook:picture" || c.Type.EndsWith("picture") || c.Type.Contains("avatar"))?.Value;
-
-        if (provider == "Facebook" && string.IsNullOrEmpty(avatarUrl) && !string.IsNullOrEmpty(providerKey))
-        {
-            avatarUrl = $"https://graph.facebook.com/{providerKey}/picture?type=large";
-        }
-
-        if (string.IsNullOrEmpty(email))
-        {
-            email = $"{providerKey ?? Guid.NewGuid().ToString().Substring(0, 8)}@{provider.ToLower()}.fashionstore.vn";
-        }
-
-        var user = await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Email == email ||
-                (provider == "Google" && u.GoogleId == providerKey) ||
-                (provider == "Facebook" && u.FacebookId == providerKey));
-
-        if (user == null)
-        {
-            var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
-            int roleId = customerRole?.RoleId ?? 2;
-
-            user = new User
-            {
-                UserGuid = Guid.NewGuid(),
-                Username = $"{provider.ToLower()}_{Guid.NewGuid().ToString().Substring(0, 6)}",
-                Email = email,
-                FullName = name,
-                RoleId = roleId,
-                GoogleId = provider == "Google" ? providerKey : null,
-                FacebookId = provider == "Facebook" ? providerKey : null,
-                AvatarUrl = avatarUrl,
-                CreatedAt = DateTime.Now
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            _context.Carts.Add(new Cart { UserId = user.UserId });
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            if (provider == "Google" && string.IsNullOrEmpty(user.GoogleId)) user.GoogleId = providerKey;
-            if (provider == "Facebook" && string.IsNullOrEmpty(user.FacebookId)) user.FacebookId = providerKey;
-            if (!string.IsNullOrEmpty(avatarUrl)) user.AvatarUrl = avatarUrl;
-            await _context.SaveChangesAsync();
-        }
-
-        await SignInUserAsync(user, isPersistent: true);
-        TempData["SuccessMessage"] = $"Đăng nhập thành công bằng {provider}! Chào mừng {user.FullName}.";
-
-        return RedirectUserByRole(user.Role?.RoleName == "Admin", null);
     }
 
     #endregion

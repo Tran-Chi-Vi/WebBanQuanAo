@@ -246,8 +246,14 @@
         function toggleNewAddrForm(show) {
             const block = document.getElementById('newAddressFormBlock');
             if (block) {
-                if (show) block.classList.remove('d-none');
-                else block.classList.add('d-none');
+                if (show) {
+                    block.classList.remove('d-none');
+                    document.querySelectorAll('input[name="SelectedAddressId"]').forEach(r => r.checked = false);
+                } else {
+                    block.classList.add('d-none');
+                    const chk = document.getElementById('chkNewAddr');
+                    if (chk) chk.checked = false;
+                }
             }
         }
 

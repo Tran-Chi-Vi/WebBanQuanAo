@@ -197,6 +197,8 @@ using (var scope = app.Services.CreateScope())
             {
                 await context.Database.ExecuteSqlRawAsync(@"
                     ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""AvatarUrl"" character varying(500);
+                    ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""GoogleId"" character varying(100);
+                    ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""FacebookId"" character varying(100);
                 ");
             }
             catch { }

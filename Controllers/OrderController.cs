@@ -167,7 +167,17 @@ public class OrderController : Controller
             }
 
             int addressId = 0;
-            if (model.CreateNewAddress && model.NewAddress != null)
+            bool userHasSavedAddresses = await _context.Addresses.AnyAsync(a => a.UserId == userId);
+
+            bool isEnteringNewAddress = model.CreateNewAddress || 
+                !userHasSavedAddresses || 
+                (model.NewAddress != null && 
+                 (!string.IsNullOrWhiteSpace(model.NewAddress.RecipientName) ||
+                  !string.IsNullOrWhiteSpace(model.NewAddress.Phone) ||
+                  !string.IsNullOrWhiteSpace(model.NewAddress.StreetAddress) ||
+                  !string.IsNullOrWhiteSpace(model.NewAddress.City)));
+
+            if (isEnteringNewAddress && model.NewAddress != null)
             {
                 if (string.IsNullOrWhiteSpace(model.NewAddress.RecipientName) ||
                     string.IsNullOrWhiteSpace(model.NewAddress.Phone) ||
@@ -176,20 +186,20 @@ public class OrderController : Controller
                     string.IsNullOrWhiteSpace(model.NewAddress.District) ||
                     string.IsNullOrWhiteSpace(model.NewAddress.Ward))
                 {
-                    TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng mới.";
+                    TempData["ErrorMessage"] = "Vui lòng nhập đầy đủ thông tin địa chỉ giao hàng mới (Tên người nhận, SĐT, Số nhà/Đường, Tỉnh/Thành, Quận/Huyện, Phường/Xã).";
                     return await RebindCheckoutViewAsync(userId, cartItems, model);
                 }
 
                 var newAddress = new Address
                 {
                     UserId = userId,
-                    RecipientName = model.NewAddress.RecipientName,
-                    Phone = model.NewAddress.Phone,
-                    DetailAddress = model.NewAddress.StreetAddress,
-                    Province = model.NewAddress.City,
-                    District = model.NewAddress.District,
-                    Ward = model.NewAddress.Ward,
-                    IsDefault = !await _context.Addresses.AnyAsync(a => a.UserId == userId)
+                    RecipientName = model.NewAddress.RecipientName.Trim(),
+                    Phone = model.NewAddress.Phone.Trim(),
+                    DetailAddress = model.NewAddress.StreetAddress.Trim(),
+                    Province = model.NewAddress.City.Trim(),
+                    District = model.NewAddress.District.Trim(),
+                    Ward = model.NewAddress.Ward.Trim(),
+                    IsDefault = !userHasSavedAddresses
                 };
 
                 _context.Addresses.Add(newAddress);
@@ -216,7 +226,7 @@ public class OrderController : Controller
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Vui lòng chọn hoặc nhập địa chỉ giao hàng hợp lệ.";
+                        TempData["ErrorMessage"] = "Vui lòng chọn hoặc nhập đầy đủ thông tin địa chỉ giao hàng hợp lệ.";
                         return await RebindCheckoutViewAsync(userId, cartItems, model);
                     }
                 }
