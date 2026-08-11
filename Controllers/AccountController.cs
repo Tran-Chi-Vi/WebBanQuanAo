@@ -99,6 +99,12 @@ public class AccountController : Controller
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value ?? $"{provider} User";
         var providerKey = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var avatarUrl = claims.FirstOrDefault(c => c.Type == "picture" || c.Type == "urn:facebook:picture" || c.Type.EndsWith("picture") || c.Type.Contains("avatar"))?.Value;
+
+        if (provider == "Facebook" && string.IsNullOrEmpty(avatarUrl) && !string.IsNullOrEmpty(providerKey))
+        {
+            avatarUrl = $"https://graph.facebook.com/{providerKey}/picture?type=large";
+        }
 
         if (string.IsNullOrEmpty(email))
         {
@@ -125,6 +131,7 @@ public class AccountController : Controller
                 RoleId = roleId,
                 GoogleId = provider == "Google" ? providerKey : null,
                 FacebookId = provider == "Facebook" ? providerKey : null,
+                AvatarUrl = avatarUrl,
                 CreatedAt = DateTime.Now
             };
 
@@ -138,6 +145,7 @@ public class AccountController : Controller
         {
             if (provider == "Google" && string.IsNullOrEmpty(user.GoogleId)) user.GoogleId = providerKey;
             if (provider == "Facebook" && string.IsNullOrEmpty(user.FacebookId)) user.FacebookId = providerKey;
+            if (!string.IsNullOrEmpty(avatarUrl)) user.AvatarUrl = avatarUrl;
             await _context.SaveChangesAsync();
         }
 
@@ -393,6 +401,11 @@ public class AccountController : Controller
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "Customer")
         };
+
+        if (!string.IsNullOrEmpty(user.AvatarUrl))
+        {
+            claims.Add(new Claim("AvatarUrl", user.AvatarUrl));
+        }
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);

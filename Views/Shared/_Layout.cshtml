@@ -208,11 +208,19 @@
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            var userAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
                             <div class="dropdown">
                                 <button class="btn btn-outline-custom d-flex align-items-center gap-2 py-2 px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-size:0.75rem;font-weight:700;flex-shrink:0;">
-                                        @(User.FindFirst("FullName")?.Value?.Substring(0,1)?.ToUpper() ?? "U")
-                                    </div>
+                                    @if (!string.IsNullOrEmpty(userAvatarUrl))
+                                    {
+                                        <img src="@userAvatarUrl" alt="Avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid #6366f1;" />
+                                    }
+                                    else
+                                    {
+                                        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-size:0.75rem;font-weight:700;flex-shrink:0;">
+                                            @(User.FindFirst("FullName")?.Value?.Substring(0,1)?.ToUpper() ?? "U")
+                                        </div>
+                                    }
                                     <span class="d-none d-md-inline" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.88rem;">@User.FindFirst("FullName")?.Value</span>
                                     <i class="bi bi-chevron-down" style="font-size:0.75rem;"></i>
                                 </button>

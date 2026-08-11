@@ -30,6 +30,9 @@ public class User
     [MaxLength(15)]
     public string? Phone { get; set; }
 
+    [MaxLength(500)]
+    public string? AvatarUrl { get; set; }
+
     public int RoleId { get; set; }
     public Role Role { get; set; } = null!;
 

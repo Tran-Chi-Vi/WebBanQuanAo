@@ -1616,3 +1616,113 @@ body.user-dark-mode .contact-info-card p,
 body.user-dark-mode .contact-info-card small {
   color: #cbd5e1 !important;
 }
+
+/* ==========================================================================
+   IMPECCABLE CYBER VIP MEMBER CARD WITH CONTINUOUS ROTATING LED GLOW BORDER
+   ========================================================================== */
+
+.led-vip-card-wrapper {
+  position: relative;
+  border-radius: 26px;
+  padding: 3.5px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.led-vip-card-wrapper:hover {
+  transform: translateY(-4px) scale(1.005);
+}
+
+/* Continuously Rotating Conic Gradient LED Border */
+.led-vip-card-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  animation: rotateLedBorder 5s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes rotateLedBorder {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tier LED Colors & Glowing Aura */
+/* Bronze (Đồng): Amber Copper Metallic LED Glow */
+.led-vip-card-wrapper.tier-bronze::before {
+  background: conic-gradient(
+    transparent 0deg,
+    #d97706 60deg,
+    #f59e0b 120deg,
+    #fbbf24 180deg,
+    #b45309 240deg,
+    transparent 360deg
+  );
+}
+.led-vip-card-wrapper.tier-bronze {
+  box-shadow: 0 0 28px rgba(245, 158, 11, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
+}
+
+/* Silver (Bạc): Platinum Radiant Silver LED Glow */
+.led-vip-card-wrapper.tier-silver::before {
+  background: conic-gradient(
+    transparent 0deg,
+    #94a3b8 60deg,
+    #cbd5e1 120deg,
+    #ffffff 180deg,
+    #64748b 240deg,
+    transparent 360deg
+  );
+}
+.led-vip-card-wrapper.tier-silver {
+  box-shadow: 0 0 28px rgba(203, 213, 225, 0.45), 0 12px 36px rgba(15, 23, 42, 0.6);
+}
+
+/* Gold (Vàng): Intense Golden Aura LED Glow */
+.led-vip-card-wrapper.tier-gold::before {
+  background: conic-gradient(
+    transparent 0deg,
+    #eab308 60deg,
+    #fbbf24 120deg,
+    #f59e0b 180deg,
+    #fff7ed 240deg,
+    transparent 360deg
+  );
+}
+.led-vip-card-wrapper.tier-gold {
+  box-shadow: 0 0 32px rgba(234, 179, 8, 0.55), 0 12px 36px rgba(15, 23, 42, 0.6);
+}
+
+/* Diamond (Kim Cương): Cyber Cyan/Magenta Sparkle LED Glow */
+.led-vip-card-wrapper.tier-diamond::before {
+  background: conic-gradient(
+    transparent 0deg,
+    #06b6d4 60deg,
+    #38bdf8 120deg,
+    #ec4899 180deg,
+    #a855f7 240deg,
+    transparent 360deg
+  );
+}
+.led-vip-card-wrapper.tier-diamond {
+  box-shadow: 0 0 36px rgba(6, 182, 212, 0.6), 0 12px 36px rgba(15, 23, 42, 0.6);
+}
+
+/* Inner VIP Card Container matching Home Banner Background */
+.led-vip-card-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 23px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%) !important;
+  overflow: hidden;
+  color: #ffffff !important;
+}
