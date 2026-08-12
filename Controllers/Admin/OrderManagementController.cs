@@ -166,17 +166,19 @@ public class OrderManagementController : Controller
         await _context.SaveChangesAsync();
 
         // Gửi Email Hóa Đơn & Cập Nhật Trạng Thái Cho Khách Hàng (Background Task Non-Blocking)
+        int targetOrderId = orderId;
+        var serviceProvider = HttpContext.RequestServices;
         _ = Task.Run(async () =>
         {
             try
             {
-                using var scope = HttpContext.RequestServices.CreateScope();
-                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-                await emailService.SendOrderInvoiceEmailAsync(orderId);
+                using var scope = serviceProvider.CreateScope();
+                var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                await scopedEmailService.SendOrderInvoiceEmailAsync(targetOrderId);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Lỗi gửi email cập nhật đơn hàng: " + ex.Message);
+                Console.WriteLine("Lỗi gửi email cập nhật đơn hàng: " + ex.ToString());
             }
         });
 

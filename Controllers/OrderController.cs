@@ -344,15 +344,18 @@ public class OrderController : Controller
 
             // Gửi Hóa Đơn Đặt Hàng Qua Gmail (Fire & Forget Task - Phản hồi khách hàng ngay lập tức trong 50ms)
             int targetOrderId = order.OrderId;
+            var serviceProvider = HttpContext.RequestServices;
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    await _emailService.SendOrderInvoiceEmailAsync(targetOrderId);
+                    using var scope = serviceProvider.CreateScope();
+                    var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                    await scopedEmailService.SendOrderInvoiceEmailAsync(targetOrderId);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Lỗi gửi email hóa đơn nền: " + ex.Message);
+                    Console.WriteLine("Lỗi gửi email hóa đơn nền: " + ex.ToString());
                 }
             });
 

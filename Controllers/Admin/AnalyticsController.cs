@@ -289,18 +289,19 @@ public class AnalyticsController : Controller
         // Gửi Email Níu Chân Khách Hàng (Background Task Non-Blocking)
         string targetEmail = user.Email;
         string targetName = string.IsNullOrWhiteSpace(user.FullName) ? user.Username : user.FullName;
+        var serviceProvider = HttpContext.RequestServices;
 
         _ = Task.Run(async () =>
         {
             try
             {
-                using var scope = HttpContext.RequestServices.CreateScope();
-                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-                await emailService.SendChurnWinBackEmailAsync(targetEmail, targetName, voucherCode, discountValue, dType, endDate);
+                using var scope = serviceProvider.CreateScope();
+                var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                await scopedEmailService.SendChurnWinBackEmailAsync(targetEmail, targetName, voucherCode, discountValue, dType, endDate);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Lỗi gửi email níu chân khách hàng: " + ex.Message);
+                Console.WriteLine("Lỗi gửi email níu chân khách hàng: " + ex.ToString());
             }
         });
 
