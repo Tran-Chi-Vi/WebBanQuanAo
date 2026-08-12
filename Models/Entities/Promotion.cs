@@ -28,5 +28,13 @@ public class Promotion
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
+    public int? AssignedUserId { get; set; }
+
+    [ForeignKey("AssignedUserId")]
+    public User? AssignedUser { get; set; }
+
+    [MaxLength(255)]
+    public string? AllowedEmail { get; set; }
+
     public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

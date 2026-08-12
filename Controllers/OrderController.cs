@@ -258,10 +258,25 @@ public class OrderController : Controller
             if (!string.IsNullOrEmpty(promoCode))
             {
                 var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
-                if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
+                var currentUser = await _context.Users.FindAsync(userId);
+                string currentUserEmail = currentUser?.Email ?? User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+
+                bool isRestricted = (promo?.AssignedUserId.HasValue == true || !string.IsNullOrEmpty(promo?.AllowedEmail));
+                bool isUserMatch = promo?.AssignedUserId.HasValue == true && promo.AssignedUserId.Value == userId;
+                bool isEmailMatch = !string.IsNullOrEmpty(currentUserEmail) && 
+                                    !string.IsNullOrEmpty(promo?.AllowedEmail) && 
+                                    promo.AllowedEmail.Trim().ToLower() == currentUserEmail.Trim().ToLower();
+
+                bool isAllowed = !isRestricted || isUserMatch || isEmailMatch;
+
+                if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue && isAllowed)
                 {
                     promotionId = promo.PromotionId;
                     promoDiscount = promo.DiscountType == DiscountType.Percentage ? (subTotal * promo.DiscountValue) / 100m : promo.DiscountValue;
+                }
+                else
+                {
+                    HttpContext.Session.Remove(SESSION_PROMO_KEY);
                 }
             }
 

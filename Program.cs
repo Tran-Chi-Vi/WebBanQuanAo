@@ -189,6 +189,10 @@ using (var scope = app.Services.CreateScope())
                         ALTER TABLE [UserBehaviorLogs] ADD [RecommendationSource] NVARCHAR(50) NULL;
                     IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Users]') AND name = 'AvatarUrl')
                         ALTER TABLE [Users] ADD [AvatarUrl] NVARCHAR(500) NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Promotions]') AND name = 'AssignedUserId')
+                        ALTER TABLE [Promotions] ADD [AssignedUserId] INT NULL;
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Promotions]') AND name = 'AllowedEmail')
+                        ALTER TABLE [Promotions] ADD [AllowedEmail] NVARCHAR(255) NULL;
                     IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[UserBehaviorLogs]') AND name = 'ProductId' AND is_nullable = 0)
                         ALTER TABLE [UserBehaviorLogs] ALTER COLUMN [ProductId] INT NULL;
                 ");
@@ -203,6 +207,8 @@ using (var scope = app.Services.CreateScope())
                     ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""AvatarUrl"" character varying(500);
                     ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""GoogleId"" character varying(100);
                     ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""FacebookId"" character varying(100);
+                    ALTER TABLE ""Promotions"" ADD COLUMN IF NOT EXISTS ""AssignedUserId"" integer;
+                    ALTER TABLE ""Promotions"" ADD COLUMN IF NOT EXISTS ""AllowedEmail"" character varying(255);
                 ");
             }
             catch { }

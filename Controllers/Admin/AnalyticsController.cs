@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Data;
 using WEBBANQUANAO.Models.Entities;
+using WEBBANQUANAO.Services;
 
 namespace WEBBANQUANAO.Controllers.Admin;
 
@@ -19,6 +20,19 @@ public class VisitorLogDto
     public string IpAddress { get; set; } = "";
     public string DeviceType { get; set; } = "";
     public DateTime Timestamp { get; set; }
+}
+
+public class ChurnRiskUserDto
+{
+    public int UserId { get; set; }
+    public string FullName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public DateTime? LastOrderDate { get; set; }
+    public int DaysInactive { get; set; }
+    public int TotalPastOrders { get; set; }
+    public decimal TotalPastSpent { get; set; }
+    public string ChurnRiskLevel { get; set; } = "Cao";
 }
 
 [Area("Admin")]
@@ -178,6 +192,40 @@ public class AnalyticsController : Controller
             };
         }
 
+        // 9. Customer Churn Risk Analysis (Phân tích nguy cơ khách hàng rời đi)
+        var allUsers = await _context.Users
+            .AsNoTracking()
+            .Include(u => u.Role)
+            .Include(u => u.Orders)
+            .Where(u => u.Role.RoleName != "Admin" && !string.IsNullOrEmpty(u.Email))
+            .ToListAsync();
+
+        var churnRiskList = new List<ChurnRiskUserDto>();
+        foreach (var u in allUsers)
+        {
+            var validOrders = u.Orders.Where(o => o.Status != OrderStatus.Cancelled).ToList();
+            var lastOrder = validOrders.OrderByDescending(o => o.OrderDate).FirstOrDefault();
+            
+            DateTime? lastActivityDate = lastOrder?.OrderDate;
+            int daysInactive = lastActivityDate.HasValue ? (int)(now - lastActivityDate.Value).TotalDays : 35;
+
+            string riskLevel = daysInactive >= 30 ? "Cao (Rất lâu chưa mua hàng)" : "Trung bình (Có nguy cơ rời đi)";
+            churnRiskList.Add(new ChurnRiskUserDto
+            {
+                UserId = u.UserId,
+                FullName = string.IsNullOrWhiteSpace(u.FullName) ? u.Username : u.FullName,
+                Email = u.Email,
+                Phone = u.Phone ?? "Chưa cập nhật",
+                LastOrderDate = lastActivityDate,
+                DaysInactive = daysInactive,
+                TotalPastOrders = validOrders.Count,
+                TotalPastSpent = validOrders.Sum(o => o.TotalAmount),
+                ChurnRiskLevel = riskLevel
+            });
+        }
+
+        churnRiskList = churnRiskList.OrderByDescending(x => x.DaysInactive).Take(10).ToList();
+
         ViewBag.ActivePeriod = period;
         ViewBag.TotalPageViews = totalPageViews;
         ViewBag.TodayPageViews = todayPageViews;
@@ -199,7 +247,65 @@ public class AnalyticsController : Controller
 
         ViewBag.TopSearches = topSearches;
         ViewBag.RecentLogs = recentLogs;
+        ViewBag.ChurnRiskUsers = churnRiskList;
 
         return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendChurnWinBackVoucher(int userId, decimal discountValue = 20, int discountType = 0)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null || string.IsNullOrEmpty(user.Email))
+        {
+            return Json(new { success = false, message = "Không tìm thấy người dùng hoặc tài khoản này chưa cập nhật Email." });
+        }
+
+        DiscountType dType = discountType == 1 ? DiscountType.FixedAmount : DiscountType.Percentage;
+        string randomSuffix = Guid.NewGuid().ToString("N").Substring(0, 4).ToUpper();
+        string voucherCode = $"WINBACK-{user.UserId}-{randomSuffix}";
+
+        DateTime startDate = DateTime.Now;
+        DateTime endDate = DateTime.Now.AddDays(30);
+
+        var voucher = new Promotion
+        {
+            Code = voucherCode,
+            DiscountType = dType,
+            DiscountValue = discountValue,
+            MinOrderValue = 100000,
+            StartDate = startDate,
+            EndDate = endDate,
+            AssignedUserId = user.UserId,
+            AllowedEmail = user.Email.Trim().ToLower()
+        };
+
+        _context.Promotions.Add(voucher);
+        await _context.SaveChangesAsync();
+
+        // Gửi Email Níu Chân Khách Hàng (Background Task Non-Blocking)
+        string targetEmail = user.Email;
+        string targetName = string.IsNullOrWhiteSpace(user.FullName) ? user.Username : user.FullName;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                using var scope = HttpContext.RequestServices.CreateScope();
+                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                await emailService.SendChurnWinBackEmailAsync(targetEmail, targetName, voucherCode, discountValue, dType, endDate);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi gửi email níu chân khách hàng: " + ex.Message);
+            }
+        });
+
+        return Json(new
+        {
+            success = true,
+            message = $"Đã tạo mã Voucher độc quyền '{voucherCode}' gán riêng cho Gmail '{user.Email}' và khởi chạy gửi Email níu chân thành công!"
+        });
     }
 }

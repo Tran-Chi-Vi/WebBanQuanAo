@@ -225,6 +225,28 @@ public class CartController : Controller
             return Json(new { success = false, message = "Mã giảm giá đã hết hạn hoặc chưa có hiệu lực." });
         }
 
+        // Kiểm tra quyền riêng tư của Voucher (Chỉ riêng tài khoản Gmail gán mã mới được dùng)
+        int currentUserId = GetCurrentUserId();
+        var currentUser = currentUserId > 0 ? await _context.Users.FindAsync(currentUserId) : null;
+        string currentUserEmail = currentUser?.Email ?? User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+
+        if (promotion.AssignedUserId.HasValue || !string.IsNullOrEmpty(promotion.AllowedEmail))
+        {
+            bool isUserMatch = currentUserId > 0 && promotion.AssignedUserId.HasValue && promotion.AssignedUserId.Value == currentUserId;
+            bool isEmailMatch = !string.IsNullOrEmpty(currentUserEmail) && 
+                                !string.IsNullOrEmpty(promotion.AllowedEmail) && 
+                                promotion.AllowedEmail.Trim().ToLower() == currentUserEmail.Trim().ToLower();
+
+            if (!isUserMatch && !isEmailMatch)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "🔒 Mã giảm giá này là phần quà tri ân đặc biệt dành riêng cho tài khoản Gmail khác và không thể sử dụng cho tài khoản của bạn."
+                });
+            }
+        }
+
         var cart = await GetCartViewModelAsync();
         if (cart.SubTotal < promotion.MinOrderValue)
         {
@@ -322,7 +344,19 @@ public class CartController : Controller
         if (!string.IsNullOrEmpty(promoCode))
         {
             var promo = await _context.Promotions.FirstOrDefaultAsync(p => p.Code == promoCode);
-            if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue)
+            int currentUserId = GetCurrentUserId();
+            var currentUser = currentUserId > 0 ? await _context.Users.FindAsync(currentUserId) : null;
+            string currentUserEmail = currentUser?.Email ?? User.FindFirst(ClaimTypes.Email)?.Value ?? "";
+
+            bool isRestricted = (promo?.AssignedUserId.HasValue == true || !string.IsNullOrEmpty(promo?.AllowedEmail));
+            bool isUserMatch = currentUserId > 0 && promo?.AssignedUserId.HasValue == true && promo.AssignedUserId.Value == currentUserId;
+            bool isEmailMatch = !string.IsNullOrEmpty(currentUserEmail) && 
+                                !string.IsNullOrEmpty(promo?.AllowedEmail) && 
+                                promo.AllowedEmail.Trim().ToLower() == currentUserEmail.Trim().ToLower();
+
+            bool isAllowed = !isRestricted || isUserMatch || isEmailMatch;
+
+            if (promo != null && promo.StartDate <= DateTime.Now && promo.EndDate >= DateTime.Now && subTotal >= promo.MinOrderValue && isAllowed)
             {
                 if (promo.DiscountType == DiscountType.Percentage)
                 {

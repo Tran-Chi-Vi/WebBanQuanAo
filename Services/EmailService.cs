@@ -173,6 +173,61 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(order.User.Email, subject, body);
     }
 
+    public async Task<bool> SendChurnWinBackEmailAsync(string toEmail, string recipientName, string voucherCode, decimal discountValue, DiscountType discountType, DateTime endDate)
+    {
+        string discountText = discountType == DiscountType.Percentage 
+            ? $"{discountValue:N0}%" 
+            : $"{discountValue:N0}đ";
+
+        string subject = $"🎁 [FASHION STORE] - Tặng Riêng Bạn Voucher {discountText} - Chúng Tôi Rất Nhớ Bạn!";
+
+        string htmlBody = $@"
+            <div style=""font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; background-color: #f8fafc; border-radius: 20px; border: 1px solid #e2e8f0;"">
+                <!-- Header -->
+                <div style=""text-align: center; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0;"">
+                    <h2 style=""background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; color: #6366f1; margin: 0; font-size: 26px; font-weight: 800; font-family: 'Helvetica Neue', sans-serif;"">FASHION STORE</h2>
+                    <p style=""color: #64748b; margin: 6px 0 0 0; font-size: 14px; font-weight: 500;"">Hệ Thống Thời Trang Cao Cấp & Trải Nghiệm Mua Sắm VIP</p>
+                </div>
+                
+                <!-- Content Body -->
+                <div style=""padding: 30px 15px; text-align: center;"">
+                    <div style=""font-size: 48px; margin-bottom: 15px;"">🛍️✨</div>
+                    <h3 style=""color: #0f172a; margin-top: 0; font-size: 22px; font-weight: 700;"">FASHION STORE RẤT NHỚ BẠN!</h3>
+                    <p style=""color: #334155; line-height: 1.7; font-size: 15px;"">Xin chào <strong>{recipientName}</strong>,</p>
+                    <p style=""color: #334155; line-height: 1.7; font-size: 15px;"">Đã một thời gian chúng tôi chưa được đồng hành cùng bạn trong những bộ trang phục thời thượng nhất. Để tri ân tình cảm của bạn, FASHION STORE xin gửi tặng riêng bạn một phần quà đặc biệt:</p>
+
+                    <!-- Voucher Callout Box -->
+                    <div style=""margin: 30px auto; max-width: 420px; padding: 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); border: 2px dashed #a5b4fc;"">
+                        <div style=""font-size: 13px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; font-weight: 600;"">ƯU ĐÃI NÍU CHÂN KHÁCH HÀNG VIP</div>
+                        <div style=""font-size: 32px; font-weight: 800; margin: 10px 0; font-family: monospace; letter-spacing: 4px; color: #ffffff;"">{voucherCode}</div>
+                        <div style=""font-size: 16px; font-weight: 700; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; display: inline-block; margin-top: 5px;"">Giảm Ngay {discountText} Cho Đơn Hàng</div>
+                        <div style=""font-size: 12px; margin-top: 12px; opacity: 0.85;"">Hạn sử dụng: đến hết ngày {endDate:dd/MM/yyyy}</div>
+                    </div>
+
+                    <!-- Security Notice Box -->
+                    <div style=""background-color: #f1f5f9; border-left: 4px solid #6366f1; padding: 14px; border-radius: 8px; text-align: left; margin: 20px 0;"">
+                        <p style=""color: #1e293b; margin: 0; font-size: 13px; font-weight: 600;"">🔒 QUYỀN LỢI ĐỘC QUYỀN & BẢO MẬT GMAIL:</p>
+                        <p style=""color: #475569; margin: 5px 0 0 0; font-size: 12px; line-height: 1.5;"">Mã giảm giá này được gán trực tiếp và <strong>chỉ duy nhất tài khoản Gmail ({toEmail})</strong> mới có quyền áp dụng khi thanh toán. Các tài khoản khác sẽ bị hệ thống tự động từ chối để bảo vệ quyền lợi của bạn.</p>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div style=""margin-top: 30px;"">
+                        <a href=""https://fashionstore-zjc7.onrender.com"" style=""background: linear-gradient(135deg, #6366f1, #4f46e5); color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 15px; font-weight: bold; border-radius: 30px; display: inline-block; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);"">
+                            🛍️ KHÁM PHÁ BỘ SƯU TẬP MỚI VÀ DÙNG VOUCHER
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style=""border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; color: #94a3b8; font-size: 12px;"">
+                    <p style=""margin: 0;"">Bạn nhận được email này vì bạn là khách hàng thân thiết tại FASHION STORE.</p>
+                    <p style=""margin: 6px 0 0 0;"">© 2026 FASHION STORE CO. All rights reserved.</p>
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(toEmail, subject, htmlBody);
+    }
+
     private async Task<bool> SendEmailInternalAsync(string toEmail, string subject, string htmlBody)
     {
         try
