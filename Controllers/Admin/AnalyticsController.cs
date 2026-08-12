@@ -41,10 +41,12 @@ public class ChurnRiskUserDto
 public class AnalyticsController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public AnalyticsController(ApplicationDbContext context)
+    public AnalyticsController(ApplicationDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     [HttpGet]

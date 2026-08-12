@@ -230,11 +230,19 @@ public class EmailService : IEmailService
 
     private async Task<bool> SendEmailInternalAsync(string toEmail, string subject, string htmlBody)
     {
+        if (string.IsNullOrWhiteSpace(toEmail) || !toEmail.Contains("@") || toEmail.EndsWith(".fashionstore.vn"))
+        {
+            _logger.LogWarning($"Skipping email send to invalid/fake email address: '{toEmail}'");
+            return false;
+        }
+
         try
         {
             string smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
             int smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out int p) ? p : 587;
-            string senderEmail = _configuration["EmailSettings:SenderEmail"] ?? "tranchivi29102005@gmail.com";
+            string senderEmail = _configuration["EmailSettings:SenderEmail"] 
+                ?? _configuration["EmailSettings__SenderEmail"] 
+                ?? "tranchivi29102005@gmail.com";
             string senderName = _configuration["EmailSettings:SenderName"] ?? "FASHION STORE";
 
             string password = _configuration["EmailSettings:Password"]
@@ -251,26 +259,27 @@ public class EmailService : IEmailService
             }
 
             using var message = new MailMessage();
-            message.From = new MailAddress(senderEmail, senderName);
-            message.To.Add(new MailAddress(toEmail));
+            message.From = new MailAddress(senderEmail.Trim(), senderName);
+            message.To.Add(new MailAddress(toEmail.Trim()));
             message.Subject = subject;
             message.Body = htmlBody;
             message.IsBodyHtml = true;
 
             using var client = new SmtpClient(smtpServer, smtpPort);
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(senderEmail, password);
+            client.Credentials = new NetworkCredential(senderEmail.Trim(), password);
             client.EnableSsl = true;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.Timeout = 15000;
+            client.Timeout = 20000;
 
             await client.SendMailAsync(message);
-            _logger.LogInformation($"Successfully sent email to {toEmail} with subject '{subject}'.");
+            _logger.LogInformation($"[SMTP SUCCESS] Successfully sent email to {toEmail} with subject '{subject}'.");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Failed to send email to {toEmail}. Error: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[SMTP FAILURE] Failed to send email to {toEmail}: {ex}");
+            _logger.LogError(ex, $"[SMTP ERROR] Failed to send email to {toEmail}. Details: {ex.Message}");
             return false;
         }
     }
