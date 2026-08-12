@@ -238,25 +238,22 @@ public class EmailService : IEmailService
 
         try
         {
-            string smtpServer = _configuration["EmailSettings:SmtpServer"] ?? "smtp.gmail.com";
+            string smtpServer = _configuration["EmailSettings:SmtpServer"];
+            if (string.IsNullOrWhiteSpace(smtpServer)) smtpServer = "smtp.gmail.com";
+
             int smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out int p) ? p : 587;
-            string senderEmail = _configuration["EmailSettings:SenderEmail"] 
-                ?? _configuration["EmailSettings__SenderEmail"] 
-                ?? "tranchivi29102005@gmail.com";
-            string senderName = _configuration["EmailSettings:SenderName"] ?? "FASHION STORE";
 
-            string password = _configuration["EmailSettings:Password"]
-                ?? _configuration["EmailSettings__Password"]
-                ?? "uuvaijnqembkncyq";
+            string senderEmail = _configuration["EmailSettings:SenderEmail"];
+            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = _configuration["EmailSettings__SenderEmail"];
+            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = "tranchivi29102005@gmail.com";
 
-            if (!string.IsNullOrEmpty(password))
-            {
-                password = password.Replace(" ", "").Trim();
-            }
-            if (string.IsNullOrEmpty(password))
-            {
-                password = "uuvaijnqembkncyq";
-            }
+            string senderName = "FASHION STORE";
+
+            string password = _configuration["EmailSettings:Password"];
+            if (string.IsNullOrWhiteSpace(password)) password = _configuration["EmailSettings__Password"];
+            if (string.IsNullOrWhiteSpace(password)) password = "uuvaijnqembkncyq";
+
+            password = password.Replace(" ", "").Trim();
 
             using var message = new MailMessage();
             message.From = new MailAddress(senderEmail.Trim(), senderName);
