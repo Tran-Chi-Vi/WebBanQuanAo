@@ -165,15 +165,20 @@ public class OrderManagementController : Controller
 
         await _context.SaveChangesAsync();
 
-        // Gửi Email Hóa Đơn & Cập Nhật Trạng Thái Cho Khách Hàng
-        try
+        // Gửi Email Hóa Đơn & Cập Nhật Trạng Thái Cho Khách Hàng (Background Task Non-Blocking)
+        _ = Task.Run(async () =>
         {
-            await _emailService.SendOrderInvoiceEmailAsync(orderId);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Lỗi gửi email cập nhật đơn hàng: " + ex.Message);
-        }
+            try
+            {
+                using var scope = HttpContext.RequestServices.CreateScope();
+                var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                await emailService.SendOrderInvoiceEmailAsync(orderId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi gửi email cập nhật đơn hàng: " + ex.Message);
+            }
+        });
 
         TempData["SuccessMessage"] = $"Đã cập nhật trạng thái đơn hàng #{orderId} thành '{newStatus}' và gửi email thông báo!";
         return RedirectToAction("Details", new { id = orderId });

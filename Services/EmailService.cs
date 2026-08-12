@@ -236,12 +236,18 @@ public class EmailService : IEmailService
             int smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out int p) ? p : 587;
             string senderEmail = _configuration["EmailSettings:SenderEmail"] ?? "tranchivi29102005@gmail.com";
             string senderName = _configuration["EmailSettings:SenderName"] ?? "FASHION STORE";
-            string password = _configuration["EmailSettings:Password"] ?? "";
 
+            string password = _configuration["EmailSettings:Password"]
+                ?? _configuration["EmailSettings__Password"]
+                ?? "uuvaijnqembkncyq";
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                password = password.Replace(" ", "").Trim();
+            }
             if (string.IsNullOrEmpty(password))
             {
-                _logger.LogWarning($"SMTP Password is empty in EmailSettings. Email to {toEmail} with subject '{subject}' logged/simulated.");
-                return true; // Graceful simulation mode
+                password = "uuvaijnqembkncyq";
             }
 
             using var message = new MailMessage();
@@ -252,8 +258,11 @@ public class EmailService : IEmailService
             message.IsBodyHtml = true;
 
             using var client = new SmtpClient(smtpServer, smtpPort);
+            client.UseDefaultCredentials = false;
             client.Credentials = new NetworkCredential(senderEmail, password);
             client.EnableSsl = true;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Timeout = 15000;
 
             await client.SendMailAsync(message);
             _logger.LogInformation($"Successfully sent email to {toEmail} with subject '{subject}'.");
