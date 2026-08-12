@@ -509,12 +509,20 @@ public class AccountController : Controller
         HttpContext.Session.SetString("ResetOtpEmail", user.Email);
         HttpContext.Session.SetString("ResetOtpExpiry", DateTime.UtcNow.AddMinutes(10).ToString("o"));
 
-        // Send OTP Email
-        await _emailService.SendOtpEmailAsync(user.Email, user.FullName, otpCode);
+        // Gửi OTP Email và kiểm tra kết quả thực tế
+        bool emailSent = await _emailService.SendOtpEmailAsync(user.Email, user.FullName ?? user.Username ?? "Khách hàng", otpCode);
+
+        if (!emailSent)
+        {
+            return Json(new { 
+                success = false, 
+                message = $"❌ Không thể gửi Email OTP tới '{user.Email}'. Hệ thống đang gặp sự cố SMTP. Vui lòng thử lại sau hoặc kiểm tra cấu hình Gmail."
+            });
+        }
 
         return Json(new { 
             success = true, 
-            message = $"Mã OTP đã được gửi thành công đến Gmail {user.Email}! Vui lòng kiểm tra hộp thư."
+            message = $"✅ Mã OTP đã được gửi thành công đến Gmail {user.Email}! Vui lòng kiểm tra hộp thư (cả thư mục Spam)."
         });
     }
 

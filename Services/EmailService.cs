@@ -246,13 +246,22 @@ public class EmailService : IEmailService
 
             string senderEmail = _configuration["EmailSettings:SenderEmail"];
             if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = _configuration["EmailSettings__SenderEmail"];
+            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = Environment.GetEnvironmentVariable("EmailSettings__SenderEmail");
             if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = "tranchivi29102005@gmail.com";
 
             string senderName = "FASHION STORE";
 
+            // Đọc mật khẩu từ IConfiguration và trực tiếp từ OS Environment Variable trên Render
             string password = _configuration["EmailSettings:Password"];
             if (string.IsNullOrWhiteSpace(password)) password = _configuration["EmailSettings__Password"];
-            if (string.IsNullOrWhiteSpace(password)) password = "uuvaijnqembkncyq";
+            if (string.IsNullOrWhiteSpace(password)) password = Environment.GetEnvironmentVariable("EmailSettings__Password");
+            if (string.IsNullOrWhiteSpace(password)) password = Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                _logger.LogError("[EMAIL ERROR] Chưa cấu hình EmailSettings__Password trong biến môi trường Render!");
+                return false;
+            }
 
             password = password.Replace(" ", "").Trim();
 
@@ -267,9 +276,13 @@ public class EmailService : IEmailService
             var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
             emailMessage.Body = bodyBuilder.ToMessageBody();
 
-            // Gửi email bằng MailKit SmtpClient (hỗ trợ async/await thật sự trên Linux)
+            // Gửi email bằng MailKit SmtpClient (hỗ trợ Linux / Render container)
             using var client = new MailKit.Net.Smtp.SmtpClient();
-            await client.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+            
+            // Bỏ qua lỗi SSL Certificate Store trên môi trường Linux Render Container
+            client.ServerCertificateValidationCallback = (s, c, ch, e) => true;
+
+            await client.ConnectAsync(smtpServer.Trim(), smtpPort, SecureSocketOptions.StartTls);
             await client.AuthenticateAsync(senderEmail.Trim(), password);
             await client.SendAsync(emailMessage);
             await client.DisconnectAsync(true);
