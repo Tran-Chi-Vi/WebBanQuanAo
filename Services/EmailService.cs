@@ -1,8 +1,9 @@
-using System.Net;
-using System.Net.Mail;
 using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Data;
 using WEBBANQUANAO.Models.Entities;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 
 namespace WEBBANQUANAO.Services;
 
@@ -232,7 +233,7 @@ public class EmailService : IEmailService
     {
         if (string.IsNullOrWhiteSpace(toEmail) || !toEmail.Contains("@") || toEmail.EndsWith(".fashionstore.vn"))
         {
-            _logger.LogWarning($"Skipping email send to invalid/fake email address: '{toEmail}'");
+            _logger.LogWarning($"[EMAIL SKIP] Bỏ qua địa chỉ email không hợp lệ: '{toEmail}'");
             return false;
         }
 
@@ -255,28 +256,30 @@ public class EmailService : IEmailService
 
             password = password.Replace(" ", "").Trim();
 
-            using var message = new MailMessage();
-            message.From = new MailAddress(senderEmail.Trim(), senderName);
-            message.To.Add(new MailAddress(toEmail.Trim()));
-            message.Subject = subject;
-            message.Body = htmlBody;
-            message.IsBodyHtml = true;
+            _logger.LogInformation($"[EMAIL SENDING] Đang gửi email tới {toEmail} qua {smtpServer}:{smtpPort} với tài khoản {senderEmail}");
 
-            using var client = new SmtpClient(smtpServer, smtpPort);
-            client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(senderEmail.Trim(), password);
-            client.EnableSsl = true;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.Timeout = 20000;
+            // Tạo email bằng MimeKit (MailKit)
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress(senderName, senderEmail.Trim()));
+            emailMessage.To.Add(new MailboxAddress("", toEmail.Trim()));
+            emailMessage.Subject = subject;
 
-            await client.SendMailAsync(message);
-            _logger.LogInformation($"[SMTP SUCCESS] Successfully sent email to {toEmail} with subject '{subject}'.");
+            var bodyBuilder = new BodyBuilder { HtmlBody = htmlBody };
+            emailMessage.Body = bodyBuilder.ToMessageBody();
+
+            // Gửi email bằng MailKit SmtpClient (hỗ trợ async/await thật sự trên Linux)
+            using var client = new MailKit.Net.Smtp.SmtpClient();
+            await client.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
+            await client.AuthenticateAsync(senderEmail.Trim(), password);
+            await client.SendAsync(emailMessage);
+            await client.DisconnectAsync(true);
+
+            _logger.LogInformation($"[EMAIL SUCCESS] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
             return true;
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[SMTP FAILURE] Failed to send email to {toEmail}: {ex}");
-            _logger.LogError(ex, $"[SMTP ERROR] Failed to send email to {toEmail}. Details: {ex.Message}");
+            _logger.LogError(ex, $"[EMAIL ERROR] Không thể gửi email tới {toEmail}. Chi tiết lỗi: {ex.Message}");
             return false;
         }
     }

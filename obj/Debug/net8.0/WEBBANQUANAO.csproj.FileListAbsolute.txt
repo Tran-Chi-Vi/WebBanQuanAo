@@ -141,3 +141,8 @@ D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\refint\WEBBANQUANAO.dll
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.pdb
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\WEBBANQUANAO.genruntimeconfig.cache
 D:\WEBBANQUANAO\WEBBANQUANAO\obj\Debug\net8.0\ref\WEBBANQUANAO.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\MailKit.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\MimeKit.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\WEBBANQUANAO\WEBBANQUANAO\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
