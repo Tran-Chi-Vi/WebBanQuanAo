@@ -321,11 +321,41 @@ public class EmailService : IEmailService
 
             // Gửi email bằng MailKit SmtpClient (hỗ trợ Linux / Render container)
             using var smtpClient = new MailKit.Net.Smtp.SmtpClient();
+            smtpClient.Timeout = 10000; // 10 giây timeout để chuyển fallback nhanh chóng
             
             // Bỏ qua lỗi SSL Certificate Store trên môi trường Linux Render Container
             smtpClient.ServerCertificateValidationCallback = (s, c, ch, e) => true;
 
-            await smtpClient.ConnectAsync(smtpServer.Trim(), smtpPort, SecureSocketOptions.StartTls);
+            bool isConnected = false;
+            
+            // THỬ CỔNG 587 TRƯỚC (STARTTLS)
+            try
+            {
+                _logger.LogInformation($"[EMAIL CONNECT] Thử kết nối {smtpServer}:587 (STARTTLS)...");
+                await smtpClient.ConnectAsync(smtpServer.Trim(), 587, SecureSocketOptions.StartTls);
+                isConnected = true;
+            }
+            catch (Exception ex587)
+            {
+                _logger.LogWarning($"[EMAIL PORT 587 BLOCKED] Cổng 587 bị chặn hoặc Timeout ({ex587.Message}). Đang tự động chuyển sang Cổng 465 (SSL)...");
+            }
+
+            // NẾU CỔNG 587 BỊ RENDER CHẶN (TIMEOUT), TỰ ĐỘNG THỬ CỔNG 465 (SSL)
+            if (!isConnected)
+            {
+                try
+                {
+                    await smtpClient.ConnectAsync(smtpServer.Trim(), 465, SecureSocketOptions.SslOnConnect);
+                    isConnected = true;
+                    _logger.LogInformation($"[EMAIL CONNECT SUCCESS] Kết nối thành công qua Cổng 465 (SSL)!");
+                }
+                catch (Exception ex465)
+                {
+                    _logger.LogError(ex465, $"[EMAIL PORT 465 FAILED] Cả 2 cổng 587 & 465 đều bị Render chặn: {ex465.Message}");
+                    return (false, $"Lỗi Gmail SMTP (Cả Cổng 587 & 465 đều bị Render chặn Timeout): {ex465.Message}. Vui lòng dùng Brevo HTTP API (Port 443 không bao giờ bị chặn).");
+                }
+            }
+
             await smtpClient.AuthenticateAsync(senderEmail.Trim(), password);
             await smtpClient.SendAsync(emailMessage);
             await smtpClient.DisconnectAsync(true);
