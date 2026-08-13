@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WEBBANQUANAO.Data;
 using WEBBANQUANAO.Models.Entities;
+using WEBBANQUANAO.Services;
 
 namespace WEBBANQUANAO.Controllers.Admin;
 
@@ -12,10 +13,12 @@ namespace WEBBANQUANAO.Controllers.Admin;
 public class UserController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public UserController(ApplicationDbContext context)
+    public UserController(ApplicationDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -83,5 +86,33 @@ public class UserController : Controller
         ViewBag.UserReviews = userReviews;
 
         return View(user);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TestSendUserEmail(int userId)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null || string.IsNullOrWhiteSpace(user.Email))
+        {
+            return Json(new { success = false, message = "Không tìm thấy người dùng hoặc địa chỉ Gmail rỗng!" });
+        }
+
+        try
+        {
+            bool isSuccess = await _emailService.SendOtpEmailAsync(user.Email, user.FullName ?? user.Username, "888888");
+            if (isSuccess)
+            {
+                return Json(new { success = true, message = $"✅ ĐÃ GỬI EMAIL THÀNH CÔNG TỚI '{user.Email}'! Vui lòng kiểm tra Hộp thư đến (Inbox) hoặc Thư rác (Spam)." });
+            }
+            else
+            {
+                return Json(new { success = false, message = $"❌ Không thể gửi Email tới '{user.Email}'. Vui lòng kiểm tra lại biến EmailSettings__Password trên Render Dashboard." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"❌ Lỗi khi gửi Email: {ex.Message}" });
+        }
     }
 }

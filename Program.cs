@@ -260,6 +260,32 @@ app.MapGet("/createTables", async (ApplicationDbContext context) =>
     }
 });
 
+// Route kiểm tra cấu hình Gmail SMTP trên Render
+app.MapGet("/test-email-config", async (IConfiguration config) =>
+{
+    string sender = config["EmailSettings:SenderEmail"] ?? Environment.GetEnvironmentVariable("EmailSettings__SenderEmail") ?? "tranchivi29102005@gmail.com";
+    string pass = config["EmailSettings:Password"] 
+        ?? config["EmailSettings__Password"] 
+        ?? Environment.GetEnvironmentVariable("EmailSettings__Password") 
+        ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
+        ?? "";
+
+    bool hasPass = !string.IsNullOrWhiteSpace(pass);
+    string maskedPass = hasPass ? (pass.Trim().Length > 4 ? pass.Trim().Substring(0, 4) + "****" : "****") : "CHƯA CÓ (TRỐNG)";
+
+    return Results.Json(new
+    {
+        senderEmail = sender,
+        hasPasswordConfigured = hasPass,
+        passwordPreview = maskedPass,
+        smtpServer = "smtp.gmail.com",
+        smtpPort = 587,
+        message = hasPass 
+            ? "✅ Đã nạp thành công Mật khẩu ứng dụng từ Render!" 
+            : "❌ CHƯA CẤU HÌNH biến EmailSettings__Password trên Render Dashboard -> Environment!"
+    });
+});
+
 // Route mặc định cho Khách hàng
 app.MapControllerRoute(
     name: "default",
