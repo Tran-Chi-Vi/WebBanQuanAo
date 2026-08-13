@@ -245,8 +245,10 @@ public class EmailService : IEmailService
 
         string senderName = "FASHION STORE";
 
-        // 1. BREVO / RESEND HTTP API (CỔNG 443 BẢO MẬT)
-        string brevoApiKey = _configuration["Brevo:ApiKey"] ?? Environment.GetEnvironmentVariable("BREVO_API_KEY") ?? _configuration["EmailSettings:ApiKey"];
+        // 1. BREVO / RESEND HTTP API (CỔNG 443 BẢO MẬT KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER)
+        string brevoApiKey = _configuration["Brevo:ApiKey"] 
+            ?? Environment.GetEnvironmentVariable("BREVO_API_KEY") 
+            ?? _configuration["EmailSettings:ApiKey"];
         if (!string.IsNullOrWhiteSpace(brevoApiKey))
         {
             try
