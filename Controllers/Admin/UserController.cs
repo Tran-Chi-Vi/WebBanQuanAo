@@ -100,19 +100,22 @@ public class UserController : Controller
 
         try
         {
-            bool isSuccess = await _emailService.SendOtpEmailAsync(user.Email, user.FullName ?? user.Username, "888888");
-            if (isSuccess)
+            string testSubject = "[FASHION STORE] - Email Thử Nghiệm Hệ Thống";
+            string testBody = "<div style='font-family:Arial,sans-serif;padding:20px;background:#f8fafc;border-radius:12px;'><h3>✅ EMAIL THỬ NGHIỆM THÀNH CÔNG</h3><p>Hệ thống FASHION STORE gửi email thử nghiệm thành công!</p></div>";
+
+            var result = await _emailService.SendEmailDetailedAsync(user.Email, testSubject, testBody);
+            if (result.Success)
             {
                 return Json(new { success = true, message = $"✅ ĐÃ GỬI EMAIL THÀNH CÔNG TỚI '{user.Email}'! Vui lòng kiểm tra Hộp thư đến (Inbox) hoặc Thư rác (Spam)." });
             }
             else
             {
-                return Json(new { success = false, message = $"❌ Không thể gửi Email tới '{user.Email}'. Vui lòng kiểm tra lại biến EmailSettings__Password trên Render Dashboard." });
+                return Json(new { success = false, message = $"❌ THẤT BẠI: {result.ErrorMessage}" });
             }
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = $"❌ Lỗi khi gửi Email: {ex.Message}" });
+            return Json(new { success = false, message = $"❌ Lỗi Ngoại Lệ: {ex.Message}" });
         }
     }
 }

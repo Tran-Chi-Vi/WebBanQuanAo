@@ -231,12 +231,11 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(toEmail, subject, htmlBody);
     }
 
-    private async Task<bool> SendEmailInternalAsync(string toEmail, string subject, string htmlBody)
+    public async Task<(bool Success, string ErrorMessage)> SendEmailDetailedAsync(string toEmail, string subject, string htmlBody)
     {
         if (string.IsNullOrWhiteSpace(toEmail) || !toEmail.Contains("@") || toEmail.EndsWith(".fashionstore.vn"))
         {
-            _logger.LogWarning($"[EMAIL SKIP] Bỏ qua địa chỉ email không hợp lệ: '{toEmail}'");
-            return false;
+            return (false, $"Địa chỉ Email nhận không hợp lệ: '{toEmail}'");
         }
 
         string senderEmail = _configuration["EmailSettings:SenderEmail"];
@@ -246,7 +245,7 @@ public class EmailService : IEmailService
 
         string senderName = "FASHION STORE";
 
-        // 1. HỖ TRỢ BREVO / RESEND HTTP API (CỔNG 443 KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER/GOOGLE)
+        // 1. BREVO / RESEND HTTP API (CỔNG 443 BẢO MẬT)
         string brevoApiKey = _configuration["Brevo:ApiKey"] ?? Environment.GetEnvironmentVariable("BREVO_API_KEY") ?? _configuration["EmailSettings:ApiKey"];
         if (!string.IsNullOrWhiteSpace(brevoApiKey))
         {
@@ -271,13 +270,14 @@ public class EmailService : IEmailService
                 var response = await client.SendAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"[EMAIL SUCCESS via BREVO API] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
-                    return true;
+                    _logger.LogInformation($"[EMAIL SUCCESS via BREVO API] Gửi email thành công tới {toEmail}");
+                    return (true, "Gửi email thành công qua Brevo HTTP API.");
                 }
                 else
                 {
                     string errStr = await response.Content.ReadAsStringAsync();
                     _logger.LogWarning($"[BREVO API ERROR] status={response.StatusCode}, error={errStr}");
+                    return (false, $"Lỗi API Brevo (Status {response.StatusCode}): {errStr}");
                 }
             }
             catch (Exception ex)
@@ -286,7 +286,7 @@ public class EmailService : IEmailService
             }
         }
 
-        // 2. GỬI QUA MAILKIT SMTP GMAIL (PHƯƠNG THỨC MẶC ĐỊNH KHÔNG CẦN CẤU HÌNH API KEY)
+        // 2. GỬI QUA MAILKIT SMTP GMAIL
         try
         {
             string smtpServer = _configuration["EmailSettings:SmtpServer"];
@@ -303,7 +303,7 @@ public class EmailService : IEmailService
             if (string.IsNullOrWhiteSpace(password))
             {
                 _logger.LogError("[EMAIL ERROR] Chưa cấu hình EmailSettings__Password trong biến môi trường Render!");
-                return false;
+                return (false, "Chưa cấu hình biến EmailSettings__Password trên Render Dashboard (hoặc biến bị rỗng). Vui lòng thêm biến EmailSettings__Password vào mục Environment trên Render!");
             }
 
             password = password.Replace(" ", "").Trim();
@@ -331,12 +331,18 @@ public class EmailService : IEmailService
             await smtpClient.DisconnectAsync(true);
 
             _logger.LogInformation($"[EMAIL SUCCESS via GMAIL SMTP] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
-            return true;
+            return (true, "Gửi email thành công qua Gmail SMTP.");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"[EMAIL ERROR] Không thể gửi email tới {toEmail}. Chi tiết lỗi: {ex.Message}");
-            return false;
+            return (false, $"Lỗi Gmail SMTP ({ex.GetType().Name}): {ex.Message}");
         }
+    }
+
+    private async Task<bool> SendEmailInternalAsync(string toEmail, string subject, string htmlBody)
+    {
+        var result = await SendEmailDetailedAsync(toEmail, subject, htmlBody);
+        return result.Success;
     }
 }
