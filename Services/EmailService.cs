@@ -12,12 +12,14 @@ public class EmailService : IEmailService
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public EmailService(ApplicationDbContext context, IConfiguration configuration, ILogger<EmailService> logger)
+    public EmailService(ApplicationDbContext context, IConfiguration configuration, ILogger<EmailService> logger, IHttpClientFactory httpClientFactory)
     {
         _context = context;
         _configuration = configuration;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<bool> SendOtpEmailAsync(string toEmail, string recipientName, string otpCode)
@@ -237,19 +239,60 @@ public class EmailService : IEmailService
             return false;
         }
 
+        string senderEmail = _configuration["EmailSettings:SenderEmail"];
+        if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = _configuration["EmailSettings__SenderEmail"];
+        if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = Environment.GetEnvironmentVariable("EmailSettings__SenderEmail");
+        if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = "tranchivi29102005@gmail.com";
+
+        string senderName = "FASHION STORE";
+
+        // 1. HỖ TRỢ BREVO / RESEND HTTP API (CỔNG 443 KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER/GOOGLE)
+        string brevoApiKey = _configuration["Brevo:ApiKey"] ?? Environment.GetEnvironmentVariable("BREVO_API_KEY") ?? _configuration["EmailSettings:ApiKey"];
+        if (!string.IsNullOrWhiteSpace(brevoApiKey))
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.brevo.com/v3/smtp/email");
+                request.Headers.Add("api-key", brevoApiKey.Trim());
+                request.Headers.Add("accept", "application/json");
+
+                var payload = new
+                {
+                    sender = new { name = senderName, email = senderEmail.Trim() },
+                    to = new[] { new { email = toEmail.Trim() } },
+                    subject = subject,
+                    htmlContent = htmlBody
+                };
+
+                string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+                request.Content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation($"[EMAIL SUCCESS via BREVO API] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
+                    return true;
+                }
+                else
+                {
+                    string errStr = await response.Content.ReadAsStringAsync();
+                    _logger.LogWarning($"[BREVO API ERROR] status={response.StatusCode}, error={errStr}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"[BREVO API EXCEPTION] Lỗi kết nối API Brevo: {ex.Message}");
+            }
+        }
+
+        // 2. GỬI QUA MAILKIT SMTP GMAIL (PHƯƠNG THỨC MẶC ĐỊNH KHÔNG CẦN CẤU HÌNH API KEY)
         try
         {
             string smtpServer = _configuration["EmailSettings:SmtpServer"];
             if (string.IsNullOrWhiteSpace(smtpServer)) smtpServer = "smtp.gmail.com";
 
             int smtpPort = int.TryParse(_configuration["EmailSettings:SmtpPort"], out int p) ? p : 587;
-
-            string senderEmail = _configuration["EmailSettings:SenderEmail"];
-            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = _configuration["EmailSettings__SenderEmail"];
-            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = Environment.GetEnvironmentVariable("EmailSettings__SenderEmail");
-            if (string.IsNullOrWhiteSpace(senderEmail)) senderEmail = "tranchivi29102005@gmail.com";
-
-            string senderName = "FASHION STORE";
 
             // Đọc mật khẩu từ IConfiguration và trực tiếp từ OS Environment Variable trên Render
             string password = _configuration["EmailSettings:Password"];
@@ -277,17 +320,17 @@ public class EmailService : IEmailService
             emailMessage.Body = bodyBuilder.ToMessageBody();
 
             // Gửi email bằng MailKit SmtpClient (hỗ trợ Linux / Render container)
-            using var client = new MailKit.Net.Smtp.SmtpClient();
+            using var smtpClient = new MailKit.Net.Smtp.SmtpClient();
             
             // Bỏ qua lỗi SSL Certificate Store trên môi trường Linux Render Container
-            client.ServerCertificateValidationCallback = (s, c, ch, e) => true;
+            smtpClient.ServerCertificateValidationCallback = (s, c, ch, e) => true;
 
-            await client.ConnectAsync(smtpServer.Trim(), smtpPort, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(senderEmail.Trim(), password);
-            await client.SendAsync(emailMessage);
-            await client.DisconnectAsync(true);
+            await smtpClient.ConnectAsync(smtpServer.Trim(), smtpPort, SecureSocketOptions.StartTls);
+            await smtpClient.AuthenticateAsync(senderEmail.Trim(), password);
+            await smtpClient.SendAsync(emailMessage);
+            await smtpClient.DisconnectAsync(true);
 
-            _logger.LogInformation($"[EMAIL SUCCESS] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
+            _logger.LogInformation($"[EMAIL SUCCESS via GMAIL SMTP] Gửi email thành công tới {toEmail} - Tiêu đề: '{subject}'");
             return true;
         }
         catch (Exception ex)
