@@ -262,29 +262,6 @@ app.MapGet("/createTables", async (ApplicationDbContext context) =>
     }
 });
 
-// Route kiểm tra cấu hình MailKit Gmail SMTP trên Render
-app.MapGet("/test-email-config", async (IConfiguration config) =>
-{
-    string sender = config["EmailSettings:SenderEmail"] ?? Environment.GetEnvironmentVariable("EmailSettings__SenderEmail") ?? "tranchivi29102005@gmail.com";
-    string pass = config["EmailSettings:Password"] 
-        ?? config["EmailSettings__Password"] 
-        ?? Environment.GetEnvironmentVariable("EmailSettings__Password") 
-        ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
-        ?? "";
-
-    bool hasPass = !string.IsNullOrWhiteSpace(pass);
-
-    return Results.Json(new
-    {
-        senderEmail = sender,
-        hasGmailPasswordConfigured = hasPass,
-        activeEngine = hasPass ? "⚡ MAILKIT GMAIL SMTP (CỔNG 587 & 465 SSL)" : "❌ CHƯA NẠP BIẾN EmailSettings__Password",
-        message = hasPass 
-            ? "✅ Đã nhận Mật khẩu ứng dụng Gmail!" 
-            : "❌ Vui lòng thêm biến EmailSettings__Password vào Render Dashboard -> Environment!"
-    });
-});
-
 // Route mặc định cho Khách hàng
 app.MapControllerRoute(
     name: "default",
