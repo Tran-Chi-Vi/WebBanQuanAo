@@ -260,8 +260,11 @@ public class EmailService : IEmailService
                 var payload = new
                 {
                     toEmail = toEmail.Trim(),
+                    to = toEmail.Trim(),
+                    email = toEmail.Trim(),
                     subject = subject,
-                    htmlBody = htmlBody
+                    htmlBody = htmlBody,
+                    body = htmlBody
                 };
 
                 string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
