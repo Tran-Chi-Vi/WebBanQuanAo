@@ -253,7 +253,10 @@ public class EmailService : IEmailService
         {
             try
             {
-                using var client = new HttpClient();
+                var handler = new HttpClientHandler { AllowAutoRedirect = true };
+                using var client = new HttpClient(handler);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
                 var payload = new
                 {
                     toEmail = toEmail.Trim(),
@@ -264,17 +267,27 @@ public class EmailService : IEmailService
                 string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
+                _logger.LogInformation($"[GOOGLE WEBHOOK] Đang gửi email tới {toEmail} qua {googleWebhookUrl}...");
                 var response = await client.PostAsync(googleWebhookUrl.Trim(), content);
                 string respStr = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode && !respStr.Contains("Không tìm thấy hàm"))
                 {
-                    _logger.LogInformation($"[GOOGLE WEBHOOK SUCCESS] Gửi email thành công tới {toEmail} qua Google Webhook!");
+                    _logger.LogInformation($"[GOOGLE WEBHOOK SUCCESS] Gửi email thành công tới {toEmail} qua Google Webhook! Response: {respStr}");
                     return (true, "Gửi email thành công 100% về Hộp thư Gmail thật qua Google Webhook!");
                 }
                 else
                 {
-                    _logger.LogWarning($"[GOOGLE WEBHOOK ERROR] status={response.StatusCode}, error={respStr}");
+                    _logger.LogWarning($"[GOOGLE WEBHOOK WARN] status={response.StatusCode}, error={respStr}. Đang thử query fallback...");
+                    // Fallback query GET nếu POST bị Google đổi phương thức
+                    string queryUrl = $"{googleWebhookUrl.Trim()}?toEmail={Uri.EscapeDataString(toEmail.Trim())}&subject={Uri.EscapeDataString(subject)}&htmlBody={Uri.EscapeDataString(htmlBody)}";
+                    var respGet = await client.GetAsync(queryUrl);
+                    string respGetStr = await respGet.Content.ReadAsStringAsync();
+                    if (respGet.IsSuccessStatusCode)
+                    {
+                        _logger.LogInformation($"[GOOGLE WEBHOOK GET SUCCESS] Gửi email thành công tới {toEmail}!");
+                        return (true, "Gửi email thành công 100% về Hộp thư Gmail thật qua Google Webhook (GET)!");
+                    }
                 }
             }
             catch (Exception ex)
