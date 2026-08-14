@@ -1768,19 +1768,22 @@ body.user-dark-mode .contact-info-card small {
   transform: translateY(-3px) scale(1.003);
 }
 
-/* DUY NHẤT 1 THANH SÁNG (SINGLE DOM ELEMENT) BÁM THEO VIỀN KHUNG 360° - RỘNG 10PX & DÀI 130PX NỔI BẬT */
+/* DUY NHẤT 1 THANH SÁNG (SINGLE DOM ELEMENT) BÁM THEO VIỀN KHUNG 360° - MƯỢT MÀ KHÔNG BỊ CỨNG GÓC CUA, SÁNG RỰC RỠ */
 .single-led-beam {
   position: absolute;
   top: 0;
   left: 0;
-  width: 130px; /* Chiều dài 130px sang trọng */
+  width: 95px; /* Chiều dài 95px vừa vặn để ôm mượt 100% khúc cua bo tròn */
   height: 10px; /* Độ dày to nổi bật 10px */
-  border-radius: 10px;
+  border-radius: 999px; /* Bo viền giọt nước siêu mềm mại */
   pointer-events: none;
   z-index: 3;
-  offset-path: rect(0 100% 100% 0 round 24px);
+  offset-path: rect(0 100% 100% 0 round 26px);
   offset-rotate: auto;
-  animation: singleBeamMove 10s linear infinite;
+  transform-origin: center center;
+  will-change: offset-distance;
+  animation: singleBeamMove 10.5s linear infinite;
+  filter: brightness(1.4) drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
 }
 
 @keyframes singleBeamMove {
@@ -1795,9 +1798,9 @@ body.user-dark-mode .contact-info-card small {
 /* Tốc độ mượt mà trên Mobile & Tablet */
 @media (max-width: 767.98px) {
   .single-led-beam {
-    width: 100px !important;
+    width: 80px !important;
     height: 8px !important;
-    animation-duration: 12s !important;
+    animation-duration: 12.5s !important;
   }
 }
 
@@ -1807,12 +1810,12 @@ body.user-dark-mode .contact-info-card small {
 
 /* 🥉 HẠNG ĐỒNG (BRONZE) */
 .led-vip-card-wrapper.tier-bronze {
-  box-shadow: 0 0 30px rgba(245, 158, 11, 0.55), 0 0 60px rgba(217, 119, 6, 0.3), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.65), 0 0 70px rgba(217, 119, 6, 0.4), 0 12px 36px rgba(15, 23, 42, 0.8);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
 }
 .tier-bronze .single-led-beam {
-  background: linear-gradient(90deg, transparent, #ffb703 40%, #ffffff 80%, #ffb703);
-  box-shadow: 0 0 14px #ffb703, 0 0 28px #f59e0b, 0 0 42px #d97706;
+  background: linear-gradient(90deg, transparent 0%, #ffb703 30%, #ffffff 75%, #ffb703 100%);
+  box-shadow: 0 0 18px #ffb703, 0 0 35px #f59e0b, 0 0 55px #d97706, 0 0 75px #b45309;
 }
 .tier-bronze .led-vip-card-inner {
   background: linear-gradient(135deg, #1e1103 0%, #2e1a05 45%, #0f172a 100%) !important;
@@ -1820,12 +1823,12 @@ body.user-dark-mode .contact-info-card small {
 
 /* 🥈 HẠNG BẠC (SILVER) */
 .led-vip-card-wrapper.tier-silver {
-  box-shadow: 0 0 34px rgba(226, 232, 240, 0.65), 0 0 65px rgba(148, 163, 184, 0.35), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1.5px solid rgba(226, 232, 240, 0.4);
+  box-shadow: 0 0 38px rgba(226, 232, 240, 0.75), 0 0 75px rgba(148, 163, 184, 0.45), 0 12px 36px rgba(15, 23, 42, 0.8);
+  border: 1.5px solid rgba(226, 232, 240, 0.5);
 }
 .tier-silver .single-led-beam {
-  background: linear-gradient(90deg, transparent, #cbd5e1 40%, #ffffff 80%, #cbd5e1);
-  box-shadow: 0 0 14px #ffffff, 0 0 28px #cbd5e1, 0 0 42px #94a3b8;
+  background: linear-gradient(90deg, transparent 0%, #cbd5e1 30%, #ffffff 75%, #ffffff 100%);
+  box-shadow: 0 0 18px #ffffff, 0 0 35px #cbd5e1, 0 0 55px #94a3b8, 0 0 75px #64748b;
 }
 .tier-silver .led-vip-card-inner {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%) !important;
@@ -1833,12 +1836,12 @@ body.user-dark-mode .contact-info-card small {
 
 /* 🥇 HẠNG VÀNG (GOLD) */
 .led-vip-card-wrapper.tier-gold {
-  box-shadow: 0 0 42px rgba(234, 179, 8, 0.8), 0 0 75px rgba(250, 204, 21, 0.45), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1.5px solid rgba(234, 179, 8, 0.45);
+  box-shadow: 0 0 48px rgba(234, 179, 8, 0.9), 0 0 85px rgba(250, 204, 21, 0.55), 0 12px 36px rgba(15, 23, 42, 0.8);
+  border: 1.5px solid rgba(234, 179, 8, 0.55);
 }
 .tier-gold .single-led-beam {
-  background: linear-gradient(90deg, transparent, #facc15 40%, #ffffff 80%, #facc15);
-  box-shadow: 0 0 16px #facc15, 0 0 30px #eab308, 0 0 45px #ca8a04;
+  background: linear-gradient(90deg, transparent 0%, #facc15 30%, #ffffff 75%, #facc15 100%);
+  box-shadow: 0 0 20px #facc15, 0 0 38px #eab308, 0 0 60px #ca8a04, 0 0 80px #a16207;
 }
 .tier-gold .led-vip-card-inner {
   background: linear-gradient(135deg, #1c1917 0%, #291e03 45%, #422006 100%) !important;
@@ -1846,12 +1849,12 @@ body.user-dark-mode .contact-info-card small {
 
 /* 💎 HẠNG KIM CƯƠNG (DIAMOND VIP) - KHUNG NEON CYAN (#06B6D4) & LASER CYAN (#38BDF8) & CYBER INDIGO */
 .led-vip-card-wrapper.tier-diamond {
-  box-shadow: 0 0 45px rgba(6, 182, 212, 0.95), 0 0 90px rgba(56, 189, 248, 0.6), 0 12px 36px rgba(15, 23, 42, 0.8);
-  border: 2px solid rgba(6, 182, 212, 0.65);
+  box-shadow: 0 0 55px rgba(6, 182, 212, 1), 0 0 100px rgba(56, 189, 248, 0.75), 0 12px 36px rgba(15, 23, 42, 0.85);
+  border: 2px solid rgba(6, 182, 212, 0.75);
 }
 .tier-diamond .single-led-beam {
-  background: linear-gradient(90deg, transparent, #38bdf8 40%, #ffffff 80%, #38bdf8);
-  box-shadow: 0 0 16px #38bdf8, 0 0 32px #06b6d4, 0 0 48px #6366f1;
+  background: linear-gradient(90deg, transparent 0%, #38bdf8 30%, #ffffff 75%, #38bdf8 100%);
+  box-shadow: 0 0 20px #38bdf8, 0 0 40px #06b6d4, 0 0 65px #6366f1, 0 0 90px #38bdf8;
 }
 .tier-diamond .led-vip-card-inner {
   background: linear-gradient(135deg, #060b28 0%, #10194d 50%, #200b46 100%) !important;
