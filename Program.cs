@@ -145,9 +145,9 @@ if (!string.IsNullOrEmpty(fbAppId) && !string.IsNullOrEmpty(fbAppSecret))
     {
         options.AppId = fbAppId;
         options.AppSecret = fbAppSecret;
-        options.AuthorizationEndpoint = "https://www.facebook.com/v20.0/dialog/oauth";
-        options.TokenEndpoint = "https://graph.facebook.com/v20.0/oauth/access_token";
-        options.UserInformationEndpoint = "https://graph.facebook.com/v20.0/me";
+        options.AuthorizationEndpoint = "https://www.facebook.com/v26.0/dialog/oauth";
+        options.TokenEndpoint = "https://graph.facebook.com/v26.0/oauth/access_token";
+        options.UserInformationEndpoint = "https://graph.facebook.com/v26.0/me";
         options.Fields.Add("email");
         options.Fields.Add("name");
         options.Fields.Add("picture");
