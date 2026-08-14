@@ -1781,13 +1781,13 @@ body.user-dark-mode .contact-info-card small {
   overflow: visible;
 }
 
-/* ABSOLUTELY SINGLE 1 LIGHT BEAM (RỘNG 8.5PX NỔI BẬT SANG TRỌNG, KHOẢNG TRỐNG 200% BẢO ĐẢM KHÔNG BAO GIỜ XUẤT HIỆN THANH THỨ 2) */
+/* DUY NHẤT 1 DẢI SÁNG LƯỚT TUẦN HOÀN 360 ĐỘ VÔ TẬN (SEAMLESS 360 INFINITE LOOP - KHÔNG BAO GIỜ BIẾN MẤT) */
 .led-beam-line {
   fill: none;
   stroke-width: 8.5px; /* Độ rộng dải sáng to nổi bật 8.5px */
   stroke-linecap: round;
-  stroke-dasharray: 8 200; /* DUY NHẤT 1 THANH SÁNG (Chỉ chiếm 8% chu vi, khoảng trống 200% gấp đôi chu vi) */
-  animation: ledBeamPathRun 11s linear infinite;
+  stroke-dasharray: 8 92; /* DUY NHẤT 1 THANH SÁNG (Dài 8%, khoảng trống 92% = Đúng 100% chu vi khung) */
+  animation: ledBeamPathRun 10s linear infinite;
 }
 
 @keyframes ledBeamPathRun {
@@ -1802,9 +1802,9 @@ body.user-dark-mode .contact-info-card small {
 /* Tốc độ mượt mà, thư thái trên Mobile & Tablet */
 @media (max-width: 767.98px) {
   .led-beam-line {
-    animation-duration: 13s !important; /* Chạy chậm mượt bám theo khung trên Mobile */
+    animation-duration: 12s !important; /* Chạy chậm mượt bám theo khung trên Mobile */
     stroke-width: 7.5px !important;
-    stroke-dasharray: 9 200 !important;
+    stroke-dasharray: 9 91 !important;
   }
 }
 
