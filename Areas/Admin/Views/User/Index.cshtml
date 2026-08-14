@@ -89,11 +89,6 @@
                             <td class="small text-muted">@user.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="text-end pe-4">
                                 <div class="d-flex justify-content-end gap-1 flex-nowrap">
-                                    <button type="button" onclick="testSendUserEmail(@user.UserId, '@user.Email')"
-                                            class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-semibold"
-                                            style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
-                                        <i class="bi bi-send-fill"></i> Gửi Gmail Thử
-                                    </button>
                                     <a asp-action="Details" asp-route-id="@user.UserId"
                                        class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
                                        style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">

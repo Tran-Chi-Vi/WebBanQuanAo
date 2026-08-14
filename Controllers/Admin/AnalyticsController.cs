@@ -167,19 +167,20 @@ public class AnalyticsController : Controller
             };
         }
 
-        // 8. Recent Visitor Session Log
+        // 8. Recent Visitor Session Log (Khử trùng lặp theo SessionId)
         List<VisitorLogDto> recentLogs = await _context.UserBehaviorLogs
-            .Where(l => l.Timestamp >= startDate)
+            .Where(l => l.Timestamp >= startDate && l.SessionId != null)
+            .GroupBy(l => l.SessionId)
+            .Select(g => new VisitorLogDto
+            {
+                SessionId = g.Key,
+                UserType = g.Any(l => l.UserId != null) ? "Đã đăng nhập" : "Khách vãng lai",
+                IpAddress = g.OrderByDescending(l => l.Timestamp).Select(l => l.IpAddress).FirstOrDefault() ?? "127.0.0.1",
+                DeviceType = g.OrderByDescending(l => l.Timestamp).Select(l => l.DeviceType).FirstOrDefault() ?? "Desktop",
+                Timestamp = g.Max(l => l.Timestamp)
+            })
             .OrderByDescending(l => l.Timestamp)
             .Take(10)
-            .Select(l => new VisitorLogDto
-            {
-                SessionId = l.SessionId ?? $"sid_{Guid.NewGuid():N}".Substring(0, 15),
-                UserType = l.UserId != null ? "Đã đăng nhập" : "Khách vãng lai",
-                IpAddress = l.IpAddress ?? "127.0.0.1",
-                DeviceType = l.DeviceType ?? "Desktop",
-                Timestamp = l.Timestamp
-            })
             .ToListAsync();
 
         if (!recentLogs.Any())
@@ -194,7 +195,7 @@ public class AnalyticsController : Controller
             };
         }
 
-        // 9. Customer Churn Risk Analysis (Phân tích nguy cơ khách hàng rời đi)
+        // 9. Customer Churn Risk Analysis (Phân tích nguy cơ khách hàng rời đi: Yếu, Trung Bình, Cao)
         var allUsers = await _context.Users
             .AsNoTracking()
             .Include(u => u.Role)
@@ -211,7 +212,20 @@ public class AnalyticsController : Controller
             DateTime? lastActivityDate = lastOrder?.OrderDate;
             int daysInactive = lastActivityDate.HasValue ? (int)(now - lastActivityDate.Value).TotalDays : 35;
 
-            string riskLevel = daysInactive >= 30 ? "Cao (Rất lâu chưa mua hàng)" : "Trung bình (Có nguy cơ rời đi)";
+            string riskLevel = "Yếu (Khách hàng tích cực)";
+            if (daysInactive >= 20)
+            {
+                riskLevel = "Cao (Nguy cơ rời đi cao)";
+            }
+            else if (daysInactive >= 10)
+            {
+                riskLevel = "Trung Bình (Có nguy cơ rời đi)";
+            }
+            else
+            {
+                riskLevel = "Yếu (Khách hàng tích cực)";
+            }
+
             churnRiskList.Add(new ChurnRiskUserDto
             {
                 UserId = u.UserId,

@@ -103,6 +103,7 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IChatbotService, ChatbotService>();
 builder.Services.AddMailKitEmailServices(builder.Configuration);
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+builder.Services.AddHostedService<WeeklyChurnWinBackBackgroundService>();
 
 // =========================================================================
 // 3. XÁC THỰC NGƯỜI DÙNG (AUTHENTICATION - COOKIE, GOOGLE & FACEBOOK)

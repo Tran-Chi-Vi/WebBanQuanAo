@@ -471,12 +471,12 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
                     <div>
                         <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1.5 fw-bold font-monospace small mb-2">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i> AUTOMATED CHURN RISK DETECTOR
+                            <i class="bi bi-robot me-1"></i> AUTOMATED WEEKLY CHURN WIN-BACK SYSTEM
                         </span>
                         <h4 class="fw-bold text-adaptive m-0">
-                            <i class="bi bi-person-x-fill text-danger me-2"></i> DANH SÁCH KHÁCH HÀNG CÓ NGUY CƠ RỜI ĐI (CHURN RISK)
+                            <i class="bi bi-person-x-fill text-danger me-2"></i> PHÂN TÍCH VÀ NÍU CHÂN KHÁCH HÀNG (CHURN RISK DETECTOR)
                         </h4>
-                        <p class="text-muted-adaptive small m-0 mt-1">Hệ thống phân tích khách hàng lâu ngày chưa quay lại. Bấm nút để gửi Email níu chân kèm mã Voucher độc quyền gán duy nhất cho Gmail khách hàng.</p>
+                        <p class="text-muted-adaptive small m-0 mt-1">Hệ thống tự động phân tích người dùng theo 3 mức độ nguy cơ (Yếu / Trung Bình / Cao) và tự động tạo + gửi Voucher độc quyền hàng tuần (1 tuần/lần) cho nhóm nguy cơ CAO.</p>
                     </div>
                     <div class="text-md-end">
                         <span class="badge pill-badge-red fs-6 px-3 py-2 fw-bold">
@@ -497,12 +497,16 @@
                                     <th>TỔNG TIÊU DÙNG</th>
                                     <th>SỐ NGÀY VẮNG MẶT</th>
                                     <th>MỨC ĐỘ NGUY CƠ</th>
-                                    <th class="text-end">HÀNH ĐỘNG NÍU CHÂN</th>
+                                    <th class="text-end">TRẠNG THÁI TỰ ĐỘNG</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var u in churnRiskUsers)
                                 {
+                                    string badgeClass = u.ChurnRiskLevel.StartsWith("Cao") 
+                                        ? "bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" 
+                                        : (u.ChurnRiskLevel.StartsWith("Trung") ? "bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25" : "bg-success bg-opacity-10 text-success border border-success border-opacity-25");
+
                                     <tr>
                                         <td>
                                             <strong class="text-adaptive fs-6">@u.FullName</strong>
@@ -521,15 +525,25 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2.5 py-1.5 fw-bold small">
+                                            <span class="badge @badgeClass rounded-pill px-2.5 py-1.5 fw-bold small">
                                                 @u.ChurnRiskLevel
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <button type="button" onclick="sendWinBackEmail(@u.UserId, '@u.Email', this)" class="btn btn-sm btn-danger rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
-                                                <i class="bi bi-send-fill"></i>
-                                                <span>📧 GỬI GMAIL NÍU CHÂN & VOUCHER</span>
-                                            </button>
+                                            @if (u.ChurnRiskLevel.StartsWith("Cao"))
+                                            {
+                                                <span class="badge bg-danger text-white rounded-pill px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5">
+                                                    <i class="bi bi-robot"></i>
+                                                    <span>🤖 Tự Động Gửi Email & Voucher Hàng Tuần</span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary bg-opacity-25 text-adaptive rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
+                                                    <i class="bi bi-shield-check"></i>
+                                                    <span>Theo dõi tự động</span>
+                                                </span>
+                                            }
                                         </td>
                                     </tr>
                                 }
