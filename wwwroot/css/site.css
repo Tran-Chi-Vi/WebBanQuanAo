@@ -1784,22 +1784,22 @@ body.user-dark-mode .contact-info-card small {
 /* Subtle background border track */
 .led-beam-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.12);
+  stroke: rgba(255, 255, 255, 0.15);
   stroke-width: 4px;
 }
 
-/* Duy nhất 1 dải sáng dài 50px bám sát viền khung (Độ nổi bật 5.5px, KHÔNG BỊ PHÌNH TO BÊN) */
+/* DUY NHẤT 1 DẢI SÁNG (SINGLE LIGHT BEAM) - RỘNG 8PX NỔI BẬT KHÔNG BỊ LẮP LẠI */
 .led-beam-line {
   fill: none;
-  stroke-width: 5.5px;
+  stroke-width: 8px; /* Độ rộng dải sáng to nổi bật 8px */
   stroke-linecap: round;
-  stroke-dasharray: 50 3000; /* DUY NHẤT 1 THANH DÀI 50PX BÁM SÁT KHUNG */
+  stroke-dasharray: 7 93; /* DUY NHẤT 1 THANH SÁNG (Dài 7% chu vi, khoảng trống 93%) */
   animation: ledBeamPathRun 11s linear infinite;
 }
 
 @keyframes ledBeamPathRun {
   0% {
-    stroke-dashoffset: 3050;
+    stroke-dashoffset: 100;
   }
   100% {
     stroke-dashoffset: 0;
@@ -1810,8 +1810,8 @@ body.user-dark-mode .contact-info-card small {
 @media (max-width: 767.98px) {
   .led-beam-line {
     animation-duration: 13s !important; /* Chạy chậm mượt bám theo khung trên Mobile */
-    stroke-width: 5px !important;
-    stroke-dasharray: 50 3000 !important;
+    stroke-width: 7px !important;
+    stroke-dasharray: 8 92 !important;
   }
 }
 
