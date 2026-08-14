@@ -16,10 +16,10 @@
 
     <!-- VIP MEMBERSHIP CARD WITH SMOOTH RUNNING LIGHT STRIP (DẢI SÁNG DÀI BÁM SÁT KHUNG) -->
     <div class="led-vip-card-wrapper @tierLedClass">
-        <!-- SVG Border Light Beam (Dải sáng dài bám sát khung) -->
-        <svg class="led-beam-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <rect class="led-beam-bg" x="1.5" y="1.5" width="97" height="97" rx="6" ry="6" />
-            <rect class="led-beam-line" x="1.5" y="1.5" width="97" height="97" rx="6" ry="6" />
+        <!-- SVG Border Light Beam (Dải sáng dài 50px đồng đều 4 cạnh, không bị phình) -->
+        <svg class="led-beam-svg">
+            <rect class="led-beam-bg" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="24" ry="24" vector-effect="non-scaling-stroke" />
+            <rect class="led-beam-line" x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="24" ry="24" vector-effect="non-scaling-stroke" />
         </svg>
 
         <div class="led-vip-card-inner p-4 p-md-5 position-relative">
