@@ -1768,13 +1768,13 @@ body.user-dark-mode .contact-info-card small {
   transform: translateY(-3px) scale(1.003);
 }
 
-/* DUY NHẤT 1 THANH SÁNG (SINGLE DOM ELEMENT) BÁM THEO VIỀN KHUNG 360° KHÔNG BAO GIỜ LẶP LẠI & KHÔNG BIẾN MẤT */
+/* DUY NHẤT 1 THANH SÁNG (SINGLE DOM ELEMENT) BÁM THEO VIỀN KHUNG 360° - RỘNG 10PX & DÀI 130PX NỔI BẬT */
 .single-led-beam {
   position: absolute;
   top: 0;
   left: 0;
-  width: 90px; /* Chiều dài đúng 90px */
-  height: 6px; /* Độ rộng 6px nổi bật */
+  width: 130px; /* Chiều dài 130px sang trọng */
+  height: 10px; /* Độ dày to nổi bật 10px */
   border-radius: 10px;
   pointer-events: none;
   z-index: 3;
@@ -1795,8 +1795,8 @@ body.user-dark-mode .contact-info-card small {
 /* Tốc độ mượt mà trên Mobile & Tablet */
 @media (max-width: 767.98px) {
   .single-led-beam {
-    width: 75px !important;
-    height: 5px !important;
+    width: 100px !important;
+    height: 8px !important;
     animation-duration: 12s !important;
   }
 }
@@ -1811,8 +1811,8 @@ body.user-dark-mode .contact-info-card small {
   border: 1.5px solid rgba(245, 158, 11, 0.35);
 }
 .tier-bronze .single-led-beam {
-  background: #ffb703;
-  box-shadow: 0 0 10px #ffb703, 0 0 20px #f59e0b, 0 0 30px #d97706;
+  background: linear-gradient(90deg, transparent, #ffb703 40%, #ffffff 80%, #ffb703);
+  box-shadow: 0 0 14px #ffb703, 0 0 28px #f59e0b, 0 0 42px #d97706;
 }
 .tier-bronze .led-vip-card-inner {
   background: linear-gradient(135deg, #1e1103 0%, #2e1a05 45%, #0f172a 100%) !important;
@@ -1824,8 +1824,8 @@ body.user-dark-mode .contact-info-card small {
   border: 1.5px solid rgba(226, 232, 240, 0.4);
 }
 .tier-silver .single-led-beam {
-  background: #ffffff;
-  box-shadow: 0 0 10px #ffffff, 0 0 20px #cbd5e1, 0 0 30px #94a3b8;
+  background: linear-gradient(90deg, transparent, #cbd5e1 40%, #ffffff 80%, #cbd5e1);
+  box-shadow: 0 0 14px #ffffff, 0 0 28px #cbd5e1, 0 0 42px #94a3b8;
 }
 .tier-silver .led-vip-card-inner {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%) !important;
@@ -1837,8 +1837,8 @@ body.user-dark-mode .contact-info-card small {
   border: 1.5px solid rgba(234, 179, 8, 0.45);
 }
 .tier-gold .single-led-beam {
-  background: #facc15;
-  box-shadow: 0 0 10px #facc15, 0 0 22px #eab308, 0 0 35px #ca8a04;
+  background: linear-gradient(90deg, transparent, #facc15 40%, #ffffff 80%, #facc15);
+  box-shadow: 0 0 16px #facc15, 0 0 30px #eab308, 0 0 45px #ca8a04;
 }
 .tier-gold .led-vip-card-inner {
   background: linear-gradient(135deg, #1c1917 0%, #291e03 45%, #422006 100%) !important;
@@ -1850,8 +1850,8 @@ body.user-dark-mode .contact-info-card small {
   border: 2px solid rgba(6, 182, 212, 0.65);
 }
 .tier-diamond .single-led-beam {
-  background: #38bdf8;
-  box-shadow: 0 0 12px #38bdf8, 0 0 24px #06b6d4, 0 0 36px #6366f1;
+  background: linear-gradient(90deg, transparent, #38bdf8 40%, #ffffff 80%, #38bdf8);
+  box-shadow: 0 0 16px #38bdf8, 0 0 32px #06b6d4, 0 0 48px #6366f1;
 }
 .tier-diamond .led-vip-card-inner {
   background: linear-gradient(135deg, #060b28 0%, #10194d 50%, #200b46 100%) !important;
