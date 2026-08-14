@@ -5,10 +5,7 @@
     var tierInfo = ViewBag.TierInfo as TierInfo ?? MembershipTierHelper.CalculateTier(0);
     var userAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
 
-    string tierLedClass = "tier-bronze";
-    if (tierInfo.TierName.Contains("Bạc") || tierInfo.TierName.Contains("Silver")) tierLedClass = "tier-silver";
-    else if (tierInfo.TierName.Contains("Vàng") || tierInfo.TierName.Contains("Gold")) tierLedClass = "tier-gold";
-    else if (tierInfo.TierName.Contains("Kim Cương") || tierInfo.TierName.Contains("Diamond")) tierLedClass = "tier-diamond";
+    string tierLedClass = $"tier-{tierInfo.Tier.ToString().ToLower()}";
 }
 
 <div class="container my-4">

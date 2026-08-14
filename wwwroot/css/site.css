@@ -1785,21 +1785,21 @@ body.user-dark-mode .contact-info-card small {
 .led-beam-bg {
   fill: none;
   stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 3px;
+  stroke-width: 4px;
 }
 
-/* Dải sáng dài 50px - 60px bám sát viền khung (Độ hẹp chuẩn 3.5px đồng nhất cả 4 cạnh, KHÔNG BỊ PHÌNH) */
+/* Duy nhất 1 dải sáng dài 50px bám sát viền khung (Độ nổi bật 5.5px, KHÔNG BỊ PHÌNH TO BÊN) */
 .led-beam-line {
   fill: none;
-  stroke-width: 3.5px;
+  stroke-width: 5.5px;
   stroke-linecap: round;
-  stroke-dasharray: 60 2500; /* Dải sáng dài chuẩn 60px bám sát viền khung */
+  stroke-dasharray: 50 3000; /* DUY NHẤT 1 THANH DÀI 50PX BÁM SÁT KHUNG */
   animation: ledBeamPathRun 11s linear infinite;
 }
 
 @keyframes ledBeamPathRun {
   0% {
-    stroke-dashoffset: 2560;
+    stroke-dashoffset: 3050;
   }
   100% {
     stroke-dashoffset: 0;
@@ -1810,8 +1810,8 @@ body.user-dark-mode .contact-info-card small {
 @media (max-width: 767.98px) {
   .led-beam-line {
     animation-duration: 13s !important; /* Chạy chậm mượt bám theo khung trên Mobile */
-    stroke-width: 3.5px !important;
-    stroke-dasharray: 55 2500 !important;
+    stroke-width: 5px !important;
+    stroke-dasharray: 50 3000 !important;
   }
 }
 
@@ -1822,7 +1822,7 @@ body.user-dark-mode .contact-info-card small {
 /* 🥉 HẠNG ĐỒNG (BRONZE) */
 .led-vip-card-wrapper.tier-bronze {
   box-shadow: 0 0 30px rgba(245, 158, 11, 0.55), 0 0 60px rgba(217, 119, 6, 0.3), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
 }
 .tier-bronze .led-beam-line {
   stroke: #ffb703;
@@ -1835,7 +1835,7 @@ body.user-dark-mode .contact-info-card small {
 /* 🥈 HẠNG BẠC (SILVER) */
 .led-vip-card-wrapper.tier-silver {
   box-shadow: 0 0 34px rgba(226, 232, 240, 0.65), 0 0 65px rgba(148, 163, 184, 0.35), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(226, 232, 240, 0.4);
+  border: 1.5px solid rgba(226, 232, 240, 0.4);
 }
 .tier-silver .led-beam-line {
   stroke: #ffffff;
@@ -1848,7 +1848,7 @@ body.user-dark-mode .contact-info-card small {
 /* 🥇 HẠNG VÀNG (GOLD) */
 .led-vip-card-wrapper.tier-gold {
   box-shadow: 0 0 42px rgba(234, 179, 8, 0.8), 0 0 75px rgba(250, 204, 21, 0.45), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(234, 179, 8, 0.45);
+  border: 1.5px solid rgba(234, 179, 8, 0.45);
 }
 .tier-gold .led-beam-line {
   stroke: #facc15;
@@ -1858,17 +1858,17 @@ body.user-dark-mode .contact-info-card small {
   background: linear-gradient(135deg, #1c1917 0%, #291e03 45%, #422006 100%) !important;
 }
 
-/* 💎 HẠNG KIM CƯƠNG (DIAMOND VIP) */
+/* 💎 HẠNG KIM CƯƠNG (DIAMOND VIP) - KHUNG NEON CYAN (#06B6D4) & LASER CYAN (#38BDF8) & CYBER INDIGO */
 .led-vip-card-wrapper.tier-diamond {
-  box-shadow: 0 0 50px rgba(6, 182, 212, 0.9), 0 0 90px rgba(56, 189, 248, 0.5), 0 12px 36px rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 45px rgba(6, 182, 212, 0.95), 0 0 90px rgba(56, 189, 248, 0.6), 0 12px 36px rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(6, 182, 212, 0.65);
 }
 .tier-diamond .led-beam-line {
   stroke: #38bdf8;
   filter: drop-shadow(0 0 10px #7dd3fc) drop-shadow(0 0 22px #06b6d4) drop-shadow(0 0 30px #6366f1);
 }
 .tier-diamond .led-vip-card-inner {
-  background: linear-gradient(135deg, #091e3a 0%, #102a45 45%, #230944 100%) !important;
+  background: linear-gradient(135deg, #060b28 0%, #10194d 50%, #200b46 100%) !important;
 }
 
 /* Inner VIP Card Container matching Home Banner Background */
