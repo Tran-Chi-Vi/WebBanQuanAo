@@ -243,6 +243,46 @@ public class EmailService : IEmailService
 
         string senderName = "FASHION STORE";
 
+        // 1. GOOGLE APPS SCRIPT WEBHOOK ENGINE (GỬI GMAIL THẬT 100% KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER)
+        string googleWebhookUrl = _configuration["GOOGLE_SCRIPT_WEBHOOK_URL"]
+            ?? _configuration["GoogleScript:WebhookUrl"]
+            ?? Environment.GetEnvironmentVariable("GOOGLE_SCRIPT_WEBHOOK_URL")
+            ?? "https://script.google.com/macros/s/AKfycbxNPNhe-m7uqmPpg94XtMuz-V4QICh-uNst1RQFr-I/exec";
+
+        if (!string.IsNullOrWhiteSpace(googleWebhookUrl))
+        {
+            try
+            {
+                using var client = new HttpClient();
+                var payload = new
+                {
+                    toEmail = toEmail.Trim(),
+                    subject = subject,
+                    htmlBody = htmlBody
+                };
+
+                string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
+                var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(googleWebhookUrl.Trim(), content);
+                string respStr = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation($"[GOOGLE WEBHOOK SUCCESS] Gửi email thành công tới {toEmail} qua Google Webhook!");
+                    return (true, "Gửi email thành công 100% về Hộp thư Gmail thật qua Google Webhook!");
+                }
+                else
+                {
+                    _logger.LogWarning($"[GOOGLE WEBHOOK ERROR] status={response.StatusCode}, error={respStr}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"[GOOGLE WEBHOOK EXCEPTION] Lỗi kết nối Google Webhook: {ex.Message}");
+            }
+        }
+
         // 1. HỖ TRỢ MAILTRAP HTTP API (CỔNG 443 HTTPS KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER/FIREWALL)
         string mailtrapToken = _configuration["MAILTRAP_API_KEY"]
             ?? _configuration["Mailtrap:ApiKey"]
