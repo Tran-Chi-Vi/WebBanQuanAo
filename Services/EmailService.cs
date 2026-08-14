@@ -244,26 +244,23 @@ public class EmailService : IEmailService
         string senderName = "FASHION STORE";
 
         // 1. HỖ TRỢ MAILTRAP HTTP API (CỔNG 443 HTTPS KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER/FIREWALL)
-        string mailtrapToken = _configuration["Mailtrap:ApiKey"]
+        string mailtrapToken = _configuration["MAILTRAP_API_KEY"]
+            ?? _configuration["Mailtrap:ApiKey"]
             ?? _configuration["Mailtrap__ApiKey"]
             ?? Environment.GetEnvironmentVariable("MAILTRAP_API_KEY")
             ?? Environment.GetEnvironmentVariable("Mailtrap__ApiKey")
             ?? _configuration["EmailSettings:ApiKey"]
-            ?? "";
+            ?? "f64439a9215a2f1ac4128dda8a6897cd";
 
-        // Tự động kiểm tra nếu biến password của người dùng nạp vào chứa token Mailtrap
         string envPass = _configuration["EmailSettings:Password"] 
             ?? _configuration["EmailSettings__Password"] 
             ?? Environment.GetEnvironmentVariable("EmailSettings__Password") 
             ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
             ?? "";
 
-        if (string.IsNullOrWhiteSpace(mailtrapToken) && !string.IsNullOrWhiteSpace(envPass))
+        if (!string.IsNullOrWhiteSpace(envPass) && (envPass.Trim().Length >= 25 || envPass.Trim().Length == 32))
         {
-            if (envPass.Trim().Length >= 25 || envPass.Trim().Length == 32)
-            {
-                mailtrapToken = envPass.Trim();
-            }
+            mailtrapToken = envPass.Trim();
         }
 
         if (!string.IsNullOrWhiteSpace(mailtrapToken))
