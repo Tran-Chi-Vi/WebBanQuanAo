@@ -247,7 +247,7 @@ public class EmailService : IEmailService
         string googleWebhookUrl = _configuration["GOOGLE_SCRIPT_WEBHOOK_URL"]
             ?? _configuration["GoogleScript:WebhookUrl"]
             ?? Environment.GetEnvironmentVariable("GOOGLE_SCRIPT_WEBHOOK_URL")
-            ?? "https://script.google.com/macros/s/AKfycbxNPNhe-m7uqmPpg94XtMuz-V4QICh-uNst1RQFr-I/exec";
+            ?? "https://script.google.com/macros/s/AKfycbxkohav9krou0kh_HbNxaE3QBx2jsrepE66e7Yolbw8VmRzTSOIPXf9Lk5bem_DRTQR/exec";
 
         if (!string.IsNullOrWhiteSpace(googleWebhookUrl))
         {
