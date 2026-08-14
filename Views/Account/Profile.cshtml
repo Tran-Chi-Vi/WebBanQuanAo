@@ -14,12 +14,13 @@
 <div class="container my-4">
     <h2 class="fw-bold font-heading mb-4"><i class="bi bi-person-badge text-primary me-2"></i> QUẢN LÝ TÀI KHOẢN CÁ NHÂN</h2>
 
-    <!-- VIP MEMBERSHIP CARD WITH RECTANGULAR PATH LED CHASER (A -> B -> C -> D -> A) -->
+    <!-- VIP MEMBERSHIP CARD WITH SMOOTH RUNNING LIGHT STRIP (DẢI SÁNG DÀI BÁM SÁT KHUNG) -->
     <div class="led-vip-card-wrapper @tierLedClass">
-        <!-- LED Running Dot Chaser Track (100% Constant & Smooth Speed along A -> B -> C -> D -> A) -->
-        <div class="led-chaser-track">
-            <div class="led-running-dot"></div>
-        </div>
+        <!-- SVG Border Light Beam (Dải sáng dài bám sát khung) -->
+        <svg class="led-beam-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect class="led-beam-bg" x="1.5" y="1.5" width="97" height="97" rx="6" ry="6" />
+            <rect class="led-beam-line" x="1.5" y="1.5" width="97" height="97" rx="6" ry="6" />
+        </svg>
 
         <div class="led-vip-card-inner p-4 p-md-5 position-relative">
             <!-- Animated Particle Constellation Canvas & Floating Hero Orbs Matching Home Banner -->
