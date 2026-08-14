@@ -258,9 +258,12 @@ public class EmailService : IEmailService
             ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
             ?? "";
 
-        if (string.IsNullOrWhiteSpace(mailtrapToken) && envPass.Trim().Length == 32 && !envPass.Contains(" "))
+        if (string.IsNullOrWhiteSpace(mailtrapToken) && !string.IsNullOrWhiteSpace(envPass))
         {
-            mailtrapToken = envPass.Trim();
+            if (envPass.Trim().Length >= 25 || envPass.Trim().Length == 32)
+            {
+                mailtrapToken = envPass.Trim();
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(mailtrapToken))
