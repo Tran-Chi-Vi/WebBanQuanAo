@@ -283,6 +283,9 @@ public class CartController : Controller
 
         if (userId > 0)
         {
+            // TỰ ĐỘNG GỘP GIỎ HÀNG KHÁCH VẮNG LAI (SESSION) VÀO CSDL KHI ĐĂNG NHẬP
+            await MigrateSessionCartToUserCartAsync(userId);
+
             var userCartItems = await _context.CartItems
                 .Where(ci => ci.Cart.UserId == userId)
                 .Include(ci => ci.Variant)
@@ -397,6 +400,53 @@ public class CartController : Controller
         else
         {
             return GetSessionCart().Sum(i => i.Quantity);
+        }
+    }
+
+    private async Task MigrateSessionCartToUserCartAsync(int userId)
+    {
+        try
+        {
+            var sessionItems = GetSessionCart();
+            if (sessionItems == null || !sessionItems.Any()) return;
+
+            var userCart = await _context.Carts
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (userCart == null)
+            {
+                userCart = new Cart { UserId = userId };
+                _context.Carts.Add(userCart);
+                await _context.SaveChangesAsync();
+            }
+
+            foreach (var sItem in sessionItems)
+            {
+                var variant = await _context.ProductVariants.FindAsync(sItem.VariantId);
+                if (variant == null || variant.StockQuantity <= 0) continue;
+
+                var existingItem = userCart.Items.FirstOrDefault(i => i.VariantId == sItem.VariantId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity = Math.Min(variant.StockQuantity, existingItem.Quantity + sItem.Quantity);
+                }
+                else
+                {
+                    userCart.Items.Add(new CartItem
+                    {
+                        VariantId = sItem.VariantId,
+                        Quantity = Math.Min(variant.StockQuantity, sItem.Quantity)
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            HttpContext.Session.Remove(SESSION_CART_KEY);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CART MIGRATION EXCEPTION]: {ex.Message}");
         }
     }
 
