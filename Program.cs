@@ -261,7 +261,7 @@ app.MapGet("/createTables", async (ApplicationDbContext context) =>
     }
 });
 
-// Route kiểm tra cấu hình Gmail & Brevo API trên Render
+// Route kiểm tra cấu hình MailKit Gmail SMTP trên Render
 app.MapGet("/test-email-config", async (IConfiguration config) =>
 {
     string sender = config["EmailSettings:SenderEmail"] ?? Environment.GetEnvironmentVariable("EmailSettings__SenderEmail") ?? "tranchivi29102005@gmail.com";
@@ -271,25 +271,16 @@ app.MapGet("/test-email-config", async (IConfiguration config) =>
         ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
         ?? "";
 
-    string brevoKey = config["Brevo:ApiKey"]
-        ?? config["Brevo__ApiKey"]
-        ?? Environment.GetEnvironmentVariable("BREVO_API_KEY")
-        ?? Environment.GetEnvironmentVariable("Brevo__ApiKey")
-        ?? "";
-
     bool hasPass = !string.IsNullOrWhiteSpace(pass);
-    bool hasBrevo = !string.IsNullOrWhiteSpace(brevoKey);
 
     return Results.Json(new
     {
         senderEmail = sender,
-        hasBrevoApiKeyConfigured = hasBrevo,
-        brevoKeyPreview = hasBrevo ? (brevoKey.Length > 8 ? brevoKey.Substring(0, 8) + "..." : "****") : "CHƯA NẠP BREVO_API_KEY",
         hasGmailPasswordConfigured = hasPass,
-        activeEngine = hasBrevo ? "🔥 BREVO HTTP API (CỔNG 443 - HOẠT ĐỘNG 100% TRÊN RENDER)" : (hasPass ? "⚡ GMAIL SMTP (CỔNG 465 SSL)" : "❌ CHƯA NẠP BIẾN MÔI TRƯỜNG NÀO"),
-        message = hasBrevo 
-            ? "✅ Đã nhận Brevo API Key! Mọi Email sẽ gửi qua Cổng 443 HTTPS cực nhanh (~0.1s)." 
-            : (hasPass ? "✅ Đã nhận Mật khẩu ứng dụng Gmail!" : "❌ Vui lòng thêm biến BREVO_API_KEY vào Render Dashboard -> Environment!")
+        activeEngine = hasPass ? "⚡ MAILKIT GMAIL SMTP (CỔNG 587 & 465 SSL)" : "❌ CHƯA NẠP BIẾN EmailSettings__Password",
+        message = hasPass 
+            ? "✅ Đã nhận Mật khẩu ứng dụng Gmail!" 
+            : "❌ Vui lòng thêm biến EmailSettings__Password vào Render Dashboard -> Environment!"
     });
 });
 

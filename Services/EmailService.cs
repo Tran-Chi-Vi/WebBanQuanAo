@@ -12,14 +12,12 @@ public class EmailService : IEmailService
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;
-    private readonly IHttpClientFactory _httpClientFactory;
 
-    public EmailService(ApplicationDbContext context, IConfiguration configuration, ILogger<EmailService> logger, IHttpClientFactory httpClientFactory)
+    public EmailService(ApplicationDbContext context, IConfiguration configuration, ILogger<EmailService> logger)
     {
         _context = context;
         _configuration = configuration;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<bool> SendOtpEmailAsync(string toEmail, string recipientName, string otpCode)
@@ -245,53 +243,69 @@ public class EmailService : IEmailService
 
         string senderName = "FASHION STORE";
 
-        // 1. BREVO / RESEND HTTP API (CỔNG 443 BẢO MẬT KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER)
-        string brevoApiKey = _configuration["Brevo:ApiKey"];
-        if (string.IsNullOrWhiteSpace(brevoApiKey)) brevoApiKey = _configuration["Brevo__ApiKey"];
-        if (string.IsNullOrWhiteSpace(brevoApiKey)) brevoApiKey = Environment.GetEnvironmentVariable("BREVO_API_KEY");
-        if (string.IsNullOrWhiteSpace(brevoApiKey)) brevoApiKey = Environment.GetEnvironmentVariable("Brevo__ApiKey");
-        if (string.IsNullOrWhiteSpace(brevoApiKey)) brevoApiKey = Environment.GetEnvironmentVariable("Brevo:ApiKey");
-        if (string.IsNullOrWhiteSpace(brevoApiKey)) brevoApiKey = _configuration["EmailSettings:ApiKey"];
-        if (!string.IsNullOrWhiteSpace(brevoApiKey))
+        // 1. HỖ TRỢ MAILTRAP HTTP API (CỔNG 443 HTTPS KHÔNG BAO GIỜ BỊ CHẶN BỞI RENDER/FIREWALL)
+        string mailtrapToken = _configuration["Mailtrap:ApiKey"]
+            ?? _configuration["Mailtrap__ApiKey"]
+            ?? Environment.GetEnvironmentVariable("MAILTRAP_API_KEY")
+            ?? Environment.GetEnvironmentVariable("Mailtrap__ApiKey")
+            ?? _configuration["EmailSettings:ApiKey"]
+            ?? "";
+
+        // Tự động kiểm tra nếu biến password của người dùng nạp vào chứa token Mailtrap
+        string envPass = _configuration["EmailSettings:Password"] 
+            ?? _configuration["EmailSettings__Password"] 
+            ?? Environment.GetEnvironmentVariable("EmailSettings__Password") 
+            ?? Environment.GetEnvironmentVariable("EMAILSETTINGS__PASSWORD") 
+            ?? "";
+
+        if (string.IsNullOrWhiteSpace(mailtrapToken) && envPass.Trim().Length == 32 && !envPass.Contains(" "))
+        {
+            mailtrapToken = envPass.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(mailtrapToken))
         {
             try
             {
-                var client = _httpClientFactory.CreateClient();
-                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.brevo.com/v3/smtp/email");
-                request.Headers.Add("api-key", brevoApiKey.Trim());
-                request.Headers.Add("accept", "application/json");
+                using var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://send.api.mailtrap.io/api/send");
+                request.Headers.Add("Authorization", $"Bearer {mailtrapToken.Trim()}");
+                request.Headers.Add("Accept", "application/json");
+
+                // Thí nghiệm gửi bằng Sender email Mailtrap Demo hoặc Email Sender từ hệ thống
+                string fromEmail = senderEmail.Contains("@demomailtrap.com") ? senderEmail : "hello@demomailtrap.com";
 
                 var payload = new
                 {
-                    sender = new { name = senderName, email = senderEmail.Trim() },
+                    from = new { email = fromEmail, name = senderName },
                     to = new[] { new { email = toEmail.Trim() } },
                     subject = subject,
-                    htmlContent = htmlBody
+                    html = htmlBody
                 };
 
                 string jsonPayload = System.Text.Json.JsonSerializer.Serialize(payload);
                 request.Content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
                 var response = await client.SendAsync(request);
+                string responseStr = await response.Content.ReadAsStringAsync();
+
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation($"[EMAIL SUCCESS via BREVO API] Gửi email thành công tới {toEmail}");
-                    return (true, "Gửi email thành công qua Brevo HTTP API.");
+                    _logger.LogInformation($"[MAILTRAP SUCCESS] Gửi email thành công qua Mailtrap API tới {toEmail}");
+                    return (true, "Gửi email thành công 100% qua Mailtrap HTTP API!");
                 }
                 else
                 {
-                    string errStr = await response.Content.ReadAsStringAsync();
-                    _logger.LogWarning($"[BREVO API ERROR] status={response.StatusCode}, error={errStr}");
-                    return (false, $"Lỗi API Brevo (Status {response.StatusCode}): {errStr}");
+                    _logger.LogWarning($"[MAILTRAP API ERROR] status={response.StatusCode}, error={responseStr}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"[BREVO API EXCEPTION] Lỗi kết nối API Brevo: {ex.Message}");
+                _logger.LogError(ex, $"[MAILTRAP API EXCEPTION] {ex.Message}");
             }
         }
 
-        // 2. GỬI QUA MAILKIT SMTP GMAIL
+        // 2. GỬI QUA MAILKIT SMTP GMAIL / MAILTRAP SMTP
         try
         {
             string smtpServer = _configuration["EmailSettings:SmtpServer"];
@@ -357,7 +371,7 @@ public class EmailService : IEmailService
                 catch (Exception ex465)
                 {
                     _logger.LogError(ex465, $"[EMAIL PORT 465 FAILED] Cả 2 cổng 587 & 465 đều bị Render chặn: {ex465.Message}");
-                    return (false, $"Lỗi Gmail SMTP (Cả Cổng 587 & 465 đều bị Render chặn Timeout): {ex465.Message}. Vui lòng dùng Brevo HTTP API (Port 443 không bao giờ bị chặn).");
+                    return (false, $"Lỗi Gmail SMTP (Cả Cổng 587 & 465 đều bị Render chặn Timeout): {ex465.Message}.");
                 }
             }
 
