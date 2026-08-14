@@ -105,6 +105,13 @@ builder.Services.AddMailKitEmailServices(builder.Configuration);
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 builder.Services.AddHostedService<WeeklyChurnWinBackBackgroundService>();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 // =========================================================================
 // 3. XÁC THỰC NGƯỜI DÙNG (AUTHENTICATION - COOKIE, GOOGLE & FACEBOOK)
 // =========================================================================
