@@ -36,11 +36,11 @@
                                 @(Model.FullName?.Substring(0,1)?.ToUpper() ?? "U")
                             </div>
                         }
-                        <div>
+                        <div class="overflow-hidden" style="max-width:100%;">
                             <span class="badge @tierInfo.BadgeClass px-3 py-1.5 fs-6 rounded-pill fw-bold mb-1">
                                 <i class="bi bi-shield-shaded me-1"></i> @tierInfo.TierName
                             </span>
-                            <h3 class="fw-bold font-heading text-white m-0" style="font-size:1.85rem;">@Model.FullName</h3>
+                            <h3 class="fw-bold font-heading text-white m-0 text-break" style="font-size:clamp(1.3rem, 4vw, 1.85rem);line-height:1.25;">@Model.FullName</h3>
                         </div>
                     </div>
 

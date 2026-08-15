@@ -210,10 +210,10 @@
                         {
                             var userAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
                             <div class="dropdown">
-                                <button class="btn btn-outline-custom d-flex align-items-center gap-2 py-2 px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-outline-custom d-inline-flex align-items-center gap-2 py-2 px-3 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="max-width:200px;">
                                     @if (!string.IsNullOrEmpty(userAvatarUrl))
                                     {
-                                        <img src="@userAvatarUrl" alt="Avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid #6366f1;" />
+                                        <img src="@userAvatarUrl" alt="Avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid #6366f1;" />
                                     }
                                     else
                                     {
@@ -221,8 +221,8 @@
                                             @(User.FindFirst("FullName")?.Value?.Substring(0,1)?.ToUpper() ?? "U")
                                         </div>
                                     }
-                                    <span class="d-none d-md-inline" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.88rem;">@User.FindFirst("FullName")?.Value</span>
-                                    <i class="bi bi-chevron-down" style="font-size:0.75rem;"></i>
+                                    <span class="d-none d-md-inline text-truncate" style="max-width:110px;font-size:0.88rem;font-weight:600;">@User.FindFirst("FullName")?.Value</span>
+                                    <i class="bi bi-chevron-down ms-auto" style="font-size:0.75rem;flex-shrink:0;"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2" style="min-width:210px;">
                                     @if (User.IsInRole("Admin"))

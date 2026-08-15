@@ -525,6 +525,18 @@ button.rounded-circle {
   color: var(--primary);
 }
 
+/* Dark Mode Overrides for btn-outline-custom */
+body.user-dark-mode .btn-outline-custom {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  background: rgba(30, 41, 59, 0.75) !important;
+}
+body.user-dark-mode .btn-outline-custom:hover {
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  background: rgba(99, 102, 241, 0.25) !important;
+}
+
 /* === HERO BANNER === */
 .hero-banner {
   background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #311042 75%, #1a0533 100%);

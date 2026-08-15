@@ -235,14 +235,14 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpGet]
     [HttpPost]
-    [Authorize]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        TempData["InfoMessage"] = "Bạn đã đăng xuất tài khoản.";
-        return RedirectToAction("Index", "Home");
+        HttpContext.Session.Clear();
+        TempData["InfoMessage"] = "Bạn đã đăng xuất tài khoản thành công.";
+        return Redirect("~/");
     }
 
     [HttpGet]
