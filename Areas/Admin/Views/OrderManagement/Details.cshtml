@@ -11,7 +11,16 @@
         <h4 class="fw-bold font-heading m-0 text-dark">CHI TIẾT ĐƠN HÀNG #@Model.OrderNumber</h4>
         <small class="text-muted">Mã Đơn ID: #@Model.OrderId | Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
     </div>
-    <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left"></i> Quay lại danh sách đơn hàng</a>
+    <div class="d-flex gap-2">
+        <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="orderId" value="@Model.OrderId" />
+            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill fw-bold shadow-sm px-3">
+                <i class="bi bi-envelope-at-fill me-1"></i> Gửi Lại Email Hóa Đơn & Mã QR
+            </button>
+        </form>
+        <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+    </div>
 </div>
 
 <div class="row g-4">

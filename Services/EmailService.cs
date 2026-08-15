@@ -85,7 +85,10 @@ public class EmailService : IEmailService
         {
             var p = item.Variant?.Product;
             var imgUrl = p?.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p?.Images.FirstOrDefault()?.ImageUrl ?? "https://via.placeholder.com/80";
-            if (!imgUrl.StartsWith("http") && !imgUrl.StartsWith("/")) imgUrl = "/" + imgUrl;
+            if (!imgUrl.StartsWith("http"))
+            {
+                imgUrl = "https://fashionstore-zjc7.onrender.com" + (imgUrl.StartsWith("/") ? "" : "/") + imgUrl;
+            }
             
             totalItemsCount += item.Quantity;
             decimal itemTotal = item.UnitPrice * item.Quantity;

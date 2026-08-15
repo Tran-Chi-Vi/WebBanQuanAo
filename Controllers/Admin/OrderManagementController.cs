@@ -185,4 +185,28 @@ public class OrderManagementController : Controller
         TempData["SuccessMessage"] = $"Đã cập nhật trạng thái đơn hàng #{orderId} thành '{newStatus}' và gửi email thông báo!";
         return RedirectToAction("Details", new { id = orderId });
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendInvoice(int orderId)
+    {
+        var order = await _context.Orders.Include(o => o.User).FirstOrDefaultAsync(o => o.OrderId == orderId);
+        if (order == null || order.User == null)
+        {
+            TempData["ErrorMessage"] = "Không tìm thấy đơn hàng hoặc người dùng.";
+            return RedirectToAction("Index");
+        }
+
+        bool success = await _emailService.SendOrderInvoiceEmailAsync(orderId);
+        if (success)
+        {
+            TempData["SuccessMessage"] = $"Đã gửi lại Email Hóa Đơn & Mã QR tới địa chỉ '{order.User.Email}' thành công!";
+        }
+        else
+        {
+            TempData["ErrorMessage"] = $"Không thể gửi email tới '{order.User.Email}'. Vui lòng kiểm tra xem địa chỉ email có phải là Gmail thật hay không!";
+        }
+
+        return RedirectToAction("Details", new { id = orderId });
+    }
 }
