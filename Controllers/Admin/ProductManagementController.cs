@@ -258,6 +258,37 @@ public class ProductManagementController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> QuickRestock(int productId, Dictionary<int, int> variantStocks)
+    {
+        var product = await _context.Products
+            .Include(p => p.Variants)
+            .FirstOrDefaultAsync(p => p.ProductId == productId);
+
+        if (product == null) return NotFound();
+
+        if (variantStocks != null && variantStocks.Any())
+        {
+            foreach (var kvp in variantStocks)
+            {
+                var variant = product.Variants.FirstOrDefault(v => v.VariantId == kvp.Key);
+                if (variant != null)
+                {
+                    variant.StockQuantity = Math.Max(0, kvp.Value);
+                }
+            }
+            // If product was discontinued or out of stock, activate status if stock > 0
+            if (product.Variants.Sum(v => v.StockQuantity) > 0 && product.Status == ProductStatus.Discontinued)
+            {
+                product.Status = ProductStatus.Active;
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        TempData["SuccessMessage"] = $"Cập nhật nhập hàng tồn kho cho sản phẩm '{product.ProductName}' thành công!";
+        return RedirectToAction("Index");
+    }
+
     #region Manage Variants & Images
 
     [HttpPost]

@@ -1,25 +1,30 @@
 @model List<Product>
 @{
-    ViewData["Title"] = "Quản Lý Sản Phẩm";
+    ViewData["Title"] = "Quản Lý Sản Phẩm & Tồn Kho";
     var categories = ViewBag.Categories as List<Category> ?? new List<Category>();
     var brands = ViewBag.Brands as List<Brand> ?? new List<Brand>();
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h4 class="fw-bold font-heading m-0">DANH SÁCH SẢN PHẨM</h4>
-        <small class="text-muted">Tổng số: @ViewBag.TotalItems sản phẩm</small>
+        <h4 class="fw-bold font-heading m-0"><i class="bi bi-box-seam-fill text-primary me-2"></i> QUẢN LÝ SẢN PHẨM & TỒN KHO</h4>
+        <small class="text-muted">Tổng số: <strong>@ViewBag.TotalItems</strong> sản phẩm trong cửa hàng</small>
     </div>
-    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary-gradient shadow-sm">
-        <i class="bi bi-plus-lg me-1"></i> Thêm Sản Phẩm Mới
-    </a>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary-gradient shadow-sm fw-bold px-3">
+            <i class="bi bi-plus-lg me-1"></i> Thêm Sản Phẩm Mới
+        </a>
+    </div>
 </div>
 
 <!-- Filters Header -->
 <div class="card p-3 border-0 shadow-sm rounded-4 bg-white mb-4">
     <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" method="get" class="row g-3">
         <div class="col-md-4">
-            <input type="text" name="searchQuery" class="form-control rounded-3" placeholder="Tìm theo tên sản phẩm..." value="@ViewBag.SearchQuery" />
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="searchQuery" class="form-control border-start-0 ps-0" placeholder="Tìm theo tên sản phẩm..." value="@ViewBag.SearchQuery" />
+            </div>
         </div>
         <div class="col-md-3">
             <select name="categoryId" class="form-select rounded-3">
@@ -40,7 +45,7 @@
             </select>
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Lọc</button>
+            <button type="submit" class="btn btn-outline-primary w-100 fw-bold"><i class="bi bi-funnel me-1"></i> Lọc</button>
         </div>
     </form>
 </div>
@@ -49,38 +54,59 @@
 <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
     <div class="table-responsive">
         <table class="table table-custom align-middle">
-            <thead>
+            <thead class="table-light">
                 <tr>
-                    <th>Hình Ảnh</th>
+                    <th style="width:70px;">Hình Ảnh</th>
                     <th>Tên Sản Phẩm</th>
                     <th>Danh Mục</th>
                     <th>Thương Hiệu</th>
                     <th>Giá Gốc</th>
-                    <th>Biến Thể (Size/Màu)</th>
+                    <th>Tồn Kho</th>
                     <th>Trạng Thái</th>
-                    <th>Thao Tác</th>
+                    <th style="min-width: 220px;">Thao Tác</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var p in Model)
                 {
                     var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                    int totalStock = p.Variants.Sum(v => v.StockQuantity);
+
                     <tr>
                         <td>
-                            <img src="@img" alt="@p.ProductName" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                            <img src="@img" alt="@p.ProductName" class="rounded-3 shadow-sm border" style="width: 54px; height: 54px; object-fit: cover;" />
                         </td>
-                        <td class="fw-bold">@p.ProductName</td>
-                        <td class="small text-muted">@p.Category?.CategoryName</td>
-                        <td class="small text-muted">@p.Brand?.BrandName</td>
+                        <td>
+                            <div class="fw-bold text-dark fs-6">@p.ProductName</div>
+                            <small class="text-muted font-monospace">@p.Variants.Count size/màu biến thể</small>
+                        </td>
+                        <td class="small text-muted fw-semibold">@p.Category?.CategoryName</td>
+                        <td class="small text-muted fw-semibold">@p.Brand?.BrandName</td>
                         <td class="fw-bold text-primary">@p.BasePrice.ToString("N0")đ</td>
                         <td>
-                            <span class="badge bg-light text-dark border">@p.Variants.Count biến thể</span>
+                            @if (totalStock > 0)
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold px-2.5 py-1.5 rounded-pill">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Còn @totalStock SP
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold px-2.5 py-1.5 rounded-pill">
+                                    <i class="bi bi-exclamation-octagon-fill me-1"></i> HẾT HÀNG (0 SP)
+                                </span>
+                            }
                         </td>
                         <td>
                             <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary")">@p.Status</span>
                         </td>
                         <td>
                             <div class="d-flex gap-2 align-items-center">
+                                <button type="button" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-bold"
+                                        data-bs-toggle="modal" data-bs-target="#restockModal-@p.ProductId"
+                                        style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                    <i class="bi bi-plus-circle-fill"></i> Nhập Hàng
+                                </button>
                                 <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Edit" asp-route-id="@p.ProductId"
                                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
                                    style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
@@ -98,8 +124,79 @@
                             </div>
                         </td>
                     </tr>
+
+                    <!-- Restock Modal for Product -->
+                    <div class="modal fade" id="restockModal-@p.ProductId" tabindex="-1" aria-labelledby="restockLabel-@p.ProductId" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                                <form asp-area="Admin" asp-controller="ProductManagement" asp-action="QuickRestock" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@p.ProductId" />
+                                    <div class="modal-header bg-light rounded-top-4">
+                                        <h5 class="modal-title fw-bold text-dark" id="restockLabel-@p.ProductId">
+                                            <i class="bi bi-box-seam text-success me-2"></i> Nhập Hàng Tồn Kho: <span class="text-primary">@p.ProductName</span>
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body p-4">
+                                        <p class="text-muted small mb-3">Cập nhật số lượng tồn kho cho các biến thể Size/Màu sắc để sản phẩm sẵn sàng mở bán lại trên trang web:</p>
+                                        <div class="table-responsive">
+                                            <table class="table align-middle table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Mã SKU</th>
+                                                        <th>Size</th>
+                                                        <th>Màu Sắc</th>
+                                                        <th>Giá</th>
+                                                        <th style="width: 220px;">Tồn Kho Hiện Tại</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var v in p.Variants)
+                                                    {
+                                                        <tr>
+                                                            <td class="font-monospace small fw-bold text-muted">@v.SKU</td>
+                                                            <td><span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">@v.Size</span></td>
+                                                            <td><span class="badge bg-light text-dark border px-2 py-1">@v.Color</span></td>
+                                                            <td class="fw-bold">@v.Price.ToString("N0")đ</td>
+                                                            <td>
+                                                                <div class="input-group input-group-sm">
+                                                                    <input type="number" name="variantStocks[@v.VariantId]" 
+                                                                           id="input-stock-@v.VariantId" 
+                                                                           class="form-control text-center font-monospace fw-bold" 
+                                                                           value="@v.StockQuantity" min="0" />
+                                                                    <button type="button" class="btn btn-outline-success font-monospace" onclick="addStockValue(@v.VariantId, 20)" title="Cộng thêm 20 SP">+20</button>
+                                                                    <button type="button" class="btn btn-outline-success font-monospace" onclick="addStockValue(@v.VariantId, 50)" title="Cộng thêm 50 SP">+50</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer bg-light rounded-bottom-4">
+                                        <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Hủy</button>
+                                        <button type="submit" class="btn btn-success fw-bold px-4 rounded-3">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Lưu Cập Nhật Tồn Kho
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    function addStockValue(variantId, count) {
+        const input = document.getElementById(`input-stock-${variantId}`);
+        if (input) {
+            let current = parseInt(input.value) || 0;
+            input.value = current + count;
+        }
+    }
+</script>
