@@ -115,8 +115,14 @@ public class EmailService : IEmailService
             ? $"{order.Address.RecipientName} - SĐT: {order.Address.Phone} ({order.Address.DetailAddress}, {order.Address.Ward}, {order.Address.District}, {order.Address.Province})"
             : "Chưa cập nhật";
 
+        // Convert Render Server UTC Time to Vietnam ICT Local Time (UTC+7)
+        DateTime vnOrderDate = order.OrderDate.AddHours(7);
+        string orderDateStr = vnOrderDate.ToString("dd/MM/yyyy HH:mm");
+        string deliveryTimeStr = order.Payment?.PaidAt.HasValue == true 
+            ? order.Payment.PaidAt.Value.AddHours(7).ToString("dd/MM/yyyy HH:mm")
+            : "Dự kiến 1 - 3 ngày làm việc";
+
         string trackOrderUrl = $"https://fashionstore-zjc7.onrender.com/Order/Track/{order.OrderGuid}";
-        string qrCodeImageUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackOrderUrl)}";
 
         string body = $@"
             <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
@@ -129,7 +135,8 @@ public class EmailService : IEmailService
                     </div>
                     <div style=""text-align: right;"">
                         <div style=""font-family: monospace; font-size: 15px; font-weight: bold; color: #0f172a;"">#{order.OrderNumber}</div>
-                        <div style=""color: #94a3b8; font-size: 12px; margin-top: 4px;"">{order.OrderDate:dd/MM/yyyy HH:mm}</div>
+                        <div style=""color: #475569; font-size: 12px; margin-top: 4px; font-weight: 600;"">🕒 Đặt hàng: {orderDateStr}</div>
+                        <div style=""color: #10b981; font-size: 11px; margin-top: 2px;"">🚚 Giao hàng: {deliveryTimeStr}</div>
                     </div>
                 </div>
 
@@ -151,7 +158,9 @@ public class EmailService : IEmailService
                     <div style=""font-weight: bold; color: #0f172a; margin-bottom: 6px; font-size: 14px;"">📌 THÔNG TIN GIAO HÀNG & THU HỘ (COD):</div>
                     <div>Khách hàng nhận: <strong>{order.User.FullName}</strong> ({order.User.Email})</div>
                     <div>Địa chỉ nhận hàng: <strong>{addressText}</strong></div>
-                    <div>Hình thức thanh toán: <strong>{(order.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THANH TOÁN KHI NHẬN HÀNG (Cần thu hộ: {order.TotalAmount:N0}đ)")}</strong></div>
+                    <div>Thời gian đặt hàng: <strong>{orderDateStr} (Giờ Việt Nam)</strong></div>
+                    <div>Thời gian giao hàng: <strong>{deliveryTimeStr}</strong></div>
+                    <div style=""margin-top: 4px;"">Hình thức thanh toán: <strong>{(order.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THANH TOÁN KHI NHẬN HÀNG (Cần thu hộ: {order.TotalAmount:N0}đ)")}</strong></div>
                 </div>
 
                 <!-- PRODUCT ITEMS TABLE -->

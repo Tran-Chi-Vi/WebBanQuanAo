@@ -1,11 +1,17 @@
 @model Order
 @{
     ViewData["Title"] = $"Phiếu Giao Hàng & Tra Cứu #{Model.OrderNumber}";
+    DateTime vnOrderDate = Model.OrderDate.AddHours(7);
+    string orderDateStr = vnOrderDate.ToString("dd/MM/yyyy HH:mm");
+    string deliveryCompletedTimeStr = Model.Payment?.PaidAt.HasValue == true
+        ? Model.Payment.PaidAt.Value.AddHours(7).ToString("dd/MM/yyyy HH:mm")
+        : "Đang vận chuyển";
+
     string trackUrl = $"https://fashionstore-zjc7.onrender.com/Order/Track/{Model.OrderGuid}";
     string qrCodeUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackUrl)}";
 }
 
-<div class="container my-4" style="max-width: 750px;">
+<div class="container my-4" style="max-width: 780px;">
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show rounded-4 mb-4 shadow-sm fw-bold fs-6" role="alert">
@@ -20,100 +26,131 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
-    @if (TempData["InfoMessage"] != null)
-    {
-        <div class="alert alert-info alert-dismissible fade show rounded-4 mb-4 shadow-sm fw-bold fs-6" role="alert">
-            <i class="bi bi-info-circle-fill me-2 fs-5"></i> @TempData["InfoMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
-        <!-- Header Banner -->
-        <div class="bg-primary text-white p-4 text-center position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
-            <div class="badge bg-white text-primary fw-bold px-3 py-1.5 rounded-pill mb-2 shadow-sm fs-6">
-                📦 PHIẾU GIAO HÀNG & XÁC NHẬN CHO SHIPPER
+        <!-- Premium Header Banner -->
+        <div class="p-4 text-white text-center position-relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold px-3 py-1.5 rounded-pill mb-2 shadow-sm fs-6">
+                <i class="bi bi-box-seam-fill me-1"></i> PHIẾU GIAO HÀNG SHIPPER
+            </span>
+            <h3 class="fw-bold font-monospace text-white mb-1">#@Model.OrderNumber</h3>
+            <div class="small opacity-75 mt-1">
+                <i class="bi bi-clock-history me-1"></i> Thời gian đặt hàng: <strong>@orderDateStr (Giờ Việt Nam)</strong>
             </div>
-            <h3 class="fw-bold font-monospace mb-1">#@Model.OrderNumber</h3>
-            <p class="mb-0 opacity-75 small">Ngày khởi tạo: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
         </div>
 
         <div class="card-body p-4">
-            <!-- Shipper Quick Action Buttons (If order is active) -->
+
+            <!-- Order Timeline Flow -->
+            <div class="p-3 bg-light rounded-4 border mb-4">
+                <h6 class="fw-bold text-dark font-heading mb-3 text-uppercase"><i class="bi bi-arrow-right-circle text-primary me-2"></i> LỊCH TRÌNH VẬN CHUYỂN & GIAO HÀNG</h6>
+                <div class="row g-2 text-center small">
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white border border-success text-success fw-bold">
+                            <i class="bi bi-cart-check-fill d-block fs-5 mb-1"></i>
+                            <div>1. Khởi Tạo</div>
+                            <div class="font-monospace" style="font-size:0.75rem;">@orderDateStr</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white border @(Model.Status != OrderStatus.Pending ? "border-info text-info" : "border-secondary text-muted") fw-bold">
+                            <i class="bi bi-truck d-block fs-5 mb-1"></i>
+                            <div>2. Đang Giao</div>
+                            <div class="font-monospace" style="font-size:0.75rem;">@(Model.Status != OrderStatus.Pending ? "Đã xuất kho" : "Chờ lấy hàng")</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 rounded-3 bg-white border @(Model.Status == OrderStatus.Completed ? "border-success text-success" : (Model.Status == OrderStatus.Cancelled ? "border-danger text-danger" : "border-secondary text-muted")) fw-bold">
+                            <i class="bi @(Model.Status == OrderStatus.Completed ? "bi-check-circle-fill" : (Model.Status == OrderStatus.Cancelled ? "bi-x-circle-fill" : "bi-clock")) d-block fs-5 mb-1"></i>
+                            <div>3. Hoàn Tất</div>
+                            <div class="font-monospace" style="font-size:0.75rem;">@deliveryCompletedTimeStr</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipper Interactive Panel (Only if Order is Active) -->
             @if (Model.Status != OrderStatus.Completed && Model.Status != OrderStatus.Cancelled)
             {
-                <div class="card p-3 border-2 border-primary bg-primary-subtle rounded-4 mb-4 text-center">
-                    <h6 class="fw-bold text-primary text-uppercase mb-2"><i class="bi bi-shield-check me-1"></i> BẢNG XÁC NHẬN XỬ LÝ GIAO HÀNG (DÀNH CHO SHIPPER)</h6>
-                    <p class="small text-muted mb-3">Shipper vui lòng chọn trạng thái tương ứng sau khi gặp khách hàng giao hàng:</p>
+                <div class="card p-3.5 border-2 border-primary bg-primary-subtle rounded-4 mb-4 text-center">
+                    <h6 class="fw-bold text-primary text-uppercase mb-2"><i class="bi bi-hand-index-thumb-fill me-1"></i> THAO TÁC XÁC NHẬN DÀNH CHO SHIPPER</h6>
+                    <p class="small text-muted mb-3">Vui lòng chọn trạng thái tương ứng sau khi gặp trực tiếp khách hàng giao hàng:</p>
 
-                    <div class="d-grid gap-2 col-md-10 mx-auto">
+                    <div class="d-grid gap-2.5 col-md-10 mx-auto">
                         <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="orderGuid" value="@Model.OrderGuid" />
                             <input type="hidden" name="actionType" value="confirm_success" />
-                            <button type="submit" onclick="return confirm('Bạn có chắc chắn xác nhận ĐƠN HÀNG ĐÃ GIAO THÀNH CÔNG tới khách hàng?')" class="btn btn-success btn-lg w-100 fw-bold py-3 shadow rounded-3">
-                                <i class="bi bi-check-circle-fill me-2 fs-5"></i> ✅ GIAO HÀNG THÀNH CÔNG (XÁC NHẬN)
+                            <button type="submit" onclick="return confirm('Xác nhận ĐƠN HÀNG ĐÃ GIAO THÀNH CÔNG tới khách hàng?')" class="btn btn-success btn-lg w-100 fw-bold py-3 shadow rounded-3 fs-6">
+                                <i class="bi bi-check-lg me-2"></i> GIAO HÀNG THÀNH CÔNG (XÁC NHẬN)
                             </button>
                         </form>
 
-                        <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline mt-1">
+                        <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="orderGuid" value="@Model.OrderGuid" />
                             <input type="hidden" name="actionType" value="fail_attempt" />
-                            <button type="submit" onclick="return confirm('Xác nhận báo GIAO HÀNG THẤT BẠI cho lần này? (Nếu thất bại 3 lần đơn sẽ tự hủy & trả về kho)')" class="btn btn-outline-danger w-100 fw-bold py-2 rounded-3">
-                                <i class="bi bi-x-circle me-1"></i> ❌ BÁO GIAO THẤT BẠI (Lần @(Model.DeliveryAttemptCount + 1)/3)
+                            <button type="submit" onclick="return confirm('Báo GIAO HÀNG THẤT BẠI cho lần này? (Thất bại 3 lần đơn sẽ tự hủy & hoàn kho)')" class="btn btn-outline-danger w-100 fw-bold py-2.5 rounded-3">
+                                <i class="bi bi-x-lg me-1"></i> BÁO GIAO THẤT BẠI (Lần @(Model.DeliveryAttemptCount + 1)/3)
                             </button>
                         </form>
                     </div>
                 </div>
             }
 
-            <!-- Order Status & Attempt Counter -->
+            <!-- QR Code Card & Order Status Details -->
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border h-100">
-                        <small class="text-muted fw-bold d-block mb-1">TRẠNG THÁI ĐƠN HÀNG</small>
-                        <div class="fs-6 mb-2">
-                            @switch (Model.Status)
-                            {
-                                case OrderStatus.Pending:
-                                    <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill"><i class="bi bi-hourglass-split me-1"></i> Đang Xử Lý / Trong Kho</span>
-                                    break;
-                                case OrderStatus.Shipping:
-                                    <span class="badge bg-info text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-truck me-1"></i> Đang Giao Hàng</span>
-                                    break;
-                                case OrderStatus.Completed:
-                                    <span class="badge bg-success text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> GIAO THÀNH CÔNG</span>
-                                    break;
-                                case OrderStatus.Cancelled:
-                                    <span class="badge bg-danger text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i> ĐÃ HỦY ĐƠN & HOÀN KHO</span>
-                                    break;
-                                default:
-                                    <span class="badge bg-secondary fs-6">Chờ Duyệt</span>
-                                    break;
-                            }
+                <div class="col-md-5 text-center">
+                    <div class="p-3 bg-light rounded-4 border h-100 d-flex flex-column justify-content-center align-items-center">
+                        <div class="small fw-bold text-primary text-uppercase mb-2"><i class="bi bi-qr-code-scan me-1"></i> Mã QR Vận Đơn</div>
+                        <div class="bg-white p-2.5 rounded-3 border shadow-sm mb-2">
+                            <img src="@qrCodeUrl" alt="Mã QR Đơn Hàng" style="width: 160px; height: 160px;" class="d-block" />
                         </div>
-                        <div class="small text-muted font-monospace">Lần phát hàng: <strong>@Model.DeliveryAttemptCount / 3 lần</strong></div>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">GUID: @Model.OrderGuid.ToString().Substring(0, 8)...</span>
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border h-100">
-                        <small class="text-muted fw-bold d-block mb-1">TIỀN THU HỘ (COD) / THANH TOÁN</small>
-                        @if (Model.Payment?.Status == PaymentStatus.Success)
-                        {
-                            <div class="fw-bold text-success fs-5"><i class="bi bi-shield-check me-1"></i> ĐÃ THANH TOÁN (0đ COD)</div>
-                        }
-                        else
-                        {
-                            <div class="fw-bold text-danger fs-4">CẦN THU HỘ COD: @Model.TotalAmount.ToString("N0")đ</div>
-                        }
+                <div class="col-md-7">
+                    <div class="d-flex flex-column gap-3 h-100">
+                        <div class="p-3 bg-light rounded-4 border">
+                            <small class="text-muted fw-bold d-block mb-1">TRẠNG THÁI HIỆN TẠI</small>
+                            <div class="fs-6 mb-1">
+                                @switch (Model.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill"><i class="bi bi-hourglass-split me-1"></i> Đang Xử Lý</span>
+                                        break;
+                                    case OrderStatus.Shipping:
+                                        <span class="badge bg-info text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-truck me-1"></i> Đang Giao Hàng</span>
+                                        break;
+                                    case OrderStatus.Completed:
+                                        <span class="badge bg-success text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Đã Giao Thành Công</span>
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        <span class="badge bg-danger text-white fs-6 px-3 py-2 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i> Đã Hủy & Hoàn Kho</span>
+                                        break;
+                                }
+                            </div>
+                            <small class="text-muted font-monospace d-block">Số lần phát hàng: <strong>@Model.DeliveryAttemptCount / 3 lần</strong></small>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-4 border">
+                            <small class="text-muted fw-bold d-block mb-1">TIỀN THU HỘ (COD) / THANH TOÁN</small>
+                            @if (Model.Payment?.Status == PaymentStatus.Success)
+                            {
+                                <div class="fw-bold text-success fs-5"><i class="bi bi-shield-check me-1"></i> ĐÃ THANH TOÁN (0đ COD)</div>
+                            }
+                            else
+                            {
+                                <div class="fw-bold text-danger fs-4">CẦN THU HỘ COD: @Model.TotalAmount.ToString("N0")đ</div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Recipient Information & One-Tap Phone Call -->
-            <div class="card p-3 border rounded-3 bg-white mb-4 shadow-sm">
+            <div class="card p-3.5 border rounded-4 bg-white mb-4 shadow-sm">
                 <h6 class="fw-bold font-heading mb-3 text-dark"><i class="bi bi-geo-alt-fill text-danger me-2"></i> THÔNG TIN NGƯỜI NHẬN HÀNG</h6>
                 @if (Model.Address != null)
                 {
@@ -122,11 +159,11 @@
                             <div class="fw-bold text-dark fs-5">@Model.Address.RecipientName</div>
                             <div class="text-muted"><i class="bi bi-telephone me-1"></i> SĐT: <strong class="text-dark font-monospace fs-6">@Model.Address.Phone</strong></div>
                         </div>
-                        <a href="tel:@Model.Address.Phone" class="btn btn-success fw-bold shadow-sm rounded-pill px-4 py-2">
-                            <i class="bi bi-telephone-outbound-fill me-2"></i> GỌI ĐIỆN CHO KHÁCH HÀNG
+                        <a href="tel:@Model.Address.Phone" class="btn btn-success fw-bold shadow-sm rounded-pill px-4 py-2.5">
+                            <i class="bi bi-telephone-outbound-fill me-2"></i> GỌI KHÁCH HÀNG NHẬN HÀNG
                         </a>
                     </div>
-                    <div class="small text-secondary bg-light p-2.5 rounded-3 mt-2 border fw-semibold">
+                    <div class="small text-secondary bg-light p-3 rounded-3 mt-2 border fw-semibold">
                         📍 <strong>Địa chỉ giao:</strong> @Model.Address.DetailAddress, @Model.Address.Ward, @Model.Address.District, @Model.Address.Province
                     </div>
                 }

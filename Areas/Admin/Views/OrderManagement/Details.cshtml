@@ -123,6 +123,31 @@
             </form>
         </div>
 
+        <!-- QR Code & Shipping Label Card -->
+        @{
+            string trackUrlAdmin = $"https://fashionstore-zjc7.onrender.com/Order/Track/{Model.OrderGuid}";
+            string qrCodeAdminUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackUrlAdmin)}";
+        }
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4 text-center">
+            <h5 class="fw-bold font-heading mb-2 text-primary"><i class="bi bi-qr-code-scan me-2"></i> MÃ QR VẬN ĐƠN & SHIPPER</h5>
+            <p class="small text-muted mb-3">Dán tem này lên kiện hàng để Shipper quét camera mở ngay thông tin đơn hàng & nút giao hàng 1-click:</p>
+            
+            <div id="printableShippingLabel" class="bg-light p-3 rounded-4 border border-dashed border-primary d-inline-block mb-3">
+                <div class="fw-bold text-dark font-monospace fs-5 mb-1">#@Model.OrderNumber</div>
+                <div class="bg-white p-2 d-inline-block rounded-3 border shadow-sm">
+                    <img src="@qrCodeAdminUrl" alt="Mã QR Vận Đơn" style="width: 170px; height: 170px;" class="d-block" />
+                </div>
+                <div class="small fw-bold text-danger mt-2">
+                    @(Model.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THU HỘ COD: {Model.TotalAmount.ToString("N0")}đ")
+                </div>
+                <div class="small text-muted font-monospace mt-1">@Model.Address?.RecipientName - @Model.Address?.Phone</div>
+            </div>
+
+            <button type="button" onclick="printShippingLabel()" class="btn btn-outline-primary fw-bold w-100 rounded-3">
+                <i class="bi bi-printer-fill me-1"></i> In Tem Giao Hàng (Print Shipping Label)
+            </button>
+        </div>
+
         <!-- Customer & Address Info Card -->
         <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
             <h5 class="fw-bold font-heading mb-3">THÔNG TIN KHÁCH HÀNG</h5>
@@ -140,3 +165,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    function printShippingLabel() {
+        const content = document.getElementById('printableShippingLabel').outerHTML;
+        const printWin = window.open('', '', 'width=600,height=600');
+        printWin.document.write('<html><head><title>In Tem Giao Hàng</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></head><body class="p-4 text-center">' + content + '<script>window.print();window.close();<\/script></body></html>');
+        printWin.document.close();
+    }
+</script>
