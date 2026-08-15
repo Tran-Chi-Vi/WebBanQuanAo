@@ -218,6 +218,7 @@ using (var scope = app.Services.CreateScope())
                     ALTER TABLE ""Users"" ADD COLUMN IF NOT EXISTS ""FacebookId"" character varying(100);
                     ALTER TABLE ""Promotions"" ADD COLUMN IF NOT EXISTS ""AssignedUserId"" integer;
                     ALTER TABLE ""Promotions"" ADD COLUMN IF NOT EXISTS ""AllowedEmail"" character varying(255);
+                    ALTER TABLE ""Orders"" ADD COLUMN IF NOT EXISTS ""DeliveryAttemptCount"" integer NOT NULL DEFAULT 0;
                 ");
             }
             catch { }

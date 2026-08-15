@@ -648,5 +648,79 @@ public class OrderController : Controller
         return View(order);
     }
 
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ShipperUpdateStatus(Guid orderGuid, string actionType)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.OrderGuid == orderGuid);
+
+        if (order == null)
+        {
+            TempData["ErrorMessage"] = "Không tìm thấy thông tin đơn hàng.";
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (order.Status == OrderStatus.Completed)
+        {
+            TempData["InfoMessage"] = "Đơn hàng này đã được xác nhận giao thành công trước đó.";
+            return RedirectToAction("Track", new { id = orderGuid });
+        }
+
+        if (order.Status == OrderStatus.Cancelled)
+        {
+            TempData["ErrorMessage"] = "Đơn hàng này đã bị hủy, không thể cập nhật.";
+            return RedirectToAction("Track", new { id = orderGuid });
+        }
+
+        if (actionType == "confirm_success")
+        {
+            order.Status = OrderStatus.Completed;
+            if (order.Payment != null)
+            {
+                order.Payment.Status = PaymentStatus.Success;
+                if (!order.Payment.PaidAt.HasValue) order.Payment.PaidAt = DateTime.Now;
+            }
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"🎉 XÁC NHẬN THÀNH CÔNG: Đơn hàng #{order.OrderNumber} đã giao thành công tới tận tay khách hàng!";
+        }
+        else if (actionType == "fail_attempt")
+        {
+            order.DeliveryAttemptCount += 1;
+            if (order.DeliveryAttemptCount < 3)
+            {
+                order.Status = OrderStatus.Shipping;
+                await _context.SaveChangesAsync();
+                TempData["ErrorMessage"] = $"⚠️ GIAO THẤT BẢI LẦN {order.DeliveryAttemptCount}/3: Đơn hàng #{order.OrderNumber} được giữ lại tại kho để shipper giao lại sau.";
+            }
+            else
+            {
+                // Giao thất bại 3 lần -> Tự động HỦY ĐƠN HÀNG & HOÀN TRẢ TỒN KHO VỀ CỬA HÀNG
+                order.Status = OrderStatus.Cancelled;
+                if (order.Payment != null)
+                {
+                    order.Payment.Status = PaymentStatus.Failed;
+                }
+
+                foreach (var detail in order.OrderDetails)
+                {
+                    var variant = await _context.ProductVariants.FindAsync(detail.VariantId);
+                    if (variant != null)
+                    {
+                        variant.StockQuantity += detail.Quantity;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["ErrorMessage"] = $"❌ GIAO THẤT BẢI 3 LẦN: Đơn hàng #{order.OrderNumber} đã tự động HỦY ĐƠN HÀNG và HOÀN TRẢ SẢN PHẨM VỀ TỒN KHO CỬA HÀNG!";
+            }
+        }
+
+        return RedirectToAction("Track", new { id = orderGuid });
+    }
+
     #endregion
 }

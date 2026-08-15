@@ -34,6 +34,8 @@ public class Order
 
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
+    public int DeliveryAttemptCount { get; set; } = 0;
+
     [Column(TypeName = "decimal(18,2)")]
     public decimal TotalAmount { get; set; }
 

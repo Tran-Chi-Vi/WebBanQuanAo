@@ -133,24 +133,10 @@ public class EmailService : IEmailService
                     </div>
                 </div>
 
-                <!-- QR CODE TRACKING SECTION FOR SHIPPER & CUSTOMER -->
-                <div style=""margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border-radius: 16px; border: 2px dashed #3b82f6; text-align: center;"">
-                    <div style=""font-size: 13px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;"">
-                        📱 MÃ QR TRA CỨU ĐƠN HÀNG (DÀNH CHO SHIPPER QUÉT MÃ NHANH)
-                    </div>
-                    <div style=""background: #ffffff; padding: 12px; display: inline-block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 8px 0;"">
-                        <a href=""{trackOrderUrl}"" target=""_blank"" style=""text-decoration: none;"">
-                            <img src=""{qrCodeImageUrl}"" alt=""Mã QR Đơn Hàng #{order.OrderNumber}"" style=""width: 180px; height: 180px; display: block; border: 0;"" />
-                        </a>
-                    </div>
-                    <div style=""font-family: monospace; font-size: 16px; font-weight: bold; color: #0f172a; margin-top: 6px;"">
-                        Mã Vận Đơn: <span style=""color: #2563eb;"">#{order.OrderNumber}</span>
-                    </div>
-                    <p style=""margin: 6px 0 12px 0; color: #64748b; font-size: 12px;"">
-                        Shipper hoặc khách hàng quét mã QR trên bằng camera điện thoại để xem trực tiếp chi tiết đơn hàng & trạng thái vận chuyển!
-                    </p>
-                    <a href=""{trackOrderUrl}"" style=""background: #2563eb; color: #ffffff; text-decoration: none; padding: 8px 20px; font-size: 13px; font-weight: bold; border-radius: 20px; display: inline-block;"">
-                        🔍 Mở Chi Tiết Đơn Hàng Trên Web
+                <!-- LINK TRACKING BUTTON -->
+                <div style=""margin: 20px 0; padding: 15px; background: #eff6ff; border-radius: 12px; text-align: center;"">
+                    <a href=""{trackOrderUrl}"" style=""background: #2563eb; color: #ffffff; text-decoration: none; padding: 10px 24px; font-size: 14px; font-weight: bold; border-radius: 20px; display: inline-block;"">
+                        🔍 Xem Trực Tiếp Trạng Thái & Chi Tiết Đơn Hàng
                     </a>
                 </div>
 
