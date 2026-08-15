@@ -310,6 +310,58 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(order.User.Email, subject, body);
     }
 
+    public async Task<bool> SendDeliveryFailedCustomerConfirmationEmailAsync(int orderId, int attemptCount)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null || order.User == null) return false;
+
+        DateTime nowVn = DateTime.UtcNow.AddHours(7);
+        string timeStr = nowVn.ToString("dd/MM/yyyy HH:mm");
+        string confirmUrl = $"https://fashionstore-zjc7.onrender.com/Order/CustomerConfirmDelivery/{order.OrderGuid}";
+
+        string subject = $"⚠️ [FASHION STORE] - Giao Hàng Thất Bại (Lần {attemptCount}/3) - Vui Lòng Xác Nhận Giao Lại";
+
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 2px solid #f59e0b; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
+                <div style=""text-align: center; padding-bottom: 15px; border-bottom: 2px solid #fef3c7;"">
+                    <h2 style=""color: #d97706; margin: 0; font-size: 22px; font-weight: bold;"">⚠️ THÔNG BÁO GIAO HÀNG THẤT BẠI (LẦN {attemptCount}/3)</h2>
+                    <span style=""color: #64748b; font-size: 13px;"">Đơn hàng: <strong>#{order.OrderNumber}</strong></span>
+                </div>
+
+                <div style=""margin: 20px 0; padding: 16px; background: #fffbeb; border-radius: 12px; border-left: 4px solid #f59e0b; color: #92400e;"">
+                    <div style=""font-size: 14px; font-weight: bold; margin-bottom: 4px;"">Xin chào {order.User.FullName},</div>
+                    <div style=""font-size: 13px; line-height: 1.5;"">
+                        Shipper vừa báo giao hàng không thành công vào lúc <strong>{timeStr} (Giờ Việt Nam)</strong> do không liên lạc được hoặc bận hẹn lại.
+                    </div>
+                </div>
+
+                <div style=""margin: 25px 0; text-align: center; padding: 20px; background: #eff6ff; border-radius: 14px; border: 1px dashed #3b82f6;"">
+                    <div style=""font-size: 14px; font-weight: bold; color: #1e40af; margin-bottom: 8px;"">
+                        👉 ĐƠN HÀNG ĐANG Ở TRẠNG THÁI: <span style=""color: #d97706;"">CHỜ BẠN XÁC NHẬN GIAO LẠI</span>
+                    </div>
+                    <p style=""font-size: 12px; color: #475569; margin-bottom: 16px;"">
+                        Vui lòng bấm vào nút bên dưới để xác nhận bạn sẵn sàng nhận hàng. Sau khi xác nhận, đơn hàng sẽ được tự động chuyển cho Shipper giao lại lần tiếp theo!
+                    </p>
+                    <a href=""{confirmUrl}"" style=""background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 14px; font-weight: bold; border-radius: 30px; display: inline-block; box-shadow: 0 4px 12px rgba(37,99,235,0.35);"">
+                        📲 XÁC NHẬN SẴN SÀNG NHẬN HÀNG LẦN GIAO TIẾP THEO
+                    </a>
+                </div>
+
+                <div style=""font-size: 12px; color: #64748b; line-height: 1.5; text-align: center;"">
+                    ⚠️ <em>Lưu ý: Nếu đơn hàng giao thất bại quá 3 lần, hệ thống sẽ tự động hủy đơn và hoàn trả sản phẩm về kho.</em>
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(order.User.Email, subject, body);
+    }
+
     public async Task<bool> SendChurnWinBackEmailAsync(string toEmail, string recipientName, string voucherCode, decimal discountValue, DiscountType discountType, DateTime endDate)
     {
         string discountText = discountType == DiscountType.Percentage 

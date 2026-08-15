@@ -49,29 +49,12 @@
 
 <div class="container py-4" style="max-width: 760px;">
     
-    <!-- Auto-Exit Countdown Alert (If Action Just Taken) -->
+    <!-- Instant Exit Script (If Shipper just submitted an action) -->
     @if (autoExit)
     {
-        <div id="autoExitAlert" class="alert alert-dark bg-dark text-white border-0 shadow-lg rounded-4 p-4 mb-4 text-center">
-            <div class="spinner-border text-success spinner-border-sm mb-2" role="status"></div>
-            <h5 class="fw-bold text-success mb-1">🎉 THAO TÁC ĐÃ ĐƯỢC XÁC NHẬN VÀ KHÓA THÀNH CÔNG!</h5>
-            <p class="small text-light opacity-75 mb-3">Hệ thống đã tự động gửi email thông báo cho khách hàng và khóa giao diện đơn hàng này.</p>
-            <div class="badge bg-danger fs-6 px-3 py-2 rounded-pill">
-                🔒 Tự động thoát trang trong <span id="countdownSec" class="fw-bold">5</span> giây...
-            </div>
-        </div>
-
         <script>
-            let sec = 5;
-            const timer = setInterval(() => {
-                sec--;
-                const el = document.getElementById('countdownSec');
-                if (el) el.innerText = sec;
-                if (sec <= 0) {
-                    clearInterval(timer);
-                    window.location.href = '/';
-                }
-            }, 1000);
+            // Instant out to home page as requested by user
+            window.location.href = '/';
         </script>
     }
 
@@ -89,6 +72,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
+    @if (TempData["InfoMessage"] != null && !autoExit)
+    {
+        <div class="alert alert-info alert-dismissible fade show rounded-4 mb-4 shadow-sm fw-bold fs-6" role="alert">
+            <i class="bi bi-info-circle-fill me-2 fs-5"></i> @TempData["InfoMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     <div class="track-card overflow-hidden">
         <!-- Header -->
@@ -103,6 +93,20 @@
         </div>
 
         <div class="card-body p-4">
+
+            <!-- Customer Confirmation Action Box (If order is WaitingForCustomer) -->
+            @if (Model.Status == OrderStatus.WaitingForCustomer)
+            {
+                <div class="card p-4 border-2 border-warning bg-warning-subtle rounded-4 mb-4 text-center shadow-sm">
+                    <h5 class="fw-bold text-dark mb-2"><i class="bi bi-person-check-fill text-warning me-2 fs-4"></i> CHỜ KHÁCH HÀNG XÁC NHẬN NHẬN HÀNG</h5>
+                    <p class="small text-muted mb-3">Shipper vừa báo chưa giao thành công lần @Model.DeliveryAttemptCount/3. Nếu bạn là khách hàng mua đơn này, hãy bấm vào nút bên dưới để xác nhận sẵn sàng nhận hàng lần tiếp theo!</p>
+                    <div class="col-md-9 mx-auto">
+                        <a href="/Order/CustomerConfirmDelivery/@Model.OrderGuid" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow rounded-3 text-dark fs-6">
+                            <i class="bi bi-check2-circle me-2 fs-5"></i> 👉 BẤM VÀO ĐÂY ĐỂ XÁC NHẬN NHẬN HÀNG LẦN @(Model.DeliveryAttemptCount + 1)
+                        </a>
+                    </div>
+                </div>
+            }
 
             <!-- Locked State Banner (If Completed or Cancelled) -->
             @if (Model.Status == OrderStatus.Completed || Model.Status == OrderStatus.Cancelled)
@@ -139,7 +143,7 @@
                             </button>
                         </form>
 
-                        <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline" onsubmit="return handleShipperConfirm(this, 'Báo GIAO HÀNG THẤT BẢI cho lần này? (Nếu 3 lần đơn sẽ tự động Hủy & Hoàn kho)')">
+                        <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline" onsubmit="return handleShipperConfirm(this, 'Báo GIAO HÀNG THẤT BẢI cho lần này? (Hệ thống sẽ gửi email cho Khách bấm xác nhận giao lại)')">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="orderGuid" value="@Model.OrderGuid" />
                             <input type="hidden" name="actionType" value="fail_attempt" />
@@ -167,6 +171,11 @@
                                 case OrderStatus.Shipping:
                                     <span class="status-pill bg-info-subtle text-info border border-info">
                                         <i class="bi bi-truck"></i> Đang Trên Đường Giao
+                                    </span>
+                                    break;
+                                case OrderStatus.WaitingForCustomer:
+                                    <span class="status-pill bg-warning-subtle text-dark border border-warning">
+                                        <i class="bi bi-clock-history"></i> Chờ Khách Xác Nhận Giao Lại
                                     </span>
                                     break;
                                 case OrderStatus.Completed:

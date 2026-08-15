@@ -712,9 +712,28 @@ public class OrderController : Controller
             order.DeliveryAttemptCount += 1;
             if (order.DeliveryAttemptCount < 3)
             {
-                order.Status = OrderStatus.Shipping;
+                order.Status = OrderStatus.WaitingForCustomer; // Chuyển sang trạng thái "Chờ Nhận Hàng (Chờ Khách Xác Nhận)"
                 await _context.SaveChangesAsync();
-                TempData["ErrorMessage"] = $"⚠️ GIAO THẤT BẢI LẦN {order.DeliveryAttemptCount}/3: Đơn hàng #{order.OrderNumber} được giữ lại tại kho để shipper giao lại sau.";
+
+                // Gửi email cho Khách Hàng bấm xác nhận sẵn sàng nhận hàng lần tiếp theo
+                int targetOrderId = order.OrderId;
+                int attemptNo = order.DeliveryAttemptCount;
+                var serviceProvider = HttpContext.RequestServices;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var scope = serviceProvider.CreateScope();
+                        var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                        await scopedEmailService.SendDeliveryFailedCustomerConfirmationEmailAsync(targetOrderId, attemptNo);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Lỗi gửi email xác nhận giao lại cho khách: " + ex.ToString());
+                    }
+                });
+
+                TempData["ErrorMessage"] = $"⚠️ GIAO THẤT BẢI LẦN {order.DeliveryAttemptCount}/3: Đơn hàng #{order.OrderNumber} đã chuyển sang trạng thái 'CHỜ KHÁCH XÁC NHẬN GIAO LẠI' và đã gửi Email cho khách!";
                 TempData["AutoRedirectExit"] = true;
             }
             else
@@ -761,6 +780,41 @@ public class OrderController : Controller
         }
 
         return RedirectToAction("Track", new { id = orderGuid });
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> CustomerConfirmDelivery(Guid id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .FirstOrDefaultAsync(o => o.OrderGuid == id);
+
+        if (order == null)
+        {
+            return NotFound("Không tìm thấy thông tin đơn hàng.");
+        }
+
+        if (order.Status == OrderStatus.WaitingForCustomer)
+        {
+            order.Status = OrderStatus.Shipping; // Khách đã bấm xác nhận -> Chuyển lại thành Đang Giao Hàng để Shipper đi giao
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"🎉 Cảm ơn {order.User?.FullName}! Bạn đã xác nhận sẵn sàng nhận hàng. Đơn hàng #{order.OrderNumber} đã được đưa trở lại danh sách 'ĐANG GIAO HÀNG' cho Shipper!";
+        }
+        else if (order.Status == OrderStatus.Completed)
+        {
+            TempData["InfoMessage"] = $"Đơn hàng #{order.OrderNumber} đã được giao thành công trước đó.";
+        }
+        else if (order.Status == OrderStatus.Cancelled)
+        {
+            TempData["ErrorMessage"] = $"Đơn hàng #{order.OrderNumber} đã bị hủy.";
+        }
+        else if (order.Status == OrderStatus.Shipping)
+        {
+            TempData["InfoMessage"] = $"Đơn hàng #{order.OrderNumber} đã ở trạng thái Đang Giao Hàng.";
+        }
+
+        return RedirectToAction("Track", new { id = id });
     }
 
     #endregion

@@ -8,7 +8,8 @@ public enum OrderStatus : byte
     Pending = 0,
     Shipping = 1,
     Completed = 2,
-    Cancelled = 3
+    Cancelled = 3,
+    WaitingForCustomer = 4
 }
 
 public class Order
