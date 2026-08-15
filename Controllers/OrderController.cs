@@ -799,22 +799,26 @@ public class OrderController : Controller
         {
             order.Status = OrderStatus.Shipping; // Khách đã bấm xác nhận -> Chuyển lại thành Đang Giao Hàng để Shipper đi giao
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"🎉 Cảm ơn {order.User?.FullName}! Bạn đã xác nhận sẵn sàng nhận hàng. Đơn hàng #{order.OrderNumber} đã được đưa trở lại danh sách 'ĐANG GIAO HÀNG' cho Shipper!";
-        }
-        else if (order.Status == OrderStatus.Completed)
-        {
-            TempData["InfoMessage"] = $"Đơn hàng #{order.OrderNumber} đã được giao thành công trước đó.";
-        }
-        else if (order.Status == OrderStatus.Cancelled)
-        {
-            TempData["ErrorMessage"] = $"Đơn hàng #{order.OrderNumber} đã bị hủy.";
-        }
-        else if (order.Status == OrderStatus.Shipping)
-        {
-            TempData["InfoMessage"] = $"Đơn hàng #{order.OrderNumber} đã ở trạng thái Đang Giao Hàng.";
+
+            // Gửi email xác nhận lại cho khách hàng
+            int targetOrderId = order.OrderId;
+            var serviceProvider = HttpContext.RequestServices;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    using var scope = serviceProvider.CreateScope();
+                    var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                    await scopedEmailService.SendCustomerReDeliveryConfirmedEmailAsync(targetOrderId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Lỗi gửi email xác nhận giao lại: " + ex.ToString());
+                }
+            });
         }
 
-        return RedirectToAction("Track", new { id = id });
+        return View("CustomerConfirmSuccess", order);
     }
 
     #endregion

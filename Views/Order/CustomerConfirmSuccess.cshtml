@@ -1,0 +1,44 @@
+@model Order
+@{
+    ViewData["Title"] = $"Đã Xác Nhận Giao Lại Đơn Hàng #{Model.OrderNumber}";
+    DateTime vnTime = DateTime.UtcNow.AddHours(7);
+}
+
+<div class="container py-5" style="max-width: 680px;">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center bg-white p-4 p-md-5">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle shadow-sm" style="width: 90px; height: 90px;">
+                <i class="bi bi-check-circle-fill display-3"></i>
+            </div>
+        </div>
+
+        <span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-1.5 rounded-pill mb-3 mx-auto fs-6">
+            ✅ ĐÃ GHI NHẬN THÔNG TIN THÀNH CÔNG
+        </span>
+
+        <h2 class="fw-bold font-heading text-dark mb-2">ĐÃ XÁC NHẬN GIAO LẠI ĐƠN HÀNG</h2>
+        <h4 class="font-monospace text-primary fw-bold mb-3">#@Model.OrderNumber</h4>
+
+        <div class="p-3.5 bg-light rounded-4 border text-start mb-4">
+            <div class="d-flex align-items-center gap-2 text-dark font-semibold mb-2">
+                <i class="bi bi-info-circle-fill text-primary fs-5"></i>
+                <span>Xin chào <strong>@Model.User?.FullName</strong>,</span>
+            </div>
+            <p class="small text-secondary mb-2 leading-relaxed">
+                FASHION STORE đã nhận được phản hồi yêu cầu giao lại đơn hàng <strong>#@Model.OrderNumber</strong> của bạn vào lúc <strong>@vnTime.ToString("dd/MM/yyyy HH:mm") (Giờ Việt Nam)</strong>.
+            </p>
+            <div class="p-2.5 bg-success-subtle text-success rounded-3 small fw-bold">
+                🚚 Đơn hàng của bạn đã được chuyển trở lại danh sách "ĐANG GIAO HÀNG". Vui lòng giữ máy để Shipper liên lạc giao lại cho bạn nhé!
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/" class="btn btn-primary btn-lg rounded-pill px-4 fw-bold shadow-sm">
+                <i class="bi bi-house-door-fill me-2"></i> Quay Về Trang Chủ
+            </a>
+            <a href="/Account/OrderDetails/@Model.OrderId" class="btn btn-outline-secondary btn-lg rounded-pill px-4 fw-bold">
+                <i class="bi bi-bag-check me-2"></i> Xem Đơn Hàng Của Tôi
+            </a>
+        </div>
+    </div>
+</div>

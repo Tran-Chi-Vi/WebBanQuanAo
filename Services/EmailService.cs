@@ -362,6 +362,47 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(order.User.Email, subject, body);
     }
 
+    public async Task<bool> SendCustomerReDeliveryConfirmedEmailAsync(int orderId)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null || order.User == null) return false;
+
+        DateTime nowVn = DateTime.UtcNow.AddHours(7);
+        string timeStr = nowVn.ToString("dd/MM/yyyy HH:mm");
+
+        string subject = $"✅ [FASHION STORE] - Đã Ghi Nhận Yêu Cầu Giao Lại Đơn Hàng #{order.OrderNumber}";
+
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 2px solid #10b981; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
+                <div style=""text-align: center; padding-bottom: 15px; border-bottom: 2px solid #ecfdf5;"">
+                    <h2 style=""color: #10b981; margin: 0; font-size: 22px; font-weight: bold;"">✅ ĐÃ XÁC NHẬN YÊU CẦU GIAO LẠI ĐƠN HÀNG</h2>
+                    <span style=""color: #64748b; font-size: 13px;"">Mã đơn hàng: <strong>#{order.OrderNumber}</strong></span>
+                </div>
+
+                <div style=""margin: 20px 0; padding: 18px; background: #ecfdf5; border-radius: 12px; border-left: 4px solid #10b981; color: #065f46;"">
+                    <div style=""font-size: 15px; font-weight: bold; margin-bottom: 6px;"">Xin chào {order.User.FullName},</div>
+                    <div style=""font-size: 13.5px; line-height: 1.6; color: #047857;"">
+                        FASHION STORE đã nhận được thông tin yêu cầu giao lại đơn hàng <strong>#{order.OrderNumber}</strong> của bạn vào lúc <strong>{timeStr} (Giờ Việt Nam)</strong>.
+                    </div>
+                </div>
+
+                <div style=""padding: 16px; background: #f8fafc; border-radius: 12px; font-size: 13px; color: #334155; line-height: 1.6; text-align: center; border: 1px solid #e2e8f0; margin-bottom: 20px;"">
+                    <strong>🚚 Đơn hàng của bạn đã được chuyển trở lại danh sách ĐANG GIAO HÀNG.</strong><br/>
+                    Xin vui lòng chú ý nghe máy để Shipper liên lạc với bạn trong thời gian sớm nhất nhé!
+                </div>
+
+                <div style=""text-align: center; color: #94a3b8; font-size: 12px;"">
+                    Trân trọng cảm ơn bạn đã đồng hành cùng <strong>FASHION STORE</strong>!
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(order.User.Email, subject, body);
+    }
+
     public async Task<bool> SendChurnWinBackEmailAsync(string toEmail, string recipientName, string voucherCode, decimal discountValue, DiscountType discountType, DateTime endDate)
     {
         string discountText = discountType == DiscountType.Percentage 
