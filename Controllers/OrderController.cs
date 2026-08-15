@@ -18,6 +18,7 @@ public class OrderController : Controller
     private readonly IAprioriService _aprioriService;
     private readonly IEmailService _emailService;
     private const string SESSION_PROMO_KEY = "APPLIED_PROMO_CODE";
+    private const string SESSION_SELECTED_VARIANTS_KEY = "SELECTED_CART_VARIANT_IDS";
 
     public OrderController(ApplicationDbContext context, IInventoryService inventoryService, IAprioriService aprioriService, IEmailService emailService)
     {
@@ -28,7 +29,7 @@ public class OrderController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Checkout()
+    public async Task<IActionResult> Checkout(string? selectedVariantIds)
     {
         try
         {
@@ -37,6 +38,16 @@ public class OrderController : Controller
             {
                 TempData["InfoMessage"] = "Vui lòng đăng nhập tài khoản để tiến hành thanh toán đơn hàng.";
                 return RedirectToAction("Login", "Account", new { returnUrl = "/Order/Checkout" });
+            }
+
+            // Save selectedVariantIds to Session if passed from Cart page
+            if (!string.IsNullOrEmpty(selectedVariantIds))
+            {
+                HttpContext.Session.SetString(SESSION_SELECTED_VARIANTS_KEY, selectedVariantIds);
+            }
+            else
+            {
+                selectedVariantIds = HttpContext.Session.GetString(SESSION_SELECTED_VARIANTS_KEY);
             }
 
             // Automatically merge any guest session cart items into User DB Cart
@@ -49,9 +60,23 @@ public class OrderController : Controller
                         .ThenInclude(p => p.Images)
                 .ToListAsync();
 
+            // Filter cart items by user selection if selectedVariantIds is present
+            if (!string.IsNullOrEmpty(selectedVariantIds))
+            {
+                var idList = selectedVariantIds.Split(',')
+                    .Select(id => int.TryParse(id.Trim(), out int parsed) ? parsed : 0)
+                    .Where(id => id > 0)
+                    .ToList();
+
+                if (idList.Any())
+                {
+                    cartItems = cartItems.Where(ci => idList.Contains(ci.VariantId)).ToList();
+                }
+            }
+
             if (!cartItems.Any())
             {
-                TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+                TempData["ErrorMessage"] = "Vui lòng chọn ít nhất 1 sản phẩm trong giỏ hàng để tiến hành thanh toán.";
                 return RedirectToAction("Index", "Cart");
             }
 
@@ -160,9 +185,24 @@ public class OrderController : Controller
                     .ThenInclude(v => v.Product)
                 .ToListAsync();
 
+            // Filter cart items by selectedVariantIds from Session
+            string? selectedVariantIds = HttpContext.Session.GetString(SESSION_SELECTED_VARIANTS_KEY);
+            if (!string.IsNullOrEmpty(selectedVariantIds))
+            {
+                var idList = selectedVariantIds.Split(',')
+                    .Select(id => int.TryParse(id.Trim(), out int parsed) ? parsed : 0)
+                    .Where(id => id > 0)
+                    .ToList();
+
+                if (idList.Any())
+                {
+                    cartItems = cartItems.Where(ci => idList.Contains(ci.VariantId)).ToList();
+                }
+            }
+
             if (!cartItems.Any())
             {
-                TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống.";
+                TempData["ErrorMessage"] = "Vui lòng chọn ít nhất 1 sản phẩm trong giỏ hàng để tiến hành thanh toán.";
                 return RedirectToAction("Index", "Cart");
             }
 
@@ -339,6 +379,7 @@ public class OrderController : Controller
 
             _context.CartItems.RemoveRange(cartItems);
             HttpContext.Session.Remove(SESSION_PROMO_KEY);
+            HttpContext.Session.Remove(SESSION_SELECTED_VARIANTS_KEY);
 
             await _context.SaveChangesAsync();
 
