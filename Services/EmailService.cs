@@ -196,6 +196,120 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(order.User.Email, subject, body);
     }
 
+    public async Task<bool> SendOrderCompletedEmailAsync(int orderId, DateTime completedTime)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null || order.User == null) return false;
+
+        DateTime vnCompletedTime = completedTime.AddHours(7);
+        string timeStr = vnCompletedTime.ToString("dd/MM/yyyy HH:mm:ss");
+
+        string subject = $"🎉 [FASHION STORE] - Đơn Hàng #{order.OrderNumber} Đã Giao Thành Công!";
+
+        string addressText = order.Address != null 
+            ? $"{order.Address.RecipientName} - SĐT: {order.Address.Phone} ({order.Address.DetailAddress}, {order.Address.Ward}, {order.Address.District}, {order.Address.Province})"
+            : "Chưa cập nhật";
+
+        var itemsHtml = "";
+        foreach (var item in order.OrderDetails)
+        {
+            var p = item.Variant?.Product;
+            decimal itemTotal = item.UnitPrice * item.Quantity;
+            itemsHtml += $@"
+                <tr>
+                    <td style=""padding: 10px; border-bottom: 1px solid #e2e8f0;"">
+                        <strong>{p?.ProductName}</strong> (Size: {item.Variant?.Size}, Màu: {item.Variant?.Color})
+                    </td>
+                    <td style=""padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;"">x{item.Quantity}</td>
+                    <td style=""padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #10b981;"">{itemTotal:N0}đ</td>
+                </tr>";
+        }
+
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 1px solid #10b981; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
+                <div style=""text-align: center; padding-bottom: 15px; border-bottom: 2px solid #ecfdf5;"">
+                    <h2 style=""color: #10b981; margin: 0; font-size: 24px; font-weight: bold;"">✅ ĐƠN HÀNG GIAO THÀNH CÔNG</h2>
+                    <span style=""color: #64748b; font-size: 13px;"">Mã đơn hàng: <strong>#{order.OrderNumber}</strong></span>
+                </div>
+
+                <div style=""margin: 20px 0; padding: 16px; background: #ecfdf5; border-radius: 12px; border-left: 4px solid #10b981; color: #065f46;"">
+                    <div style=""font-size: 15px; font-weight: bold; margin-bottom: 6px;"">🎉 Chúc mừng bạn đã nhận hàng thành công!</div>
+                    <div style=""font-size: 13px; color: #047857;"">Shipper đã xác nhận giao thành công lúc: <strong>{timeStr} (Giờ Việt Nam)</strong></div>
+                </div>
+
+                <div style=""margin-bottom: 20px; font-size: 13px; color: #334155; line-height: 1.6;"">
+                    <div>Khách hàng: <strong>{order.User.FullName}</strong></div>
+                    <div>Địa chỉ giao: <strong>{addressText}</strong></div>
+                    <div>Trạng thái thanh toán: <strong style=""color: #10b981;"">ĐÃ THANH TOÁN THÀNH CÔNG (0đ COD)</strong></div>
+                </div>
+
+                <h4 style=""color: #0f172a; margin: 0 0 10px 0; font-size: 14px;"">🛒 SẢN PHẨM ĐÃ GIAO:</h4>
+                <table style=""width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px;"">
+                    <tbody>{itemsHtml}</tbody>
+                </table>
+
+                <div style=""text-align: right; font-size: 18px; font-weight: bold; color: #0f172a; border-top: 2px dashed #e2e8f0; padding-top: 10px;"">
+                    TỔNG TIỀN: <span style=""color: #10b981; font-size: 22px;"">{order.TotalAmount:N0}đ</span>
+                </div>
+
+                <div style=""margin-top: 25px; text-align: center; color: #94a3b8; font-size: 12px;"">
+                    Cảm ơn bạn đã lựa chọn <strong>FASHION STORE</strong>! Chúc bạn có trải nghiệm mặc đẹp tuyệt vời!
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(order.User.Email, subject, body);
+    }
+
+    public async Task<bool> SendOrderCancelledEmailAsync(int orderId, DateTime cancelledTime, string reason)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+            .FirstOrDefaultAsync(o => o.OrderId == orderId);
+
+        if (order == null || order.User == null) return false;
+
+        DateTime vnCancelledTime = cancelledTime.AddHours(7);
+        string timeStr = vnCancelledTime.ToString("dd/MM/yyyy HH:mm:ss");
+
+        string subject = $"❌ [FASHION STORE] - Thông Báo Hủy Đơn Hàng #{order.OrderNumber}";
+
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 1px solid #ef4444; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
+                <div style=""text-align: center; padding-bottom: 15px; border-bottom: 2px solid #fef2f2;"">
+                    <h2 style=""color: #ef4444; margin: 0; font-size: 24px; font-weight: bold;"">❌ ĐƠN HÀNG ĐÃ BỊ HỦY</h2>
+                    <span style=""color: #64748b; font-size: 13px;"">Mã đơn hàng: <strong>#{order.OrderNumber}</strong></span>
+                </div>
+
+                <div style=""margin: 20px 0; padding: 16px; background: #fef2f2; border-radius: 12px; border-left: 4px solid #ef4444; color: #991b1b;"">
+                    <div style=""font-size: 15px; font-weight: bold; margin-bottom: 6px;"">Thông báo tự động hủy đơn hàng:</div>
+                    <div style=""font-size: 13px; color: #b91c1c; margin-bottom: 4px;"">Lý do: <strong>{reason}</strong></div>
+                    <div style=""font-size: 12px; color: #7f1d1d;"">Thời gian cập nhật hủy: <strong>{timeStr} (Giờ Việt Nam)</strong></div>
+                </div>
+
+                <p style=""color: #334155; font-size: 13px; line-height: 1.6;"">
+                    Sản phẩm trong đơn hàng đã được hệ thống tự động hoàn trả lại kho hàng. Nếu bạn vẫn muốn sở hữu sản phẩm này, hãy ghé thăm website FASHION STORE để đặt mua lại nhé!
+                </p>
+
+                <div style=""margin-top: 25px; text-align: center; color: #94a3b8; font-size: 12px;"">
+                    Mọi thắc mắc xin vui lòng liên hệ Hotline 1900-FASHION. Trân trọng cảm ơn!
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(order.User.Email, subject, body);
+    }
+
     public async Task<bool> SendChurnWinBackEmailAsync(string toEmail, string recipientName, string voucherCode, decimal discountValue, DiscountType discountType, DateTime endDate)
     {
         string discountText = discountType == DiscountType.Percentage 

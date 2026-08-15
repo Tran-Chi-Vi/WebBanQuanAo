@@ -679,13 +679,33 @@ public class OrderController : Controller
         if (actionType == "confirm_success")
         {
             order.Status = OrderStatus.Completed;
+            DateTime confirmTime = DateTime.UtcNow;
             if (order.Payment != null)
             {
                 order.Payment.Status = PaymentStatus.Success;
-                if (!order.Payment.PaidAt.HasValue) order.Payment.PaidAt = DateTime.Now;
+                if (!order.Payment.PaidAt.HasValue) order.Payment.PaidAt = confirmTime;
             }
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = $"🎉 XÁC NHẬN THÀNH CÔNG: Đơn hàng #{order.OrderNumber} đã giao thành công tới tận tay khách hàng!";
+
+            // Gửi email thông báo Giao Hàng Thành Công tới Khách Hàng (Background Task)
+            int targetOrderId = order.OrderId;
+            var serviceProvider = HttpContext.RequestServices;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    using var scope = serviceProvider.CreateScope();
+                    var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                    await scopedEmailService.SendOrderCompletedEmailAsync(targetOrderId, confirmTime);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Lỗi gửi email giao hàng thành công: " + ex.ToString());
+                }
+            });
+
+            TempData["SuccessMessage"] = $"🎉 XÁC NHẬN THÀNH CÔNG: Đơn hàng #{order.OrderNumber} đã giao thành công tới tận tay khách hàng! Email thông báo đã được gửi cho khách.";
+            TempData["AutoRedirectExit"] = true;
         }
         else if (actionType == "fail_attempt")
         {
@@ -695,11 +715,13 @@ public class OrderController : Controller
                 order.Status = OrderStatus.Shipping;
                 await _context.SaveChangesAsync();
                 TempData["ErrorMessage"] = $"⚠️ GIAO THẤT BẢI LẦN {order.DeliveryAttemptCount}/3: Đơn hàng #{order.OrderNumber} được giữ lại tại kho để shipper giao lại sau.";
+                TempData["AutoRedirectExit"] = true;
             }
             else
             {
                 // Giao thất bại 3 lần -> Tự động HỦY ĐƠN HÀNG & HOÀN TRẢ TỒN KHO VỀ CỬA HÀNG
                 order.Status = OrderStatus.Cancelled;
+                DateTime cancelTime = DateTime.UtcNow;
                 if (order.Payment != null)
                 {
                     order.Payment.Status = PaymentStatus.Failed;
@@ -715,7 +737,26 @@ public class OrderController : Controller
                 }
 
                 await _context.SaveChangesAsync();
-                TempData["ErrorMessage"] = $"❌ GIAO THẤT BẢI 3 LẦN: Đơn hàng #{order.OrderNumber} đã tự động HỦY ĐƠN HÀNG và HOÀN TRẢ SẢN PHẨM VỀ TỒN KHO CỬA HÀNG!";
+
+                // Gửi email thông báo Hủy Đơn Hàng tới Khách Hàng (Background Task)
+                int targetOrderId = order.OrderId;
+                var serviceProvider = HttpContext.RequestServices;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var scope = serviceProvider.CreateScope();
+                        var scopedEmailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                        await scopedEmailService.SendOrderCancelledEmailAsync(targetOrderId, cancelTime, "Giao hàng không thành công sau 3 lần phát (Không liên lạc được / Khách từ chối nhận)");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Lỗi gửi email hủy đơn hàng: " + ex.ToString());
+                    }
+                });
+
+                TempData["ErrorMessage"] = $"❌ GIAO THẤT BẢI 3 LẦN: Đơn hàng #{order.OrderNumber} đã tự động HỦY ĐƠN HÀNG và HOÀN TRẢ SẢN PHẨM VỀ TỒN KHO CỬA HÀNG! Email thông báo đã được gửi cho khách.";
+                TempData["AutoRedirectExit"] = true;
             }
         }
 
