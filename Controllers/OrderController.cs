@@ -622,4 +622,31 @@ public class OrderController : Controller
     }
 
     #endregion
+
+    #region Public Order QR Code Tracking
+
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> Track(Guid id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Address)
+            .Include(o => o.Promotion)
+            .Include(o => o.Payment)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                        .ThenInclude(p => p.Images)
+            .FirstOrDefaultAsync(o => o.OrderGuid == id);
+
+        if (order == null)
+        {
+            return NotFound("Không tìm thấy thông tin đơn hàng.");
+        }
+
+        return View(order);
+    }
+
+    #endregion
 }

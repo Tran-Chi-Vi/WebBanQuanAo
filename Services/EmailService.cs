@@ -112,6 +112,9 @@ public class EmailService : IEmailService
             ? $"{order.Address.RecipientName} - SĐT: {order.Address.Phone} ({order.Address.DetailAddress}, {order.Address.Ward}, {order.Address.District}, {order.Address.Province})"
             : "Chưa cập nhật";
 
+        string trackOrderUrl = $"https://fashionstore-zjc7.onrender.com/Order/Track/{order.OrderGuid}";
+        string qrCodeImageUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackOrderUrl)}";
+
         string body = $@"
             <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 25px; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.05);"">
                 
@@ -119,30 +122,51 @@ public class EmailService : IEmailService
                 <div style=""display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 2px solid #f1f5f9;"">
                     <div>
                         <h2 style=""color: #6366f1; margin: 0; font-size: 24px; font-weight: bold;"">FASHION STORE</h2>
-                        <span style=""color: #64748b; font-size: 13px;"">HÓA ĐƠN XÁC NHẬN ĐƠN HÀNG</span>
+                        <span style=""color: #64748b; font-size: 13px;"">HÓA ĐƠN XÁC NHẬN ĐƠN HÀNG & PHIẾU GIAO HÀNG</span>
                     </div>
                     <div style=""text-align: right;"">
-                        <div style=""font-family: monospace; font-size: 14px; font-weight: bold; color: #0f172a;"">#{order.OrderNumber}</div>
+                        <div style=""font-family: monospace; font-size: 15px; font-weight: bold; color: #0f172a;"">#{order.OrderNumber}</div>
                         <div style=""color: #94a3b8; font-size: 12px; margin-top: 4px;"">{order.OrderDate:dd/MM/yyyy HH:mm}</div>
                     </div>
                 </div>
 
+                <!-- QR CODE TRACKING SECTION FOR SHIPPER & CUSTOMER -->
+                <div style=""margin: 20px 0; padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border-radius: 16px; border: 2px dashed #3b82f6; text-align: center;"">
+                    <div style=""font-size: 13px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;"">
+                        📱 MÃ QR TRA CỨU ĐƠN HÀNG (DÀNH CHO SHIPPER QUÉT MÃ NHANH)
+                    </div>
+                    <div style=""background: #ffffff; padding: 12px; display: inline-block; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin: 8px 0;"">
+                        <a href=""{trackOrderUrl}"" target=""_blank"" style=""text-decoration: none;"">
+                            <img src=""{qrCodeImageUrl}"" alt=""Mã QR Đơn Hàng #{order.OrderNumber}"" style=""width: 180px; height: 180px; display: block; border: 0;"" />
+                        </a>
+                    </div>
+                    <div style=""font-family: monospace; font-size: 16px; font-weight: bold; color: #0f172a; margin-top: 6px;"">
+                        Mã Vận Đơn: <span style=""color: #2563eb;"">#{order.OrderNumber}</span>
+                    </div>
+                    <p style=""margin: 6px 0 12px 0; color: #64748b; font-size: 12px;"">
+                        Shipper hoặc khách hàng quét mã QR trên bằng camera điện thoại để xem trực tiếp chi tiết đơn hàng & trạng thái vận chuyển!
+                    </p>
+                    <a href=""{trackOrderUrl}"" style=""background: #2563eb; color: #ffffff; text-decoration: none; padding: 8px 20px; font-size: 13px; font-weight: bold; border-radius: 20px; display: inline-block;"">
+                        🔍 Mở Chi Tiết Đơn Hàng Trên Web
+                    </a>
+                </div>
+
                 <!-- STATUS BADGE -->
                 <div style=""margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; justify-content: space-between;"">
-                    <span style=""color: #334155; font-size: 14px; font-weight: 500;"">Trạng Thái Đơn Hàng Xét Duyệt:</span>
+                    <span style=""color: #334155; font-size: 14px; font-weight: 500;"">Trạng Thái Đơn Hàng:</span>
                     <div>{statusText}</div>
                 </div>
 
                 <!-- RECIPIENT INFO -->
                 <div style=""margin-bottom: 25px; padding: 15px; background: #f8fafc; border-radius: 12px; font-size: 13px; color: #334155; line-height: 1.6;"">
-                    <div style=""font-weight: bold; color: #0f172a; margin-bottom: 6px; font-size: 14px;"">📌 THÔNG TIN GIAO HÀNG:</div>
-                    <div>Khách hàng: <strong>{order.User.FullName}</strong> ({order.User.Email})</div>
-                    <div>Địa chỉ nhận: <strong>{addressText}</strong></div>
-                    <div>Thanh toán: <strong>{(order.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Thanh toán khi nhận hàng / Chờ xác nhận")}</strong></div>
+                    <div style=""font-weight: bold; color: #0f172a; margin-bottom: 6px; font-size: 14px;"">📌 THÔNG TIN GIAO HÀNG & THU HỘ (COD):</div>
+                    <div>Khách hàng nhận: <strong>{order.User.FullName}</strong> ({order.User.Email})</div>
+                    <div>Địa chỉ nhận hàng: <strong>{addressText}</strong></div>
+                    <div>Hình thức thanh toán: <strong>{(order.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THANH TOÁN KHI NHẬN HÀNG (Cần thu hộ: {order.TotalAmount:N0}đ)")}</strong></div>
                 </div>
 
                 <!-- PRODUCT ITEMS TABLE -->
-                <h4 style=""color: #0f172a; margin: 0 0 12px 0; font-size: 15px;"">🛒 DANH SÁCH SẢN PHẨM MUA ({totalItemsCount} sản phẩm):</h4>
+                <h4 style=""color: #0f172a; margin: 0 0 12px 0; font-size: 15px;"">🛒 CHI TIẾT SẢN PHẨM ĐANG GIAO ({totalItemsCount} sản phẩm):</h4>
                 <table style=""width: 100%; border-collapse: collapse; margin-bottom: 20px;"">
                     <thead>
                         <tr style=""background: #f1f5f9; color: #475569; font-size: 12px; text-transform: uppercase;"">
