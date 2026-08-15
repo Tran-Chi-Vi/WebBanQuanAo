@@ -104,6 +104,7 @@ builder.Services.AddScoped<IChatbotService, ChatbotService>();
 builder.Services.AddMailKitEmailServices(builder.Configuration);
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 builder.Services.AddHostedService<WeeklyChurnWinBackBackgroundService>();
+builder.Services.AddHostedService<OrderAutoCancelBackgroundService>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
