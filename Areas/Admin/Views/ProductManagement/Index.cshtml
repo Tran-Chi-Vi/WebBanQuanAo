@@ -5,19 +5,48 @@
     var brands = ViewBag.Brands as List<Brand> ?? new List<Brand>();
 }
 
+<style>
+    /* Table & Modal Theme High-Contrast Enforcement */
+    .table-product-admin {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .table-product-admin th {
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 14px 16px;
+        white-space: nowrap;
+    }
+    .table-product-admin td {
+        padding: 14px 16px;
+        vertical-align: middle;
+    }
+    .col-prod-img { width: 70px; min-width: 70px; }
+    .col-prod-name { min-width: 260px; }
+    .col-prod-cat { min-width: 130px; }
+    .col-prod-brand { min-width: 130px; }
+    .col-prod-price { min-width: 130px; }
+    .col-prod-stock { min-width: 140px; }
+    .col-prod-status { min-width: 110px; }
+    .col-prod-actions { min-width: 240px; text-align: right; }
+</style>
+
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h4 class="fw-bold font-heading m-0 text-body"><i class="bi bi-box-seam-fill text-primary me-2"></i> QUẢN LÝ SẢN PHẨM & TỒN KHO</h4>
-        <small class="text-muted">Tổng số: <strong>@ViewBag.TotalItems</strong> sản phẩm trong cửa hàng</small>
+        <small class="text-muted">Tổng số: <strong class="text-body">@ViewBag.TotalItems</strong> sản phẩm trong hệ thống</small>
     </div>
     <div class="d-flex gap-2">
-        <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-3">
+        <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-3 py-2 rounded-3">
             <i class="bi bi-plus-lg me-1"></i> Thêm Sản Phẩm Mới
         </a>
     </div>
 </div>
 
-<!-- Filters Header -->
+<!-- Filters Bar -->
 <div class="card p-3.5 border-0 shadow-sm rounded-4 bg-body mb-4">
     <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" method="get" class="row g-3">
         <div class="col-md-4">
@@ -45,25 +74,25 @@
             </select>
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100 fw-bold"><i class="bi bi-funnel me-1"></i> Lọc</button>
+            <button type="submit" class="btn btn-outline-primary w-100 fw-bold py-2"><i class="bi bi-funnel me-1"></i> Lọc</button>
         </div>
     </form>
 </div>
 
-<!-- Product Table -->
-<div class="card p-4 border-0 shadow-sm rounded-4 bg-body">
+<!-- Product Master Table -->
+<div class="card p-3 p-md-4 border-0 shadow-sm rounded-4 bg-body">
     <div class="table-responsive">
-        <table class="table align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th style="width:70px;">Hình Ảnh</th>
-                    <th>Tên Sản Phẩm</th>
-                    <th>Danh Mục</th>
-                    <th>Thương Hiệu</th>
-                    <th>Giá Gốc</th>
-                    <th>Tồn Kho</th>
-                    <th>Trạng Thái</th>
-                    <th style="min-width: 220px;" class="text-end pe-3">Thao Tác</th>
+        <table class="table align-middle table-product-admin">
+            <thead>
+                <tr class="table-light">
+                    <th class="col-prod-img">Hình Ảnh</th>
+                    <th class="col-prod-name">Tên Sản Phẩm</th>
+                    <th class="col-prod-cat">Danh Mục</th>
+                    <th class="col-prod-brand">Thương Hiệu</th>
+                    <th class="col-prod-price">Giá Gốc</th>
+                    <th class="col-prod-stock">Tồn Kho</th>
+                    <th class="col-prod-status">Trạng Thái</th>
+                    <th class="col-prod-actions">Thao Tác</th>
                 </tr>
             </thead>
             <tbody class="text-body">
@@ -73,17 +102,17 @@
                     int totalStock = p.Variants.Sum(v => v.StockQuantity);
 
                     <tr>
-                        <td>
+                        <td class="col-prod-img">
                             <img src="@img" alt="@p.ProductName" class="rounded-3 shadow-sm border" style="width: 54px; height: 54px; object-fit: cover;" />
                         </td>
-                        <td>
-                            <div class="fw-bold text-body fs-6">@p.ProductName</div>
+                        <td class="col-prod-name">
+                            <div class="fw-bold text-body fs-6 mb-0.5">@p.ProductName</div>
                             <small class="text-muted font-monospace">@p.Variants.Count size/màu biến thể</small>
                         </td>
-                        <td class="small text-muted fw-semibold">@p.Category?.CategoryName</td>
-                        <td class="small text-muted fw-semibold">@p.Brand?.BrandName</td>
-                        <td class="fw-bold text-primary">@p.BasePrice.ToString("N0")đ</td>
-                        <td>
+                        <td class="col-prod-cat small text-muted fw-semibold">@p.Category?.CategoryName</td>
+                        <td class="col-prod-brand small text-muted fw-semibold">@p.Brand?.BrandName</td>
+                        <td class="col-prod-price fw-bold text-primary">@p.BasePrice.ToString("N0")đ</td>
+                        <td class="col-prod-stock">
                             @if (totalStock > 0)
                             {
                                 <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold px-2.5 py-1.5 rounded-pill">
@@ -97,11 +126,11 @@
                                 </span>
                             }
                         </td>
-                        <td>
+                        <td class="col-prod-status">
                             <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary")">@p.Status</span>
                         </td>
-                        <td>
-                            <div class="d-flex gap-2 align-items-center justify-content-end pe-2">
+                        <td class="col-prod-actions">
+                            <div class="d-flex gap-2 align-items-center justify-content-end">
                                 <button type="button" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-bold px-3 py-1.5"
                                         data-bs-toggle="modal" data-bs-target="#restockModal-@p.ProductId"
                                         style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
@@ -132,18 +161,20 @@
                                 <form asp-area="Admin" asp-controller="ProductManagement" asp-action="QuickRestock" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="productId" value="@p.ProductId" />
-                                    <div class="modal-header bg-body-tertiary rounded-top-4">
+                                    
+                                    <div class="modal-header bg-body-tertiary rounded-top-4 border-bottom px-4 py-3">
                                         <h5 class="modal-title fw-bold text-body" id="restockLabel-@p.ProductId">
-                                            <i class="bi bi-box-seam text-success me-2"></i> Nhập Hàng Tồn Kho: <span class="text-primary">@p.ProductName</span>
+                                            <i class="bi bi-box-seam text-success me-2 fs-5"></i> Nhập Hàng Tồn Kho: <span class="text-primary">@p.ProductName</span>
                                         </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body p-4">
+                                    
+                                    <div class="modal-body p-4 bg-body text-body">
                                         <p class="text-muted small mb-3">Cập nhật số lượng tồn kho cho các biến thể Size/Màu sắc để sản phẩm sẵn sàng mở bán lại trên trang web:</p>
                                         <div class="table-responsive">
                                             <table class="table align-middle">
-                                                <thead class="table-light">
-                                                    <tr>
+                                                <thead>
+                                                    <tr class="table-light">
                                                         <th>Mã SKU</th>
                                                         <th>Size</th>
                                                         <th>Màu Sắc</th>
@@ -175,9 +206,10 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="modal-footer bg-body-tertiary rounded-bottom-4">
-                                        <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Hủy</button>
-                                        <button type="submit" class="btn btn-success fw-bold px-4 rounded-3">
+                                    
+                                    <div class="modal-footer bg-body-tertiary rounded-bottom-4 border-top px-4 py-3">
+                                        <button type="button" class="btn btn-secondary rounded-3 px-3" data-bs-dismiss="modal">Hủy</button>
+                                        <button type="submit" class="btn btn-success fw-bold px-4 rounded-3 shadow-sm">
                                             <i class="bi bi-check-circle-fill me-1"></i> Lưu Cập Nhật Tồn Kho
                                         </button>
                                     </div>
