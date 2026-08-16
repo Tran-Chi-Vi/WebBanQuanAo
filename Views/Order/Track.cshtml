@@ -13,26 +13,79 @@
 }
 
 <style>
-    /* Theme-Adaptive Card Architecture for Light & Dark Mode */
+    /* Theme-Adaptive High-Contrast System for Light & Dark Mode */
+    .track-page-container {
+        --track-card-bg: #ffffff;
+        --track-card-border: #e2e8f0;
+        --track-box-bg: #f8fafc;
+        --track-box-border: #e2e8f0;
+        --track-text-main: #0f172a;
+        --track-text-muted: #64748b;
+        --track-table-head-bg: #f1f5f9;
+        --track-table-head-color: #334155;
+        --track-action-box-bg: #eff6ff;
+        --track-action-box-border: #3b82f6;
+    }
+
+    /* Dark Mode Theme Enforcement */
+    [data-bs-theme="dark"] .track-page-container,
+    body.theme-dark .track-page-container,
+    .theme-dark .track-page-container {
+        --track-card-bg: #0f172a;
+        --track-card-border: #334155;
+        --track-box-bg: #1e293b;
+        --track-box-border: #334155;
+        --track-text-main: #f8fafc;
+        --track-text-muted: #cbd5e1;
+        --track-table-head-bg: #334155;
+        --track-table-head-color: #f1f5f9;
+        --track-action-box-bg: #1e1b4b;
+        --track-action-box-border: #6366f1;
+    }
+
     .track-wrapper {
-        background-color: var(--bs-body-bg, #ffffff);
-        color: var(--bs-body-color, #0f172a);
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        border: 1px solid var(--bs-border-color, #e2e8f0);
+        background-color: var(--track-card-bg);
+        color: var(--track-text-main);
+        border: 1px solid var(--track-card-border);
+        border-radius: 24px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         overflow: hidden;
     }
+
     .track-header {
         background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-        padding: 24px 20px;
+        padding: 26px 20px;
         color: #ffffff;
     }
+
     .track-box {
-        background-color: var(--bs-tertiary-bg, #f8fafc);
-        border: 1px solid var(--bs-border-color, #e2e8f0);
+        background-color: var(--track-box-bg);
+        border: 1px solid var(--track-box-border);
         border-radius: 16px;
-        padding: 16px;
+        padding: 18px;
+        color: var(--track-text-main);
     }
+
+    .track-text-muted {
+        color: var(--track-text-muted) !important;
+    }
+
+    .track-text-main {
+        color: var(--track-text-main) !important;
+    }
+
+    .track-table-head {
+        background-color: var(--track-table-head-bg) !important;
+        color: var(--track-table-head-color) !important;
+    }
+
+    .shipper-action-box {
+        background-color: var(--track-action-box-bg);
+        border: 2px solid var(--track-action-box-border);
+        border-radius: 18px;
+        padding: 20px;
+    }
+
     .status-pill {
         font-weight: 700;
         font-size: 13.5px;
@@ -43,7 +96,7 @@
         gap: 6px;
     }
 
-    /* Highlighted Action Buttons (Equal Height & High-Contrast Colors) */
+    /* Highlighted Vibrant Action Buttons */
     .btn-shipper-group {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -73,26 +126,26 @@
     .btn-shipper-success {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
     }
     .btn-shipper-success:hover {
         background: linear-gradient(135deg, #059669 0%, #047857 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
     }
     .btn-shipper-danger {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: #ffffff !important;
-        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
     }
     .btn-shipper-danger:hover {
         background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
     }
 </style>
 
-<div class="container py-4" style="max-width: 760px;">
+<div class="container py-4 track-page-container" style="max-width: 760px;">
     
     <!-- Instant Exit Script (If Shipper just submitted an action) -->
     @if (autoExit)
@@ -131,8 +184,8 @@
                 📦 PHIẾU XÁC NHẬN GIAO HÀNG LOGISTICS
             </span>
             <h2 class="fw-bold font-monospace mb-1 text-white">#@Model.OrderNumber</h2>
-            <div class="small opacity-75">
-                🕒 Thời gian đặt: <strong>@orderDateStr (Giờ Việt Nam)</strong>
+            <div class="small text-white-50">
+                🕒 Thời gian đặt: <strong class="text-white">@orderDateStr (Giờ Việt Nam)</strong>
             </div>
         </div>
 
@@ -143,7 +196,7 @@
             {
                 <div class="track-box border-warning bg-warning-subtle text-dark text-center mb-4">
                     <h5 class="fw-bold mb-2"><i class="bi bi-person-check-fill text-warning me-2 fs-4"></i> CHỜ KHÁCH HÀNG XÁC NHẬN NHẬN HÀNG</h5>
-                    <p class="small text-muted mb-3">Shipper vừa báo chưa giao thành công lần @Model.DeliveryAttemptCount/3. Nếu bạn là khách hàng mua đơn này, hãy bấm vào nút bên dưới để xác nhận sẵn sàng nhận hàng lần tiếp theo!</p>
+                    <p class="small text-dark opacity-75 mb-3">Shipper vừa báo chưa giao thành công lần @Model.DeliveryAttemptCount/3. Nếu bạn là khách hàng mua đơn này, hãy bấm vào nút bên dưới để xác nhận sẵn sàng nhận hàng lần tiếp theo!</p>
                     <div class="col-md-9 mx-auto">
                         <a href="/Order/CustomerConfirmDelivery/@Model.OrderGuid" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow rounded-3 text-dark fs-6">
                             <i class="bi bi-check2-circle me-2 fs-5"></i> 👉 BẤM VÀO ĐÂY ĐỂ XÁC NHẬN NHẬN HÀNG LẦN @(Model.DeliveryAttemptCount + 1)
@@ -173,9 +226,9 @@
             <!-- Shipper Action Card (Only active when NOT Completed & NOT Cancelled & NOT AutoExiting) -->
             @if (Model.Status != OrderStatus.Completed && Model.Status != OrderStatus.Cancelled && !autoExit)
             {
-                <div class="track-box border-primary bg-primary-subtle text-center mb-4">
+                <div class="shipper-action-box text-center mb-4">
                     <h6 class="fw-bold text-primary text-uppercase mb-1"><i class="bi bi-shield-lock-fill me-1"></i> BẢNG XÁC NHẬN CHÍNH THỨC CHO SHIPPER</h6>
-                    <p class="small text-muted mb-3">Vui lòng chọn trạng thái chính xác sau khi gặp và giao hàng trực tiếp cho khách:</p>
+                    <p class="small track-text-muted mb-3">Vui lòng chọn trạng thái chính xác sau khi gặp và giao hàng trực tiếp cho khách:</p>
 
                     <div class="btn-shipper-group">
                         <form asp-controller="Order" asp-action="ShipperUpdateStatus" method="post" class="d-inline" onsubmit="return handleShipperConfirm(this, 'Bạn có chắc chắn xác nhận GIAO HÀNG THÀNH CÔNG tới khách hàng?')">
@@ -203,7 +256,7 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <div class="track-box h-100">
-                        <div class="small text-muted fw-bold text-uppercase mb-2">TRẠNG THÁI GIAO HÀNG</div>
+                        <div class="small track-text-muted fw-bold text-uppercase mb-2">TRẠNG THÁI GIAO HÀNG</div>
                         <div class="mb-2">
                             @switch (Model.Status)
                             {
@@ -237,13 +290,13 @@
                                     break;
                             }
                         </div>
-                        <small class="text-secondary font-monospace d-block">Số lần phát hàng: <strong>@Model.DeliveryAttemptCount / 3 lần</strong></small>
+                        <small class="track-text-muted font-monospace d-block">Số lần phát hàng: <strong class="track-text-main">@Model.DeliveryAttemptCount / 3 lần</strong></small>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="track-box h-100">
-                        <div class="small text-muted fw-bold text-uppercase mb-2">TIỀN THU HỘ (COD) / THANH TOÁN</div>
+                        <div class="small track-text-muted fw-bold text-uppercase mb-2">TIỀN THU HỘ (COD) / THANH TOÁN</div>
                         @if (Model.Payment?.Status == PaymentStatus.Success)
                         {
                             <div class="fw-bold text-success fs-5"><i class="bi bi-shield-check me-1"></i> ĐÃ THANH TOÁN (0đ COD)</div>
@@ -258,41 +311,41 @@
 
             <!-- Recipient Info & 1-Tap Phone Call -->
             <div class="track-box mb-4">
-                <h6 class="fw-bold font-heading mb-3 text-uppercase"><i class="bi bi-geo-alt-fill text-danger me-2"></i> THÔNG TIN NGƯỜI NHẬN HÀNG</h6>
+                <h6 class="fw-bold font-heading mb-3 text-uppercase track-text-main"><i class="bi bi-geo-alt-fill text-danger me-2"></i> THÔNG TIN NGƯỜI NHẬN HÀNG</h6>
                 @if (Model.Address != null)
                 {
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
                         <div>
-                            <div class="fw-bold fs-5">@Model.Address.RecipientName</div>
-                            <div class="text-muted"><i class="bi bi-telephone me-1"></i> SĐT Khách: <strong class="font-monospace fs-6">@Model.Address.Phone</strong></div>
+                            <div class="fw-bold fs-5 track-text-main">@Model.Address.RecipientName</div>
+                            <div class="track-text-muted"><i class="bi bi-telephone me-1"></i> SĐT Khách: <strong class="font-monospace fs-6 track-text-main">@Model.Address.Phone</strong></div>
                         </div>
                         <a href="tel:@Model.Address.Phone" class="btn btn-success fw-bold shadow-sm rounded-pill px-4 py-2.5">
                             <i class="bi bi-telephone-outbound-fill me-2"></i> GỌI KHÁCH NHẬN HÀNG
                         </a>
                     </div>
-                    <div class="small p-3 rounded-3 mt-2 border fw-semibold bg-body">
+                    <div class="small p-3 rounded-3 mt-2 border fw-semibold track-box">
                         📍 <strong>Địa chỉ nhận hàng:</strong> @Model.Address.DetailAddress, @Model.Address.Ward, @Model.Address.District, @Model.Address.Province
                     </div>
                 }
                 else
                 {
-                    <div class="text-muted">Khách hàng: @Model.User?.FullName (@Model.User?.Email)</div>
+                    <div class="track-text-muted">Khách hàng: @Model.User?.FullName (@Model.User?.Email)</div>
                 }
             </div>
 
             <!-- Items Table -->
-            <h6 class="fw-bold font-heading mb-3 text-uppercase"><i class="bi bi-bag-check-fill text-primary me-2"></i> CHI TIẾT SẢN PHẨM GIAO (@Model.OrderDetails.Sum(d => d.Quantity) sản phẩm)</h6>
+            <h6 class="fw-bold font-heading mb-3 text-uppercase track-text-main"><i class="bi bi-bag-check-fill text-primary me-2"></i> CHI TIẾT SẢN PHẨM GIAO (@Model.OrderDetails.Sum(d => d.Quantity) sản phẩm)</h6>
             <div class="table-responsive mb-4">
                 <table class="table align-middle border rounded-3 overflow-hidden">
-                    <thead class="table-light">
-                        <tr>
+                    <thead>
+                        <tr class="track-table-head">
                             <th style="width: 70px;">Hình ảnh</th>
                             <th>Sản Phẩm</th>
                             <th class="text-center" style="width: 90px;">Số Lượng</th>
                             <th class="text-end pe-3">Thành Tiền</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="track-text-main">
                         @foreach (var item in Model.OrderDetails)
                         {
                             var p = item.Variant?.Product;
@@ -304,9 +357,9 @@
                                     <img src="@img" alt="@p?.ProductName" class="rounded-3 border shadow-sm" style="width: 56px; height: 56px; object-fit: cover;" />
                                 </td>
                                 <td>
-                                    <div class="fw-bold mb-1 fs-6">@p?.ProductName</div>
-                                    <span class="badge bg-body-tertiary text-body border me-1">Size: @item.Variant?.Size</span>
-                                    <span class="badge bg-body-tertiary text-body border">Màu: @item.Variant?.Color</span>
+                                    <div class="fw-bold mb-1 fs-6 track-text-main">@p?.ProductName</div>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border me-1">Size: @item.Variant?.Size</span>
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis border">Màu: @item.Variant?.Color</span>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">x @item.Quantity</span>
@@ -320,13 +373,13 @@
 
             <!-- Total Amount Summary -->
             <div class="d-flex justify-content-between align-items-center p-3.5 track-box">
-                <span class="fw-bold fs-6">TỔNG CỘNG ĐƠN HÀNG:</span>
+                <span class="fw-bold fs-6 track-text-main">TỔNG CỘNG ĐƠN HÀNG:</span>
                 <span class="fw-bold text-primary fs-4">@Model.TotalAmount.ToString("N0")đ</span>
             </div>
 
         </div>
 
-        <div class="text-center py-3 border-top text-muted small">
+        <div class="text-center py-3 border-top track-text-muted small">
             © FASHION STORE Logistics System - Hệ thống xác thực & cập nhật giao hàng thông minh.
         </div>
     </div>
