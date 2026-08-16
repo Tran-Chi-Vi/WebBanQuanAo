@@ -1,33 +1,57 @@
 @model Order
 @{
-    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.OrderNumber;
+    ViewData["Title"] = "Đơn Hàng #" + Model.OrderNumber;
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     decimal subTotal = Model.OrderDetails.Sum(d => d.UnitPrice * d.Quantity);
     decimal discountAmount = Math.Max(0, subTotal - Model.TotalAmount);
+    DateTime vnOrderDate = Model.OrderDate.AddHours(7);
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Page Header Bar -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3.5 rounded-4 bg-body border shadow-sm">
     <div>
-        <h4 class="fw-bold font-heading m-0 text-dark">CHI TIẾT ĐƠN HÀNG #@Model.OrderNumber</h4>
-        <small class="text-muted">Mã Đơn ID: #@Model.OrderId | Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</small>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h4 class="fw-bold font-heading m-0 text-body">#@Model.OrderNumber</h4>
+            @switch (Model.Status)
+            {
+                case OrderStatus.Pending:
+                    <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill">Chờ Xử Lý</span>
+                    break;
+                case OrderStatus.Shipping:
+                    <span class="badge bg-info text-white px-3 py-1.5 rounded-pill">Đang Giao Hàng</span>
+                    break;
+                case OrderStatus.WaitingForCustomer:
+                    <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill">Chờ Khách Xác Nhận</span>
+                    break;
+                case OrderStatus.Completed:
+                    <span class="badge bg-success text-white px-3 py-1.5 rounded-pill">Đã Hoàn Thành</span>
+                    break;
+                case OrderStatus.Cancelled:
+                    <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill">Đã Hủy</span>
+                    break;
+            }
+        </div>
+        <small class="text-muted">Mã Đơn ID: #@Model.OrderId | Đặt lúc: <strong>@vnOrderDate.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</strong></small>
     </div>
-    <div class="d-flex gap-2">
+    <div class="d-flex align-items-center gap-2">
         <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
             @Html.AntiForgeryToken()
             <input type="hidden" name="orderId" value="@Model.OrderId" />
-            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill fw-bold shadow-sm px-3">
-                <i class="bi bi-envelope-at-fill me-1"></i> Gửi Lại Email Hóa Đơn & Mã QR
+            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill fw-bold shadow-sm px-3 py-2">
+                <i class="bi bi-envelope-at-fill me-1"></i> Gửi Lại Mail Hóa Đơn
             </button>
         </form>
-        <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+        <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2">
+            <i class="bi bi-arrow-left me-1"></i> Quay Lại
+        </a>
     </div>
 </div>
 
 <div class="row g-4">
-    <!-- Order Items & Status Change -->
-    <div class="col-lg-8">
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
-            <h5 class="fw-bold font-heading mb-3">DANH SÁCH MẶT HÀNG ĐẶT MUA (@Model.OrderDetails.Sum(d => d.Quantity) sản phẩm)</h5>
+    <!-- Order Items & Customer Info (Left Column) -->
+    <div class="col-lg-7">
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4">
+            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-bag-check-fill text-primary me-2"></i> DANH SÁCH SẢN PHẨM MUA (@Model.OrderDetails.Sum(d => d.Quantity) SP)</h5>
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead class="table-light">
@@ -36,7 +60,7 @@
                             <th>Mã SKU</th>
                             <th>Đơn Giá</th>
                             <th class="text-center">Số Lượng</th>
-                            <th class="text-end pe-3">Thành Tiền</th>
+                            <th class="text-end pe-2">Thành Tiền</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,55 +70,73 @@
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <img src="@img" alt="prod" class="rounded-3" style="width: 54px; height: 54px; object-fit: cover;" />
+                                        <img src="@img" alt="prod" class="rounded-3 border" style="width: 52px; height: 52px; object-fit: cover;" />
                                         <div>
-                                            <div class="fw-bold text-dark small">@item.Variant?.Product?.ProductName</div>
-                                            <small class="text-muted">Size: <span class="badge bg-light text-dark border">@item.Variant?.Size</span> | Màu: <span class="badge bg-light text-dark border">@item.Variant?.Color</span></small>
+                                            <div class="fw-bold text-body small">@item.Variant?.Product?.ProductName</div>
+                                            <small class="text-muted">Size: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Size</span> | Màu: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Color</span></small>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="font-monospace small text-muted">@item.Variant?.SKU</td>
-                                <td>@item.UnitPrice.ToString("N0")đ</td>
+                                <td class="small">@item.UnitPrice.ToString("N0")đ</td>
                                 <td class="text-center">
-                                    <span class="badge bg-primary px-3 py-2 fs-7 rounded-pill">x @item.Quantity</span>
+                                    <span class="badge bg-primary px-3 py-1.5 fs-7 rounded-pill">x @item.Quantity</span>
                                 </td>
-                                <td class="text-end pe-3 fw-bold text-dark">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
+                                <td class="text-end pe-2 fw-bold text-body">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
 
-            <hr class="my-3" />
+            <hr class="my-3 opacity-25" />
 
             <!-- Order Pricing Summary -->
             <div class="row justify-content-end">
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between py-1 text-muted">
+                <div class="col-md-7">
+                    <div class="d-flex justify-content-between py-1 text-muted small">
                         <span>Tổng tiền hàng (Tạm tính):</span>
-                        <strong>@subTotal.ToString("N0")đ</strong>
+                        <strong class="text-body">@subTotal.ToString("N0")đ</strong>
                     </div>
                     @if (discountAmount > 0)
                     {
-                        <div class="d-flex justify-content-between py-1 text-success">
+                        <div class="d-flex justify-content-between py-1 text-success small">
                             <span>Giảm giá & Tích lũy hạng TV:</span>
                             <strong>-@discountAmount.ToString("N0")đ</strong>
                         </div>
                     }
-                    <div class="d-flex justify-content-between py-2 border-top fs-5 fw-bold text-dark mt-2">
+                    <div class="d-flex justify-content-between py-2 border-top fs-5 fw-bold text-body mt-2">
                         <span>Tổng Thanh Toán:</span>
                         <span class="text-primary">@Model.TotalAmount.ToString("N0")đ</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Customer & Delivery Address Card -->
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body">
+            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-geo-alt-fill text-danger me-2"></i> THÔNG TIN NGƯỜI NHẬN HÀNG</h5>
+            <div class="small text-body">
+                <div class="mb-2">
+                    <span class="text-muted">Tài khoản mua:</span>
+                    <strong class="ms-1">@Model.User?.FullName (@@@Model.User?.Username)</strong> - <span class="text-muted">@Model.User?.Email</span>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted">Người nhận hàng:</span>
+                    <strong class="ms-1 fs-6">@Model.Address?.RecipientName</strong> - SĐT: <strong class="font-monospace text-primary fs-6">@Model.Address?.Phone</strong>
+                </div>
+                <div class="p-3 bg-body-tertiary rounded-3 border mt-2">
+                    📍 <strong>Địa chỉ giao:</strong> @Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Customer Info & Status Update Form -->
-    <div class="col-lg-4">
+    <!-- Status Update & QR Shipping Label (Right Column) -->
+    <div class="col-lg-5">
         <!-- Status Update Card -->
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4">
-            <h5 class="fw-bold font-heading mb-3"><i class="bi bi-sliders text-primary me-2"></i> CẬP NHẬT TRẠNG THÁI</h5>
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4">
+            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-sliders text-primary me-2"></i> CẬP NHẬT TRẠNG THÁI</h5>
 
             <form action="/sys-admin-management/OrderManagement/UpdateStatus" method="post">
                 @Html.AntiForgeryToken()
@@ -120,7 +162,9 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary-gradient w-100 py-2 font-heading fw-bold">Lưu Trạng Thái</button>
+                <button type="submit" class="btn btn-primary w-100 py-2.5 font-heading fw-bold rounded-3 shadow-sm">
+                    <i class="bi bi-check-lg me-1"></i> Lưu Trạng Thái Đơn Hàng
+                </button>
             </form>
         </div>
 
@@ -129,40 +173,24 @@
             string trackUrlAdmin = $"https://fashionstore-zjc7.onrender.com/Order/Track/{Model.OrderGuid}";
             string qrCodeAdminUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackUrlAdmin)}";
         }
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white mb-4 text-center">
+        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4 text-center">
             <h5 class="fw-bold font-heading mb-2 text-primary"><i class="bi bi-qr-code-scan me-2"></i> MÃ QR VẬN ĐƠN & SHIPPER</h5>
             <p class="small text-muted mb-3">Dán tem này lên kiện hàng để Shipper quét camera mở ngay thông tin đơn hàng & nút giao hàng 1-click:</p>
             
-            <div id="printableShippingLabel" class="bg-light p-3 rounded-4 border border-dashed border-primary d-inline-block mb-3">
-                <div class="fw-bold text-dark font-monospace fs-5 mb-1">#@Model.OrderNumber</div>
+            <div id="printableShippingLabel" class="bg-light text-dark p-3.5 rounded-4 border border-dashed border-primary d-inline-block mb-3 shadow-sm" style="max-width: 280px; margin: 0 auto;">
+                <div class="fw-bold font-monospace fs-5 mb-1 text-dark">#@Model.OrderNumber</div>
                 <div class="bg-white p-2 d-inline-block rounded-3 border shadow-sm">
-                    <img src="@qrCodeAdminUrl" alt="Mã QR Vận Đơn" style="width: 170px; height: 170px;" class="d-block" />
+                    <img src="@qrCodeAdminUrl" alt="Mã QR Vận Đơn" style="width: 160px; height: 160px;" class="d-block" />
                 </div>
                 <div class="small fw-bold text-danger mt-2">
                     @(Model.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THU HỘ COD: {Model.TotalAmount.ToString("N0")}đ")
                 </div>
-                <div class="small text-muted font-monospace mt-1">@Model.Address?.RecipientName - @Model.Address?.Phone</div>
+                <div class="small text-secondary font-monospace mt-1">@Model.Address?.RecipientName - @Model.Address?.Phone</div>
             </div>
 
-            <button type="button" onclick="printShippingLabel()" class="btn btn-outline-primary fw-bold w-100 rounded-3">
-                <i class="bi bi-printer-fill me-1"></i> In Tem Giao Hàng (Print Shipping Label)
+            <button type="button" onclick="printShippingLabel()" class="btn btn-outline-primary fw-bold w-100 rounded-3 py-2">
+                <i class="bi bi-printer-fill me-1"></i> In Tem Giao Hàng (Shipping Label)
             </button>
-        </div>
-
-        <!-- Customer & Address Info Card -->
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
-            <h5 class="fw-bold font-heading mb-3">THÔNG TIN KHÁCH HÀNG</h5>
-            <div class="small">
-                <div class="text-muted mb-1">Tài khoản đặt:</div>
-                <div class="fw-bold text-dark">@Model.User?.FullName (@@@Model.User?.Username)</div>
-                <div class="text-muted small">@Model.User?.Email</div>
-
-                <div class="text-muted mt-3 mb-1">Người nhận hàng:</div>
-                <div class="fw-bold">@Model.Address?.RecipientName - <span class="font-monospace text-primary">@Model.Address?.Phone</span></div>
-
-                <div class="text-muted mt-3 mb-1">Địa chỉ giao hàng:</div>
-                <div class="fw-semibold">@Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province</div>
-            </div>
         </div>
     </div>
 </div>

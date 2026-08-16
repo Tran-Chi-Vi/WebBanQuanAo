@@ -7,22 +7,22 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h4 class="fw-bold font-heading m-0"><i class="bi bi-box-seam-fill text-primary me-2"></i> QUẢN LÝ SẢN PHẨM & TỒN KHO</h4>
+        <h4 class="fw-bold font-heading m-0 text-body"><i class="bi bi-box-seam-fill text-primary me-2"></i> QUẢN LÝ SẢN PHẨM & TỒN KHO</h4>
         <small class="text-muted">Tổng số: <strong>@ViewBag.TotalItems</strong> sản phẩm trong cửa hàng</small>
     </div>
     <div class="d-flex gap-2">
-        <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary-gradient shadow-sm fw-bold px-3">
+        <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-3">
             <i class="bi bi-plus-lg me-1"></i> Thêm Sản Phẩm Mới
         </a>
     </div>
 </div>
 
 <!-- Filters Header -->
-<div class="card p-3 border-0 shadow-sm rounded-4 bg-white mb-4">
+<div class="card p-3.5 border-0 shadow-sm rounded-4 bg-body mb-4">
     <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" method="get" class="row g-3">
         <div class="col-md-4">
             <div class="input-group">
-                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <span class="input-group-text bg-body-tertiary border-end-0"><i class="bi bi-search text-muted"></i></span>
                 <input type="text" name="searchQuery" class="form-control border-start-0 ps-0" placeholder="Tìm theo tên sản phẩm..." value="@ViewBag.SearchQuery" />
             </div>
         </div>
@@ -51,9 +51,9 @@
 </div>
 
 <!-- Product Table -->
-<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-body">
     <div class="table-responsive">
-        <table class="table table-custom align-middle">
+        <table class="table align-middle">
             <thead class="table-light">
                 <tr>
                     <th style="width:70px;">Hình Ảnh</th>
@@ -63,10 +63,10 @@
                     <th>Giá Gốc</th>
                     <th>Tồn Kho</th>
                     <th>Trạng Thái</th>
-                    <th style="min-width: 220px;">Thao Tác</th>
+                    <th style="min-width: 220px;" class="text-end pe-3">Thao Tác</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-body">
                 @foreach (var p in Model)
                 {
                     var img = p.Images.FirstOrDefault(i => i.IsMain)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
@@ -77,7 +77,7 @@
                             <img src="@img" alt="@p.ProductName" class="rounded-3 shadow-sm border" style="width: 54px; height: 54px; object-fit: cover;" />
                         </td>
                         <td>
-                            <div class="fw-bold text-dark fs-6">@p.ProductName</div>
+                            <div class="fw-bold text-body fs-6">@p.ProductName</div>
                             <small class="text-muted font-monospace">@p.Variants.Count size/màu biến thể</small>
                         </td>
                         <td class="small text-muted fw-semibold">@p.Category?.CategoryName</td>
@@ -101,22 +101,22 @@
                             <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary")">@p.Status</span>
                         </td>
                         <td>
-                            <div class="d-flex gap-2 align-items-center">
-                                <button type="button" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-bold"
+                            <div class="d-flex gap-2 align-items-center justify-content-end pe-2">
+                                <button type="button" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-bold px-3 py-1.5"
                                         data-bs-toggle="modal" data-bs-target="#restockModal-@p.ProductId"
                                         style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                     <i class="bi bi-plus-circle-fill"></i> Nhập Hàng
                                 </button>
                                 <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Edit" asp-route-id="@p.ProductId"
-                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
+                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
                                    style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
-                                <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa/ngưng kinh doanh sản phẩm này?')">
+                                <form asp-area="Admin" asp-controller="ProductManagement" asp-action="Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@p.ProductId" />
                                     <button type="submit"
-                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold"
+                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
                                             style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                         <i class="bi bi-trash"></i> Xóa
                                     </button>
@@ -128,12 +128,12 @@
                     <!-- Restock Modal for Product -->
                     <div class="modal fade" id="restockModal-@p.ProductId" tabindex="-1" aria-labelledby="restockLabel-@p.ProductId" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg">
-                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                            <div class="modal-content rounded-4 border-0 shadow-lg bg-body">
                                 <form asp-area="Admin" asp-controller="ProductManagement" asp-action="QuickRestock" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="productId" value="@p.ProductId" />
-                                    <div class="modal-header bg-light rounded-top-4">
-                                        <h5 class="modal-title fw-bold text-dark" id="restockLabel-@p.ProductId">
+                                    <div class="modal-header bg-body-tertiary rounded-top-4">
+                                        <h5 class="modal-title fw-bold text-body" id="restockLabel-@p.ProductId">
                                             <i class="bi bi-box-seam text-success me-2"></i> Nhập Hàng Tồn Kho: <span class="text-primary">@p.ProductName</span>
                                         </h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -141,7 +141,7 @@
                                     <div class="modal-body p-4">
                                         <p class="text-muted small mb-3">Cập nhật số lượng tồn kho cho các biến thể Size/Màu sắc để sản phẩm sẵn sàng mở bán lại trên trang web:</p>
                                         <div class="table-responsive">
-                                            <table class="table align-middle table-hover">
+                                            <table class="table align-middle">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Mã SKU</th>
@@ -151,13 +151,13 @@
                                                         <th style="width: 220px;">Tồn Kho Hiện Tại</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody class="text-body">
                                                     @foreach (var v in p.Variants)
                                                     {
                                                         <tr>
                                                             <td class="font-monospace small fw-bold text-muted">@v.SKU</td>
                                                             <td><span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">@v.Size</span></td>
-                                                            <td><span class="badge bg-light text-dark border px-2 py-1">@v.Color</span></td>
+                                                            <td><span class="badge bg-secondary-subtle text-secondary-emphasis border px-2 py-1">@v.Color</span></td>
                                                             <td class="fw-bold">@v.Price.ToString("N0")đ</td>
                                                             <td>
                                                                 <div class="input-group input-group-sm">
@@ -175,7 +175,7 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="modal-footer bg-light rounded-bottom-4">
+                                    <div class="modal-footer bg-body-tertiary rounded-bottom-4">
                                         <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Hủy</button>
                                         <button type="submit" class="btn btn-success fw-bold px-4 rounded-3">
                                             <i class="bi bi-check-circle-fill me-1"></i> Lưu Cập Nhật Tồn Kho
