@@ -3,58 +3,84 @@
     ViewData["Title"] = "Quản Lý Mã Khuyến Mãi";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold font-heading m-0">QUẢN LÝ MÃ KHUYẾN MÃI</h4>
-    <a asp-area="Admin" asp-controller="Promotion" asp-action="Create" class="btn btn-primary-gradient shadow-sm">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h4 class="fw-bold font-heading m-0 text-body"><i class="bi bi-ticket-perforated-fill text-primary me-2"></i> QUẢN LÝ MÃ KHUYẾN MÃI</h4>
+        <small class="text-muted">Danh sách mã giảm giá toàn sàn & mã tri ân khách hàng</small>
+    </div>
+    <a asp-area="Admin" asp-controller="Promotion" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-3 py-2 rounded-3">
         + Thêm Mã Khuyến Mãi Mới
     </a>
 </div>
 
-<div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+<div class="card p-3 p-md-4 border-0 shadow-sm rounded-4 bg-body">
     <div class="table-responsive">
-        <table class="table table-custom align-middle">
+        <table class="table align-middle">
             <thead>
-                <tr>
+                <tr class="table-light">
                     <th>Mã Khuyến Mãi</th>
+                    <th>Phạm Vi / Đối Tượng</th>
                     <th>Loại Giảm Giá</th>
                     <th>Giá Trị Giảm</th>
                     <th>Đơn Tối Thiểu</th>
                     <th>Thời Gian Hiệu Lực</th>
                     <th>Lượt Dùng</th>
-                    <th>Thao Tác</th>
+                    <th class="text-end">Thao Tác</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-body">
                 @foreach (var p in Model)
                 {
                     bool isActive = p.StartDate <= DateTime.Now && p.EndDate >= DateTime.Now;
+                    bool isPrivate = p.Code.StartsWith("WINBACK") || p.Code.StartsWith("PERSONAL") || !string.IsNullOrEmpty(p.AllowedEmail) || p.AssignedUserId.HasValue;
+
                     <tr>
-                        <td class="fw-bold"><span class="badge bg-primary fs-6 font-monospace">@p.Code</span></td>
-                        <td>@p.DiscountType</td>
+                        <td>
+                            <span class="badge bg-primary fs-6 font-monospace px-3 py-1.5 rounded-pill shadow-sm">@p.Code</span>
+                        </td>
+                        <td>
+                            @if (isPrivate)
+                            {
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold px-2.5 py-1 rounded-pill small">
+                                    Níu Chân KH (Tự Động Email)
+                                </span>
+                                @if (!string.IsNullOrEmpty(p.AllowedEmail))
+                                {
+                                    <div class="small text-muted font-monospace mt-1">@p.AllowedEmail</div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold px-2.5 py-1 rounded-pill small">
+                                    Công Khai Trang Chủ
+                                </span>
+                            }
+                        </td>
+                        <td class="fw-semibold">@p.DiscountType</td>
                         <td class="fw-bold text-success">
                             @(p.DiscountType == DiscountType.Percentage ? $"{p.DiscountValue}%" : $"{p.DiscountValue:N0}đ")
                         </td>
-                        <td>@p.MinOrderValue.ToString("N0")đ</td>
+                        <td class="fw-bold">@p.MinOrderValue.ToString("N0")đ</td>
                         <td class="small">
                             <div>Từ: @p.StartDate.ToString("dd/MM/yyyy")</div>
                             <div>Đến: @p.EndDate.ToString("dd/MM/yyyy")</div>
                             <span class="badge @(isActive ? "bg-success" : "bg-secondary") mt-1">
-                                @(isActive ? "Đang hiệu lực" : "Hết hạn/Chưa có")
+                                @(isActive ? "Đang hiệu lực" : "Đã hết hạn")
                             </span>
                         </td>
-                        <td><span class="badge bg-light text-dark border">@p.Orders.Count lượt</span></td>
+                        <td><span class="badge bg-body-tertiary text-body border px-2.5 py-1.5 rounded-pill">@p.Orders.Count lượt</span></td>
                         <td>
-                            <div class="d-flex gap-2 align-items-center">
+                            <div class="d-flex gap-2 align-items-center justify-content-end">
                                 <a asp-area="Admin" asp-controller="Promotion" asp-action="Edit" asp-route-id="@p.PromotionId"
-                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
+                                   class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
                                    style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
-                                <form asp-area="Admin" asp-controller="Promotion" asp-action="Delete" method="post" onsubmit="return confirm('Xóa mã này?')">
+                                <form asp-area="Admin" asp-controller="Promotion" asp-action="Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mã khuyến mãi này?')">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@p.PromotionId" />
                                     <button type="submit"
-                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold"
+                                            class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
                                             style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                         <i class="bi bi-trash"></i> Xóa
                                     </button>

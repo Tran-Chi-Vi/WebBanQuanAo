@@ -25,47 +25,60 @@
     }
     body.admin-dark-mode .order-label-muted,
     body.user-dark-mode .order-label-muted {
-        color: #cbd5e1 !important;
+        color: #94a3b8 !important;
+    }
+    .order-header-badge {
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        padding: 6px 14px;
+        border-radius: 9999px;
     }
 </style>
 
-<!-- Page Header Bar -->
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3.5 order-details-card shadow-sm">
-    <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <h4 class="fw-bold font-heading m-0">#@Model.OrderNumber</h4>
-            @switch (Model.Status)
-            {
-                case OrderStatus.Pending:
-                    <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill">Chờ Xử Lý</span>
-                    break;
-                case OrderStatus.Shipping:
-                    <span class="badge bg-info text-white px-3 py-1.5 rounded-pill">Đang Giao Hàng</span>
-                    break;
-                case OrderStatus.WaitingForCustomer:
-                    <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill">Chờ Khách Xác Nhận</span>
-                    break;
-                case OrderStatus.Completed:
-                    <span class="badge bg-success text-white px-3 py-1.5 rounded-pill">Đã Hoàn Thành</span>
-                    break;
-                case OrderStatus.Cancelled:
-                    <span class="badge bg-danger text-white px-3 py-1.5 rounded-pill">Đã Hủy</span>
-                    break;
-            }
+<!-- Page Header Bar (Impeccable Design System Formatted) -->
+<div class="card p-4 border-0 shadow-sm order-details-card mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <div class="d-flex align-items-center flex-wrap gap-2.5 mb-1.5">
+                <h3 class="fw-bold font-heading text-body mb-0" style="letter-spacing: -0.02em;">#@Model.OrderNumber</h3>
+                @switch (Model.Status)
+                {
+                    case OrderStatus.Pending:
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge">Chờ Xử Lý</span>
+                        break;
+                    case OrderStatus.Shipping:
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle order-header-badge">Đang Giao Hàng</span>
+                        break;
+                    case OrderStatus.WaitingForCustomer:
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge">Chờ Khách Xác Nhận</span>
+                        break;
+                    case OrderStatus.Completed:
+                        <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle order-header-badge">Đã Hoàn Thành</span>
+                        break;
+                    case OrderStatus.Cancelled:
+                        <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle order-header-badge">Đã Hủy</span>
+                        break;
+                }
+            </div>
+            <div class="small order-label-muted d-flex align-items-center gap-2 flex-wrap">
+                <span>Mã Đơn ID: <strong class="text-body">#@Model.OrderId</strong></span>
+                <span>•</span>
+                <span>Đặt lúc: <strong class="text-body">@vnOrderDate.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</strong></span>
+            </div>
         </div>
-        <small class="order-label-muted">Mã Đơn ID: #@Model.OrderId | Đặt lúc: <strong>@vnOrderDate.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</strong></small>
-    </div>
-    <div class="d-flex align-items-center gap-2">
-        <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="orderId" value="@Model.OrderId" />
-            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill fw-bold shadow-sm px-3 py-2">
-                Gửi Lại Mail Hóa Đơn
-            </button>
-        </form>
-        <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2">
-            Quay Lại
-        </a>
+        <div class="d-flex align-items-center gap-2.5">
+            <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="orderId" value="@Model.OrderId" />
+                <button type="submit" class="btn btn-primary fw-bold shadow-sm px-3.5 py-2 rounded-3" style="font-size:0.88rem;">
+                    Gửi Lại Mail Hóa Đơn
+                </button>
+            </form>
+            <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-outline-secondary fw-semibold px-3.5 py-2 rounded-3" style="font-size:0.88rem;">
+                Quay Lại
+            </a>
+        </div>
     </div>
 </div>
 

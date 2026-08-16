@@ -105,13 +105,19 @@ public class HomeController : Controller
             bestsellers = bestsellers.OrderByDescending(p => favIds.Contains(p.ProductId)).ToList();
         }
 
-        // Khuyến mãi đang hoạt động
+        // Khuyến mãi đang hoạt động (Chỉ hiển thị các mã công khai đang trong thời hạn hiệu lực)
         try
         {
             var now = DateTime.Now;
             ViewBag.ActivePromotions = await _context.Promotions
-                .Where(p => p.StartDate <= now && p.EndDate >= now)
-                .Take(3)
+                .Where(p => p.StartDate <= now 
+                         && p.EndDate >= now 
+                         && string.IsNullOrEmpty(p.AllowedEmail) 
+                         && p.AssignedUserId == null 
+                         && !p.Code.StartsWith("WINBACK")
+                         && !p.Code.StartsWith("PERSONAL"))
+                .OrderByDescending(p => p.StartDate)
+                .Take(4)
                 .ToListAsync();
         }
         catch
