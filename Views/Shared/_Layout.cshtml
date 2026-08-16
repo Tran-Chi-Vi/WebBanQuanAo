@@ -53,13 +53,42 @@
 
     <!-- ====== STICKY HEADER CONTAINER ====== -->
     <header class="sticky-top" style="z-index:999;">
+        @{
+            var nowDate = DateTime.Now;
+            var layoutPublicPromos = new List<WEBBANQUANAO.Models.Entities.Promotion>();
+            try
+            {
+                layoutPublicPromos = _layoutDbContext.Promotions
+                    .Where(p => p.StartDate <= nowDate 
+                             && p.EndDate >= nowDate 
+                             && string.IsNullOrEmpty(p.AllowedEmail) 
+                             && p.AssignedUserId == null 
+                             && !p.Code.StartsWith("WINBACK")
+                             && !p.Code.StartsWith("PERSONAL"))
+                    .OrderByDescending(p => p.StartDate)
+                    .Take(5)
+                    .ToList();
+            }
+            catch { }
+        }
+
         <!-- ====== TOP ANNOUNCEMENT MARQUEE ====== -->
         <div class="top-announcement-marquee-wrapper" id="announcementBar">
             <div class="top-announcement-marquee-content" id="announcementContent">
-                🔥 MÃ GIẢM GIÁ: <strong class="text-warning">"FASHION2026"</strong> - GIẢM 10% CHO ĐƠN TỪ 300.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
-                💥 <strong class="text-warning">"GIAM50K"</strong> - GIẢM 50.000đ CHO ĐƠN TỪ 500.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
-                🚚 MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN TỪ 500.000đ &nbsp;&nbsp;|&nbsp;&nbsp;
-                ⚡ MỚI VỀ HÔM NAY: Váy Đầm Luxury, Áo Blazer Modern, Quần Jean Slimfit, Áo Polo Cotton...
+                @if (layoutPublicPromos.Any())
+                {
+                    @foreach (var promo in layoutPublicPromos)
+                    {
+                        var discountStr = promo.DiscountType == WEBBANQUANAO.Models.Entities.DiscountType.Percentage ? $"GIẢM {promo.DiscountValue}%" : $"GIẢM {promo.DiscountValue:N0}đ";
+                        <span>MÃ GIẢM GIÁ: <strong class="text-warning">"@promo.Code"</strong> - @discountStr CHO ĐƠN TỪ @promo.MinOrderValue.ToString("N0")đ &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                    }
+                }
+                else
+                {
+                    <span>ƯU ĐÃI THỜI TRANG HOT NHẤT 2026 &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                }
+                <span>MIỄN PHÍ VẬN CHUYỂN CHO ĐƠN TỪ 500.000đ &nbsp;&nbsp;|&nbsp;&nbsp;</span>
+                <span>MỚI VỀ HÔM NAY: Váy Đầm Luxury, Áo Blazer Modern, Quần Jean Slimfit, Áo Polo Cotton...</span>
             </div>
         </div>
 
