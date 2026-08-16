@@ -714,3 +714,41 @@ body.user-dark-mode .page-item.active .page-link {
   color: #ffffff !important;
 }
 
+/* SweetAlert2 & Toast Alerts High-Contrast System */
+.swal2-popup {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+.swal2-title, .swal2-html-container, .swal2-content {
+  color: #f8fafc !important;
+}
+.swal2-confirm {
+  background-color: #6366f1 !important;
+}
+
+body.admin-dark-mode .alert-success,
+body.user-dark-mode .alert-success {
+  background-color: #064e3b !important;
+  color: #ecfdf5 !important;
+  border-color: #059669 !important;
+}
+body.admin-dark-mode .alert-danger,
+body.user-dark-mode .alert-danger {
+  background-color: #7f1d1d !important;
+  color: #fef2f2 !important;
+  border-color: #dc2626 !important;
+}
+body.admin-dark-mode .alert-info,
+body.user-dark-mode .alert-info {
+  background-color: #1e3a8a !important;
+  color: #eff6ff !important;
+  border-color: #2563eb !important;
+}
+body.admin-dark-mode .alert-warning,
+body.user-dark-mode .alert-warning {
+  background-color: #78350f !important;
+  color: #fef3c7 !important;
+  border-color: #d97706 !important;
+}
+

@@ -7,11 +7,33 @@
     DateTime vnOrderDate = Model.OrderDate.AddHours(7);
 }
 
+<style>
+    .order-details-card {
+        background-color: var(--bs-body-bg, #ffffff);
+        color: var(--bs-body-color, #0f172a);
+        border: 1px solid var(--bs-border-color, #e2e8f0);
+        border-radius: 16px;
+    }
+    body.admin-dark-mode .order-details-card,
+    body.user-dark-mode .order-details-card {
+        background-color: #1e293b !important;
+        color: #ffffff !important;
+        border-color: #334155 !important;
+    }
+    .order-label-muted {
+        color: #64748b;
+    }
+    body.admin-dark-mode .order-label-muted,
+    body.user-dark-mode .order-label-muted {
+        color: #cbd5e1 !important;
+    }
+</style>
+
 <!-- Page Header Bar -->
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3.5 rounded-4 bg-body border shadow-sm">
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-3.5 order-details-card shadow-sm">
     <div>
         <div class="d-flex align-items-center gap-2 mb-1">
-            <h4 class="fw-bold font-heading m-0 text-body">#@Model.OrderNumber</h4>
+            <h4 class="fw-bold font-heading m-0">#@Model.OrderNumber</h4>
             @switch (Model.Status)
             {
                 case OrderStatus.Pending:
@@ -31,18 +53,18 @@
                     break;
             }
         </div>
-        <small class="text-muted">Mã Đơn ID: #@Model.OrderId | Đặt lúc: <strong>@vnOrderDate.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</strong></small>
+        <small class="order-label-muted">Mã Đơn ID: #@Model.OrderId | Đặt lúc: <strong>@vnOrderDate.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</strong></small>
     </div>
     <div class="d-flex align-items-center gap-2">
         <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
             @Html.AntiForgeryToken()
             <input type="hidden" name="orderId" value="@Model.OrderId" />
             <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill fw-bold shadow-sm px-3 py-2">
-                <i class="bi bi-envelope-at-fill me-1"></i> Gửi Lại Mail Hóa Đơn
+                Gửi Lại Mail Hóa Đơn
             </button>
         </form>
         <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2">
-            <i class="bi bi-arrow-left me-1"></i> Quay Lại
+            Quay Lại
         </a>
     </div>
 </div>
@@ -50,12 +72,12 @@
 <div class="row g-4">
     <!-- Order Items & Customer Info (Left Column) -->
     <div class="col-lg-7">
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4">
-            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-bag-check-fill text-primary me-2"></i> DANH SÁCH SẢN PHẨM MUA (@Model.OrderDetails.Sum(d => d.Quantity) SP)</h5>
+        <div class="card p-4 border-0 shadow-sm order-details-card mb-4">
+            <h5 class="fw-bold font-heading mb-3">DANH SÁCH SẢN PHẨM MUA (@Model.OrderDetails.Sum(d => d.Quantity) SP)</h5>
             <div class="table-responsive">
                 <table class="table align-middle">
-                    <thead class="table-light">
-                        <tr>
+                    <thead>
+                        <tr class="table-light">
                             <th>Sản Phẩm</th>
                             <th>Mã SKU</th>
                             <th>Đơn Giá</th>
@@ -72,17 +94,17 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <img src="@img" alt="prod" class="rounded-3 border" style="width: 52px; height: 52px; object-fit: cover;" />
                                         <div>
-                                            <div class="fw-bold text-body small">@item.Variant?.Product?.ProductName</div>
-                                            <small class="text-muted">Size: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Size</span> | Màu: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Color</span></small>
+                                            <div class="fw-bold small">@item.Variant?.Product?.ProductName</div>
+                                            <small class="order-label-muted">Size: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Size</span> | Màu: <span class="badge bg-secondary-subtle text-secondary-emphasis border">@item.Variant?.Color</span></small>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="font-monospace small text-muted">@item.Variant?.SKU</td>
+                                <td class="font-monospace small order-label-muted">@item.Variant?.SKU</td>
                                 <td class="small">@item.UnitPrice.ToString("N0")đ</td>
                                 <td class="text-center">
                                     <span class="badge bg-primary px-3 py-1.5 fs-7 rounded-pill">x @item.Quantity</span>
                                 </td>
-                                <td class="text-end pe-2 fw-bold text-body">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
+                                <td class="text-end pe-2 fw-bold">@((item.UnitPrice * item.Quantity).ToString("N0"))đ</td>
                             </tr>
                         }
                     </tbody>
@@ -94,9 +116,9 @@
             <!-- Order Pricing Summary -->
             <div class="row justify-content-end">
                 <div class="col-md-7">
-                    <div class="d-flex justify-content-between py-1 text-muted small">
-                        <span>Tổng tiền hàng (Tạm tính):</span>
-                        <strong class="text-body">@subTotal.ToString("N0")đ</strong>
+                    <div class="d-flex justify-content-between py-1 small">
+                        <span class="order-label-muted">Tổng tiền hàng (Tạm tính):</span>
+                        <strong>@subTotal.ToString("N0")đ</strong>
                     </div>
                     @if (discountAmount > 0)
                     {
@@ -105,7 +127,7 @@
                             <strong>-@discountAmount.ToString("N0")đ</strong>
                         </div>
                     }
-                    <div class="d-flex justify-content-between py-2 border-top fs-5 fw-bold text-body mt-2">
+                    <div class="d-flex justify-content-between py-2 border-top fs-5 fw-bold mt-2">
                         <span>Tổng Thanh Toán:</span>
                         <span class="text-primary">@Model.TotalAmount.ToString("N0")đ</span>
                     </div>
@@ -114,19 +136,19 @@
         </div>
 
         <!-- Customer & Delivery Address Card -->
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body">
-            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-geo-alt-fill text-danger me-2"></i> THÔNG TIN NGƯỜI NHẬN HÀNG</h5>
-            <div class="small text-body">
+        <div class="card p-4 border-0 shadow-sm order-details-card">
+            <h5 class="fw-bold font-heading mb-3">THÔNG TIN NGƯỜI NHẬN HÀNG</h5>
+            <div class="small">
                 <div class="mb-2">
-                    <span class="text-muted">Tài khoản mua:</span>
-                    <strong class="ms-1">@Model.User?.FullName (@@@Model.User?.Username)</strong> - <span class="text-muted">@Model.User?.Email</span>
+                    <span class="order-label-muted">Tài khoản mua:</span>
+                    <strong class="ms-1">@Model.User?.FullName (@@@Model.User?.Username)</strong> - <span class="order-label-muted">@Model.User?.Email</span>
                 </div>
                 <div class="mb-2">
-                    <span class="text-muted">Người nhận hàng:</span>
+                    <span class="order-label-muted">Người nhận hàng:</span>
                     <strong class="ms-1 fs-6">@Model.Address?.RecipientName</strong> - SĐT: <strong class="font-monospace text-primary fs-6">@Model.Address?.Phone</strong>
                 </div>
                 <div class="p-3 bg-body-tertiary rounded-3 border mt-2">
-                    📍 <strong>Địa chỉ giao:</strong> @Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province
+                    <strong>Địa chỉ giao:</strong> @Model.Address?.DetailAddress, @Model.Address?.Ward, @Model.Address?.District, @Model.Address?.Province
                 </div>
             </div>
         </div>
@@ -135,8 +157,8 @@
     <!-- Status Update & QR Shipping Label (Right Column) -->
     <div class="col-lg-5">
         <!-- Status Update Card -->
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4">
-            <h5 class="fw-bold font-heading mb-3 text-body"><i class="bi bi-sliders text-primary me-2"></i> CẬP NHẬT TRẠNG THÁI</h5>
+        <div class="card p-4 border-0 shadow-sm order-details-card mb-4">
+            <h5 class="fw-bold font-heading mb-3">CẬP NHẬT TRẠNG THÁI</h5>
 
             <form action="/sys-admin-management/OrderManagement/UpdateStatus" method="post">
                 @Html.AntiForgeryToken()
@@ -163,7 +185,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2.5 font-heading fw-bold rounded-3 shadow-sm">
-                    <i class="bi bi-check-lg me-1"></i> Lưu Trạng Thái Đơn Hàng
+                    Lưu Trạng Thái Đơn Hàng
                 </button>
             </form>
         </div>
@@ -173,9 +195,9 @@
             string trackUrlAdmin = $"https://fashionstore-zjc7.onrender.com/Order/Track/{Model.OrderGuid}";
             string qrCodeAdminUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={Uri.EscapeDataString(trackUrlAdmin)}";
         }
-        <div class="card p-4 border-0 shadow-sm rounded-4 bg-body mb-4 text-center">
-            <h5 class="fw-bold font-heading mb-2 text-primary"><i class="bi bi-qr-code-scan me-2"></i> MÃ QR VẬN ĐƠN & SHIPPER</h5>
-            <p class="small text-muted mb-3">Dán tem này lên kiện hàng để Shipper quét camera mở ngay thông tin đơn hàng & nút giao hàng 1-click:</p>
+        <div class="card p-4 border-0 shadow-sm order-details-card mb-4 text-center">
+            <h5 class="fw-bold font-heading mb-2 text-primary">MÃ QR VẬN ĐƠN & SHIPPER</h5>
+            <p class="small order-label-muted mb-3">Dán tem này lên kiện hàng để Shipper quét camera mở ngay thông tin đơn hàng & nút giao hàng 1-click:</p>
             
             <div id="printableShippingLabel" class="bg-light text-dark p-3.5 rounded-4 border border-dashed border-primary d-inline-block mb-3 shadow-sm" style="max-width: 280px; margin: 0 auto;">
                 <div class="fw-bold font-monospace fs-5 mb-1 text-dark">#@Model.OrderNumber</div>
@@ -183,13 +205,13 @@
                     <img src="@qrCodeAdminUrl" alt="Mã QR Vận Đơn" style="width: 160px; height: 160px;" class="d-block" />
                 </div>
                 <div class="small fw-bold text-danger mt-2">
-                    @(Model.Payment?.Status == PaymentStatus.Success ? "✅ ĐÃ THANH TOÁN (0đ COD)" : $"🚚 THU HỘ COD: {Model.TotalAmount.ToString("N0")}đ")
+                    @(Model.Payment?.Status == PaymentStatus.Success ? "ĐÃ THANH TOÁN (0đ COD)" : $"THU HỘ COD: {Model.TotalAmount.ToString("N0")}đ")
                 </div>
                 <div class="small text-secondary font-monospace mt-1">@Model.Address?.RecipientName - @Model.Address?.Phone</div>
             </div>
 
             <button type="button" onclick="printShippingLabel()" class="btn btn-outline-primary fw-bold w-100 rounded-3 py-2">
-                <i class="bi bi-printer-fill me-1"></i> In Tem Giao Hàng (Shipping Label)
+                In Tem Giao Hàng (Shipping Label)
             </button>
         </div>
     </div>

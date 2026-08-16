@@ -704,7 +704,7 @@ public class OrderController : Controller
                 }
             });
 
-            TempData["SuccessMessage"] = $"🎉 Đã giao thành công đơn hàng #{order.OrderNumber}!";
+            TempData["SuccessMessage"] = $"Đã giao thành công đơn hàng #{order.OrderNumber}.";
             TempData["AutoRedirectExit"] = true;
         }
         else if (actionType == "fail_attempt")
@@ -733,7 +733,7 @@ public class OrderController : Controller
                     }
                 });
 
-                TempData["ErrorMessage"] = $"⚠️ Giao thất bại lần {order.DeliveryAttemptCount}/3. Đã gửi mail cho khách!";
+                TempData["ErrorMessage"] = $"Báo giao hàng thất bại lần {order.DeliveryAttemptCount}/3. Đã gửi email xác nhận giao lại cho khách hàng.";
                 TempData["AutoRedirectExit"] = true;
             }
             else
@@ -774,7 +774,7 @@ public class OrderController : Controller
                     }
                 });
 
-                TempData["ErrorMessage"] = $"❌ Đơn #{order.OrderNumber} đã bị hủy (thất bại 3 lần) & hoàn kho!";
+                TempData["ErrorMessage"] = $"Đơn hàng #{order.OrderNumber} đã bị hủy do giao thất bại 3 lần và đã hoàn trả tồn kho.";
                 TempData["AutoRedirectExit"] = true;
             }
         }

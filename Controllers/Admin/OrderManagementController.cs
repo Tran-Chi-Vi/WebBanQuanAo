@@ -182,7 +182,7 @@ public class OrderManagementController : Controller
             }
         });
 
-        TempData["SuccessMessage"] = $"🎉 Đã cập nhật đơn #{orderId} thành công!";
+        TempData["SuccessMessage"] = $"Đã cập nhật đơn hàng #{orderId} thành công.";
         return RedirectToAction("Details", new { id = orderId });
     }
 
@@ -193,18 +193,18 @@ public class OrderManagementController : Controller
         var order = await _context.Orders.Include(o => o.User).FirstOrDefaultAsync(o => o.OrderId == orderId);
         if (order == null || order.User == null)
         {
-            TempData["ErrorMessage"] = "Không tìm thấy đơn hàng.";
+            TempData["ErrorMessage"] = "Không tìm thấy thông tin đơn hàng.";
             return RedirectToAction("Index");
         }
 
         bool success = await _emailService.SendOrderInvoiceEmailAsync(orderId);
         if (success)
         {
-            TempData["SuccessMessage"] = $"📧 Đã gửi lại mail hóa đơn tới {order.User.Email}!";
+            TempData["SuccessMessage"] = $"Đã gửi lại email hóa đơn tới {order.User.Email}.";
         }
         else
         {
-            TempData["ErrorMessage"] = $"❌ Gửi mail tới {order.User.Email} thất bại!";
+            TempData["ErrorMessage"] = $"Gửi email tới {order.User.Email} thất bại.";
         }
 
         return RedirectToAction("Details", new { id = orderId });

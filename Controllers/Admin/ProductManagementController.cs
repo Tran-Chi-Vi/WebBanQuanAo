@@ -285,7 +285,7 @@ public class ProductManagementController : Controller
             await _context.SaveChangesAsync();
         }
 
-        TempData["SuccessMessage"] = $"Cập nhật nhập hàng tồn kho cho sản phẩm '{product.ProductName}' thành công!";
+        TempData["SuccessMessage"] = $"Đã cập nhật tồn kho cho sản phẩm '{product.ProductName}' thành công.";
         return RedirectToAction("Index");
     }
 
