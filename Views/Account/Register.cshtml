@@ -42,12 +42,22 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
                     <label asp-for="Password" class="form-label fw-bold small">Mật khẩu</label>
-                    <input asp-for="Password" class="form-control rounded-3" placeholder="••••••••" />
+                    <div class="input-group">
+                        <input asp-for="Password" id="registerPasswordInput" class="form-control rounded-start-3" placeholder="••••••••" />
+                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="ConfirmPassword" class="form-label fw-bold small">Xác nhận mật khẩu</label>
-                    <input asp-for="ConfirmPassword" class="form-control rounded-3" placeholder="••••••••" />
+                    <div class="input-group">
+                        <input asp-for="ConfirmPassword" id="registerConfirmPasswordInput" class="form-control rounded-start-3" placeholder="••••••••" />
+                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerConfirmPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
                     <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                 </div>
             </div>

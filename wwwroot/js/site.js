@@ -38,9 +38,56 @@ function toggleUserStoreTheme() {
   applyUserThemeUI(!isDark);
 }
 
+/* =========================================================================
+   GLOBAL SHOW/HIDE PASSWORD TOGGLE SYSTEM
+   ========================================================================= */
+function togglePasswordVisibility(inputId, btnEl) {
+  const input = typeof inputId === 'string' ? document.getElementById(inputId) : inputId;
+  if (!input) return;
+  const icon = (btnEl && btnEl.querySelector) ? (btnEl.querySelector('i') || btnEl) : btnEl;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (icon && icon.classList) {
+      icon.classList.remove('bi-eye');
+      icon.classList.add('bi-eye-slash');
+    }
+  } else {
+    input.type = 'password';
+    if (icon && icon.classList) {
+      icon.classList.remove('bi-eye-slash');
+      icon.classList.add('bi-eye');
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const savedTheme = localStorage.getItem('fs_user_theme');
   applyUserThemeUI(savedTheme === 'dark');
+
+  // Auto-wrap any standalone password inputs with eye toggle buttons
+  document.querySelectorAll('input[type="password"]').forEach(function(input) {
+    if (!input.closest('.input-group')) {
+      const parent = input.parentElement;
+      if (parent) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'input-group';
+        input.classList.remove('rounded-3');
+        input.classList.add('rounded-start-3');
+        parent.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-secondary rounded-end-3 px-3';
+        btn.type = 'button';
+        btn.title = 'Hiện/Ẩn mật khẩu';
+        btn.innerHTML = '<i class="bi bi-eye"></i>';
+        btn.onclick = function() {
+          togglePasswordVisibility(input, btn);
+        };
+        wrapper.appendChild(btn);
+      }
+    }
+  });
+
   console.log('WEBBANQUANAO Fashion Engine v2.0 Initialized.');
 
   // =========================================================================

@@ -114,15 +114,30 @@
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Mật khẩu hiện tại</label>
-                        <input type="password" name="CurrentPassword" class="form-control rounded-3" required />
+                        <div class="input-group">
+                            <input type="password" id="profileCurrentPasswordInput" name="CurrentPassword" class="form-control rounded-start-3" required />
+                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileCurrentPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Mật khẩu mới</label>
-                        <input type="password" name="NewPassword" class="form-control rounded-3" required />
+                        <div class="input-group">
+                            <input type="password" id="profileNewPasswordInput" name="NewPassword" class="form-control rounded-start-3" required />
+                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileNewPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Xác nhận mật khẩu mới</label>
-                        <input type="password" name="ConfirmNewPassword" class="form-control rounded-3" required />
+                        <div class="input-group">
+                            <input type="password" id="profileConfirmPasswordInput" name="ConfirmNewPassword" class="form-control rounded-start-3" required />
+                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileConfirmPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-outline-custom py-2">Đổi Mật Khẩu</button>
                 </form>

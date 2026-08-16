@@ -209,7 +209,12 @@ else
                                                         <p class="text-muted small">Nhập mật khẩu mới thay thế cho tài khoản <strong>@@@u.Username</strong>:</p>
                                                         <div class="mb-3">
                                                             <label class="form-label small fw-bold">Mật khẩu mới (*)</label>
-                                                            <input type="password" name="newPassword" class="form-control rounded-3" placeholder="Nhập ít nhất 6 ký tự..." required minlength="6" />
+                                                            <div class="input-group">
+                                                                <input type="password" id="adminResetPwdInput-@u.UserId" name="newPassword" class="form-control rounded-start-3" placeholder="Nhập ít nhất 6 ký tự..." required minlength="6" />
+                                                                <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('adminResetPwdInput-@u.UserId', this)" title="Hiện/Ẩn mật khẩu">
+                                                                    <i class="bi bi-eye"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
