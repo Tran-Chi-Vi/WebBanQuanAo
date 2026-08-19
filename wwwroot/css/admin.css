@@ -752,3 +752,12 @@ body.user-dark-mode .alert-warning {
   border-color: #d97706 !important;
 }
 
+/* Admin Dark Mode Card Border & Table Text Polish */
+body.admin-dark-mode .card,
+body.admin-dark-mode .modal-content {
+  border: 1px solid #334155 !important;
+}
+body.admin-dark-mode table.table {
+  color: #f8fafc !important;
+}
+
