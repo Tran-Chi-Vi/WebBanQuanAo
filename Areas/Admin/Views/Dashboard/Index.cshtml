@@ -7,40 +7,40 @@
 <!-- Stat Metric Cards Row -->
 <div class="row g-3 g-md-4 mb-4">
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4 rounded-4 bg-white border border-light shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
+        <div class="stat-card p-4 rounded-4 bg-body border shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.05em;">TỔNG DOANH THU</span>
                 <div class="stat-icon-box rounded-3 d-flex align-items-center justify-content-center text-success" style="width:42px;height:42px;background:#d1fae5;font-size:1.25rem;">
                     <i class="bi bi-cash-stack"></i>
                 </div>
             </div>
-            <h3 class="fw-bold font-heading text-dark m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalRevenue.ToString("N0")đ</h3>
+            <h3 class="fw-bold font-heading text-body m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalRevenue.ToString("N0")đ</h3>
             <small class="text-success fw-semibold"><i class="bi bi-graph-up-arrow me-1"></i>Đơn đã hoàn thành/giao</small>
         </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4 rounded-4 bg-white border border-light shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
+        <div class="stat-card p-4 rounded-4 bg-body border shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.05em;">TỔNG ĐƠN HÀNG</span>
                 <div class="stat-icon-box rounded-3 d-flex align-items-center justify-content-center text-primary" style="width:42px;height:42px;background:#e0e7ff;font-size:1.25rem;">
                     <i class="bi bi-cart-check-fill"></i>
                 </div>
             </div>
-            <h3 class="fw-bold font-heading text-dark m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalOrders</h3>
+            <h3 class="fw-bold font-heading text-body m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalOrders</h3>
             <small class="text-warning fw-bold"><i class="bi bi-clock-history me-1"></i>@Model.PendingOrdersCount đơn chờ xử lý</small>
         </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card p-4 rounded-4 bg-white border border-light shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
+        <div class="stat-card p-4 rounded-4 bg-body border shadow-sm position-relative overflow-hidden" style="transition:transform 0.3s ease, box-shadow 0.3s ease;">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:0.05em;">TỔNG SẢN PHẨM</span>
                 <div class="stat-icon-box rounded-3 d-flex align-items-center justify-content-center text-warning" style="width:42px;height:42px;background:#fef3c7;font-size:1.25rem;">
                     <i class="bi bi-box-seam-fill"></i>
                 </div>
             </div>
-            <h3 class="fw-bold font-heading text-dark m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalProducts</h3>
+            <h3 class="fw-bold font-heading text-body m-0 font-monospace" style="font-size:1.65rem;">@Model.TotalProducts</h3>
             <small class="text-muted">Sản phẩm đang kinh doanh</small>
         </div>
     </div>
