@@ -27,7 +27,7 @@
                                     <label class="border rounded-4 p-3 d-flex align-items-start gap-3 cursor-pointer position-relative mb-0 @(addr.AddressId == Model.SelectedAddressId ? "border-primary bg-light" : "")" for="addr_@addr.AddressId">
                                         <input class="form-check-input mt-1 flex-shrink-0" type="radio" name="SelectedAddressId" id="addr_@addr.AddressId" value="@addr.AddressId" checked="@(addr.AddressId == Model.SelectedAddressId)" onchange="toggleNewAddrForm(false)" />
                                         <div class="flex-grow-1">
-                                            <div class="fw-bold text-dark">@addr.RecipientName - <span class="text-primary font-monospace">@addr.Phone</span></div>
+                                            <div class="fw-bold text-body">@addr.RecipientName - <span class="text-primary font-monospace">@addr.Phone</span></div>
                                             <div class="small text-muted mt-1">@addr.DetailAddress, @addr.Ward, @addr.District, @addr.Province</div>
                                             @if (addr.IsDefault)
                                             {
