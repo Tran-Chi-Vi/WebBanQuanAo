@@ -27,7 +27,7 @@
         <!-- Image Gallery Column -->
         <div class="col-lg-6">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3 bg-light position-relative" style="aspect-ratio:4/3;max-height:500px;">
-                <img id="mainProductImg" src="@mainImage" alt="@Model.ProductName" class="w-100 h-100 object-fit-cover transition-all" style="transition:transform 0.4s ease;" />
+                <img id="mainProductImg" src="@mainImage" alt="@Model.ProductName" onerror="this.onerror=null;this.src='/images/no-image.png';" class="w-100 h-100 object-fit-cover transition-all" style="transition:transform 0.4s ease;" />
             </div>
 
             <!-- Thumbnail Slider -->
