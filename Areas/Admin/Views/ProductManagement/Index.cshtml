@@ -133,11 +133,13 @@
                             <div class="d-flex gap-2 align-items-center justify-content-end">
                                 <button type="button" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1 fw-bold px-3 py-1.5"
                                         data-bs-toggle="modal" data-bs-target="#restockModal-@p.ProductId"
+                                        title="Cập nhật tồn kho sản phẩm @p.ProductName" aria-label="Nhập hàng @p.ProductName"
                                         style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                     <i class="bi bi-plus-circle-fill"></i> Nhập Hàng
                                 </button>
                                 <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Edit" asp-route-id="@p.ProductId"
                                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
+                                   title="Chỉnh sửa sản phẩm @p.ProductName" aria-label="Sửa @p.ProductName"
                                    style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
@@ -146,6 +148,7 @@
                                     <input type="hidden" name="id" value="@p.ProductId" />
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
+                                            title="Xóa sản phẩm @p.ProductName" aria-label="Xóa @p.ProductName"
                                             style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
                                         <i class="bi bi-trash"></i> Xóa
                                     </button>
