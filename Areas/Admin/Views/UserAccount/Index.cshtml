@@ -102,7 +102,7 @@ else
                         @foreach (var u in Model)
                         {
                             <tr>
-                                <td class="ps-4 fw-bold text-dark">
+                                <td class="ps-4 fw-bold text-body">
                                     <div class="d-flex align-items-center gap-2">
                                         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:white;font-size:0.85rem;font-weight:700;flex-shrink:0;">
                                             @(u.FullName?.Substring(0,1)?.ToUpper() ?? "U")
@@ -118,11 +118,11 @@ else
                                 <td>
                                     @if (u.Role?.RoleName == "Admin")
                                     {
-                                        <span class="badge bg-danger">Admin</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold px-2.5 py-1 rounded-pill">Quản Trị Viên (Admin)</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-info text-dark">Khách Hàng</span>
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle fw-bold px-2.5 py-1 rounded-pill">Khách Hàng</span>
                                     }
                                 </td>
                                 <td class="small text-muted">@u.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
