@@ -2023,3 +2023,21 @@ footer {
   background: rgba(99, 102, 241, 0.04) !important;
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
 }
+
+/* User Dark Mode Dropdown Menu High Contrast Polish */
+body.user-dark-mode .dropdown-menu {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+body.user-dark-mode .dropdown-item {
+  color: #e2e8f0 !important;
+}
+body.user-dark-mode .dropdown-item:hover,
+body.user-dark-mode .dropdown-item:focus {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+body.user-dark-mode .dropdown-divider {
+  border-top-color: #334155 !important;
+}
