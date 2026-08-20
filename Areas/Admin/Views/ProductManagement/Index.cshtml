@@ -127,7 +127,7 @@
                             }
                         </td>
                         <td class="col-prod-status">
-                            <span class="badge @(p.Status == ProductStatus.Active ? "bg-success" : "bg-secondary")">@p.Status</span>
+                            <span class="badge @(p.Status == ProductStatus.Active ? "bg-success-subtle text-success border border-success-subtle" : "bg-secondary-subtle text-secondary border border-secondary-subtle") fw-bold px-2.5 py-1 rounded-pill">@p.Status</span>
                         </td>
                         <td class="col-prod-actions">
                             <div class="d-flex gap-2 align-items-center justify-content-end">
