@@ -191,7 +191,7 @@
                             @for (int i = 1; i <= Model.TotalPages; i++)
                             {
                                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                    <a class="page-link rounded-3 fw-bold" asp-controller="Product" asp-action="Index"
+                                    <a class="page-link rounded-3 fw-bold" aria-label="Trang @i" asp-controller="Product" asp-action="Index"
                                        asp-route-page="@i"
                                        asp-route-categoryId="@Model.CategoryId"
                                        asp-route-brandId="@Model.BrandId"
