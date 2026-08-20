@@ -2047,3 +2047,9 @@ body.user-dark-mode .dropdown-divider {
   outline: 2.5px solid #6366f1 !important;
   outline-offset: 2px !important;
 }
+
+/* Active Navigation Link Indicator Styling */
+.navbar-custom .nav-link.active {
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+}
