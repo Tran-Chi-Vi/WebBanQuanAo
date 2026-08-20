@@ -2041,3 +2041,9 @@ body.user-dark-mode .dropdown-item:focus {
 body.user-dark-mode .dropdown-divider {
   border-top-color: #334155 !important;
 }
+
+/* Accessibility Focus Ring Polish */
+:focus-visible {
+  outline: 2.5px solid #6366f1 !important;
+  outline-offset: 2px !important;
+}
