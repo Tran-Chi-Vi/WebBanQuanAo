@@ -4,11 +4,11 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold font-heading m-0">THÊM MÃ KHUYẾN MÃI MỚI</h4>
+    <h4 class="fw-bold font-heading m-0 text-body">THÊM MÃ KHUYẾN MÃI MỚI</h4>
     <a asp-area="Admin" asp-controller="Promotion" asp-action="Index" class="btn btn-sm btn-outline-custom"><i class="bi bi-arrow-left"></i> Quay lại</a>
 </div>
 
-<div class="card p-4 border-0 shadow-sm rounded-4 bg-white max-w-600 mx-auto" style="max-width: 600px;">
+<div class="card p-4 border-0 shadow-sm rounded-4 bg-body max-w-600 mx-auto" style="max-width: 600px;">
     <form asp-area="Admin" asp-controller="Promotion" asp-action="Create" method="post">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
