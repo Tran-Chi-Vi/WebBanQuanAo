@@ -31,14 +31,14 @@
                         <td>
                             @if (c.ParentCategory != null)
                             {
-                                <span class="badge bg-light text-dark border">@c.ParentCategory.CategoryName</span>
+                                <span class="badge bg-body-tertiary text-body border">@c.ParentCategory.CategoryName</span>
                             }
                             else
                             {
                                 <span class="text-muted small">Cấp cha</span>
                             }
                         </td>
-                        <td><span class="badge bg-primary">@c.Products.Count SP</span></td>
+                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1.5 rounded-pill">@c.Products.Count SP</span></td>
                         <td>
                             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="DeleteCategory" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
                                 @Html.AntiForgeryToken()
