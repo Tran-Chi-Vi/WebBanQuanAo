@@ -44,7 +44,7 @@
                     <label asp-for="Password" class="form-label fw-bold small">Mật khẩu</label>
                     <div class="input-group">
                         <input asp-for="Password" id="registerPasswordInput" class="form-control rounded-start-3" placeholder="••••••••" />
-                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerPasswordInput', this)" title="Hiện/Ẩn mật khẩu" aria-label="Bấm để ẩn hoặc hiện mật khẩu">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
@@ -54,7 +54,7 @@
                     <label asp-for="ConfirmPassword" class="form-label fw-bold small">Xác nhận mật khẩu</label>
                     <div class="input-group">
                         <input asp-for="ConfirmPassword" id="registerConfirmPasswordInput" class="form-control rounded-start-3" placeholder="••••••••" />
-                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerConfirmPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                        <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('registerConfirmPasswordInput', this)" title="Hiện/Ẩn mật khẩu" aria-label="Bấm để ẩn hoặc hiện mật khẩu">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
