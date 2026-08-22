@@ -141,8 +141,8 @@
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-muted">MÃ GIẢM GIÁ (PROMO CODE)</label>
                         <div class="input-group">
-                            <input type="text" id="promoCodeInput" class="form-control text-uppercase" placeholder="Nhập mã..." value="@Model.AppliedPromoCode" />
-                            <button onclick="applyPromoAjax()" class="btn btn-outline-primary fw-bold" type="button">Áp Dụng</button>
+                            <input type="text" id="promoCodeInput" class="form-control text-uppercase" placeholder="Nhập mã..." value="@Model.AppliedPromoCode" aria-label="Nhập mã ưu đãi hoặc mã giảm giá" />
+                            <button onclick="applyPromoAjax()" class="btn btn-outline-primary fw-bold" type="button" title="Bấm để áp dụng mã giảm giá">Áp Dụng</button>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.PromoMessage))
                         {
