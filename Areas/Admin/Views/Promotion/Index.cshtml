@@ -64,7 +64,7 @@
                         <td class="small">
                             <div>Từ: @p.StartDate.ToString("dd/MM/yyyy")</div>
                             <div>Đến: @p.EndDate.ToString("dd/MM/yyyy")</div>
-                            <span class="badge @(isActive ? "bg-success" : "bg-secondary") mt-1">
+                            <span class="badge @(isActive ? "bg-success-subtle text-success border border-success-subtle" : "bg-secondary-subtle text-secondary border border-secondary-subtle") fw-bold px-2.5 py-1 rounded-pill mt-1">
                                 @(isActive ? "Đang hiệu lực" : "Đã hết hạn")
                             </span>
                         </td>
