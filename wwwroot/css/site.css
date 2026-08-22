@@ -2058,3 +2058,9 @@ body.user-dark-mode .dropdown-divider {
 .badge.rounded-pill {
   transition: all 0.2s ease-in-out;
 }
+
+/* Form Select Focus Outline Polish */
+.form-select:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.25) !important;
+}
