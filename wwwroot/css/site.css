@@ -2053,3 +2053,8 @@ body.user-dark-mode .dropdown-divider {
   color: var(--primary) !important;
   font-weight: 700 !important;
 }
+
+/* Badge Pill Smooth Transition Polish */
+.badge.rounded-pill {
+  transition: all 0.2s ease-in-out;
+}
