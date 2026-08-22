@@ -139,16 +139,16 @@
 
                 <!-- Quantity & Action Buttons Container (Exact 48px Height Alignment) -->
                 <div class="mb-2">
-                    <label class="form-label fw-bold small text-dark mb-2 d-block">3. CHỌN SỐ LƯỢNG & ĐẶT HÀNG:</label>
+                    <label class="form-label fw-bold small text-body mb-2 d-block">3. CHỌN SỐ LƯỢNG & ĐẶT HÀNG:</label>
                     <div class="d-flex align-items-stretch gap-3 flex-wrap flex-sm-nowrap">
                         <!-- Quantity Input Stepper (48px Height) -->
                         <div class="input-group" style="width: 125px; height: 48px; flex-shrink: 0;">
-                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px;" onclick="changeQty(-1)"><i class="bi bi-dash-lg"></i></button>
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px;" onclick="changeQty(-1)" title="Giảm số lượng" aria-label="Giảm số lượng sản phẩm"><i class="bi bi-dash-lg"></i></button>
                             <input type="number" id="purchaseQuantity" name="quantity"
                                    class="form-control text-center fw-bold px-1 font-monospace"
                                    style="font-size: 1.05rem; height: 48px; border-color: #cbd5e1;"
                                    value="1" min="1" max="@(firstVariant?.StockQuantity ?? 100)" />
-                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" onclick="changeQty(1)"><i class="bi bi-plus-lg"></i></button>
+                            <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" onclick="changeQty(1)" title="Tăng số lượng" aria-label="Tăng số lượng sản phẩm"><i class="bi bi-plus-lg"></i></button>
                         </div>
 
                         <!-- Add to Cart Button (48px Height) -->
