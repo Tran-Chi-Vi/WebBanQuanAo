@@ -30,7 +30,7 @@
                     <!-- Category Filter -->
                     <div class="mb-4">
                         <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Danh Mục</label>
-                        <select name="categoryId" class="form-select rounded-3 font-heading small">
+                        <select name="categoryId" class="form-select rounded-3 font-heading small" aria-label="Chọn danh mục sản phẩm">
                             <option value="">-- Tất cả danh mục --</option>
                             @foreach (var c in Model.Categories.Where(x => x.ParentCategoryId == null))
                             {
