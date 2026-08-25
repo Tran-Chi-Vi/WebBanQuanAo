@@ -167,7 +167,7 @@
                         <span id="summaryFinalTotal" class="fw-bold text-primary">@Model.FinalTotal.ToString("N0")đ</span>
                     </div>
 
-                    <button type="button" id="proceedCheckoutBtn" onclick="proceedSelectedCheckout()" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg">
+                    <button type="button" id="proceedCheckoutBtn" onclick="proceedSelectedCheckout()" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg" title="Bấm để tiến hành đặt các sản phẩm đã chọn trong giỏ hàng" aria-label="Tiến hành đặt hàng các sản phẩm đã chọn">
                         TIẾN HÀNH ĐẶT HÀNG (<span id="btnSelectedCount">@Model.Items.Count</span>) <i class="bi bi-arrow-right ms-2"></i>
                     </button>
                     <div id="noSelectionWarning" class="small text-danger fw-bold text-center mt-2" style="display:none;">
