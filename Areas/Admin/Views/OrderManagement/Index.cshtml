@@ -20,7 +20,7 @@
         </div>
         <div class="col-md-3">
             <label class="form-label small fw-bold">Trạng Thái Đơn Hàng</label>
-            <select name="statusFilter" class="form-select rounded-3">
+            <select name="statusFilter" class="form-select rounded-3" aria-label="Lọc đơn hàng theo trạng thái">
                 <option value="">-- Tất cả trạng thái --</option>
                 <option value="0" selected="@(Model.StatusFilter == OrderStatus.Pending)">Chờ xử lý (Pending)</option>
                 <option value="1" selected="@(Model.StatusFilter == OrderStatus.Shipping)">Đang giao hàng (Shipping)</option>
