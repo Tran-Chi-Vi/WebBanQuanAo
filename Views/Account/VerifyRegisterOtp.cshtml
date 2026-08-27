@@ -1,0 +1,160 @@
+@model VerifyRegistrationOtpViewModel
+@{
+    ViewData["Title"] = "Xác Thực Mã OTP Đăng Ký Tài Khoản";
+    int remainingSeconds = ViewBag.RemainingSeconds ?? 300;
+    bool isExpired = ViewBag.IsExpired ?? false;
+}
+
+<div class="container my-5">
+    <div class="card p-4 p-md-5 border-0 shadow-lg rounded-4 bg-body mx-auto" style="max-width: 520px;">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3 shadow-sm" style="width: 72px; height: 72px;">
+                <i class="bi bi-shield-lock-fill display-5"></i>
+            </div>
+            <h3 class="fw-bold font-heading m-0 text-body">XÁC THỰC MÃ OTP GMAIL</h3>
+            <p class="text-muted small mt-2 mb-0">
+                Mã xác thực 6 chữ số đã được gửi đến địa chỉ email:
+            </p>
+            <div class="fw-bold text-primary fs-6 mt-1 text-break">
+                <i class="bi bi-envelope-at me-1"></i>@Model.Email
+            </div>
+        </div>
+
+        <!-- 5-Minute Expiration Countdown Box -->
+        <div id="countdownBox" class="alert @(isExpired ? "alert-danger" : "alert-warning") border-0 rounded-4 text-center py-2.5 px-3 mb-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-clock-history fs-5"></i>
+                <span class="small fw-bold">Thời gian mã OTP có hiệu lực:</span>
+                <span id="timerDisplay" class="fw-extrabold font-heading fs-5 ms-1" style="letter-spacing: 0.05em; min-width: 60px;">
+                    @(isExpired ? "00:00" : $"{remainingSeconds / 60:D2}:{remainingSeconds % 60:D2}")
+                </span>
+            </div>
+            <div id="expiredWarningText" class="small text-danger fw-bold mt-1 @(isExpired ? "" : "d-none")">
+                ⚠️ Mã OTP đã hết hạn sau 5 phút! Vui lòng nhấn "Gửi lại mã OTP".
+            </div>
+        </div>
+
+        <form asp-controller="Account" asp-action="VerifyRegisterOtp" method="post" id="otpVerifyForm">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3 text-center"></div>
+
+            <div class="mb-4">
+                <label asp-for="OtpCode" class="form-label fw-bold small text-muted text-uppercase text-center d-block" style="letter-spacing:0.05em;">Nhập 6 Chữ Số Mã OTP</label>
+                <input asp-for="OtpCode" id="otpInput" class="form-control form-control-lg text-center rounded-3 fw-bold font-heading shadow-sm fs-2 py-2" placeholder="000000" maxlength="6" autocomplete="one-time-code" autofocus style="letter-spacing: 0.35em; font-family: 'Outfit', monospace;" />
+                <span asp-validation-for="OtpCode" class="text-danger small d-block text-center mt-1"></span>
+            </div>
+
+            <button type="submit" id="submitOtpBtn" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3 rounded-3" @(isExpired ? "disabled" : "")>
+                <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN & TẠO TÀI KHOẢN
+            </button>
+        </form>
+
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-2">
+            <a asp-controller="Account" asp-action="Register" class="text-secondary small fw-semibold text-decoration-none d-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i> Đăng ký lại
+            </a>
+
+            <form id="resendOtpForm" class="m-0">
+                @Html.AntiForgeryToken()
+                <button type="button" id="resendOtpBtn" onclick="handleResendOtp()" class="btn btn-link text-primary p-0 small fw-bold text-decoration-none d-flex align-items-center gap-1">
+                    <i class="bi bi-arrow-clockwise fs-6"></i> Gửi lại mã OTP
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let remainingSeconds = @remainingSeconds;
+        let timerInterval = null;
+
+        function startCountdown() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            const timerDisplay = document.getElementById('timerDisplay');
+            const countdownBox = document.getElementById('countdownBox');
+            const expiredWarningText = document.getElementById('expiredWarningText');
+            const submitOtpBtn = document.getElementById('submitOtpBtn');
+
+            timerInterval = setInterval(() => {
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "00:00";
+                    countdownBox.className = 'alert alert-danger border-0 rounded-4 text-center py-2.5 px-3 mb-4 shadow-sm';
+                    expiredWarningText.classList.remove('d-none');
+                    if (submitOtpBtn) submitOtpBtn.disabled = true;
+                    return;
+                }
+
+                remainingSeconds--;
+                const mins = Math.floor(remainingSeconds / 60);
+                const secs = remainingSeconds % 60;
+                timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (remainingSeconds > 0) {
+                startCountdown();
+            }
+
+            const otpInput = document.getElementById('otpInput');
+            if (otpInput) {
+                otpInput.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
+        });
+
+        async function handleResendOtp() {
+            const resendBtn = document.getElementById('resendOtpBtn');
+            if (!resendBtn) return;
+
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang gửi...';
+
+            try {
+                const formData = new FormData(document.getElementById('resendOtpForm'));
+                const response = await fetch('@Url.Action("ResendRegisterOtp", "Account")', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    if (typeof showToast === 'function') {
+                        showToast(result.message, 'success');
+                    } else {
+                        alert(result.message);
+                    }
+
+                    remainingSeconds = result.remainingSeconds || 300;
+                    document.getElementById('expiredWarningText').classList.add('d-none');
+                    document.getElementById('countdownBox').className = 'alert alert-warning border-0 rounded-4 text-center py-2.5 px-3 mb-4 shadow-sm';
+                    document.getElementById('submitOtpBtn').disabled = false;
+                    document.getElementById('otpInput').value = '';
+                    document.getElementById('otpInput').focus();
+
+                    startCountdown();
+                } else {
+                    if (typeof showToast === 'function') {
+                        showToast(result.message, 'error');
+                    } else {
+                        alert(result.message);
+                    }
+                }
+            } catch (err) {
+                if (typeof showToast === 'function') {
+                    showToast('Có lỗi kết nối xảy ra khi gửi lại mã OTP.', 'error');
+                } else {
+                    alert('Có lỗi kết nối xảy ra khi gửi lại mã OTP.');
+                }
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = '<i class="bi bi-arrow-clockwise fs-6"></i> Gửi lại mã OTP';
+            }
+        }
+    </script>
+}

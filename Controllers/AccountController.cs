@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
@@ -192,29 +193,151 @@ public class AccountController : Controller
             return View(model);
         }
 
-        if (await _context.Users.AnyAsync(u => u.Username == model.Username))
+        if (await _context.Users.AnyAsync(u => u.Username.ToLower() == model.Username.ToLower()))
         {
             ModelState.AddModelError("Username", "Tên đăng nhập này đã được sử dụng.");
             return View(model);
         }
 
-        if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+        if (await _context.Users.AnyAsync(u => u.Email.ToLower() == model.Email.ToLower()))
         {
             ModelState.AddModelError("Email", "Email này đã được sử dụng.");
             return View(model);
         }
 
+        // Tạo mã OTP 6 chữ số ngẫu nhiên
+        string otpCode = new Random().Next(100000, 999999).ToString();
+
+        // Lưu thông tin đăng ký tạm thời vào Session (hết hạn sau 5 phút)
+        var pendingReg = new PendingRegistrationModel
+        {
+            FullName = model.FullName,
+            Username = model.Username,
+            Email = model.Email,
+            Phone = model.Phone,
+            PasswordHash = HashPassword(model.Password),
+            OtpCode = otpCode,
+            OtpExpiry = DateTime.Now.AddMinutes(5)
+        };
+
+        HttpContext.Session.SetString("PENDING_REGISTRATION", JsonSerializer.Serialize(pendingReg));
+
+        // Gửi email OTP xác thực
+        try
+        {
+            await _emailService.SendRegistrationOtpEmailAsync(model.Email, model.FullName, otpCode);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to send registration OTP email: {ex.Message}");
+        }
+
+        TempData["InfoMessage"] = $"Mã xác thực OTP 6 chữ số đã được gửi đến email {model.Email}. Vui lòng kiểm tra hộp thư (hoặc thư rác) và xác thực trong vòng 5 phút.";
+        return RedirectToAction("VerifyRegisterOtp");
+    }
+
+    [HttpGet]
+    public IActionResult VerifyRegisterOtp()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        var json = HttpContext.Session.GetString("PENDING_REGISTRATION");
+        if (string.IsNullOrEmpty(json))
+        {
+            TempData["ErrorMessage"] = "Phiên đăng ký đã hết hạn hoặc không tồn tại. Vui lòng đăng ký lại.";
+            return RedirectToAction("Register");
+        }
+
+        var pendingReg = JsonSerializer.Deserialize<PendingRegistrationModel>(json);
+        if (pendingReg == null)
+        {
+            TempData["ErrorMessage"] = "Phiên đăng ký không hợp lệ. Vui lòng đăng ký lại.";
+            return RedirectToAction("Register");
+        }
+
+        var viewModel = new VerifyRegistrationOtpViewModel
+        {
+            Email = pendingReg.Email
+        };
+
+        int remainingSeconds = (int)Math.Max(0, (pendingReg.OtpExpiry - DateTime.Now).TotalSeconds);
+        ViewBag.RemainingSeconds = remainingSeconds;
+        ViewBag.IsExpired = remainingSeconds <= 0;
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VerifyRegisterOtp(VerifyRegistrationOtpViewModel model)
+    {
+        var json = HttpContext.Session.GetString("PENDING_REGISTRATION");
+        if (string.IsNullOrEmpty(json))
+        {
+            TempData["ErrorMessage"] = "Phiên đăng ký đã hết hạn hoặc không tồn tại. Vui lòng thực hiện đăng ký lại.";
+            return RedirectToAction("Register");
+        }
+
+        var pendingReg = JsonSerializer.Deserialize<PendingRegistrationModel>(json);
+        if (pendingReg == null)
+        {
+            TempData["ErrorMessage"] = "Phiên đăng ký không hợp lệ. Vui lòng thực hiện đăng ký lại.";
+            return RedirectToAction("Register");
+        }
+
+        model.Email = pendingReg.Email;
+        int remainingSeconds = (int)Math.Max(0, (pendingReg.OtpExpiry - DateTime.Now).TotalSeconds);
+        ViewBag.RemainingSeconds = remainingSeconds;
+        ViewBag.IsExpired = remainingSeconds <= 0;
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        // Kiểm tra xem mã OTP có bị hết hạn 5 phút hay không
+        if (DateTime.Now > pendingReg.OtpExpiry)
+        {
+            ModelState.AddModelError("OtpCode", "Mã xác thực OTP đã hết hạn (sau 5 phút). Vui lòng nhấn 'Gửi lại mã' để nhận mã xác thực mới.");
+            ViewBag.IsExpired = true;
+            return View(model);
+        }
+
+        // Kiểm tra khớp mã OTP
+        if (model.OtpCode != pendingReg.OtpCode)
+        {
+            ModelState.AddModelError("OtpCode", "Mã xác thực OTP không chính xác. Vui lòng kiểm tra lại email của bạn.");
+            return View(model);
+        }
+
+        // Kiểm tra trùng lặp
+        if (await _context.Users.AnyAsync(u => u.Username.ToLower() == pendingReg.Username.ToLower()))
+        {
+            ModelState.AddModelError("", "Tên đăng nhập này vừa được đăng ký bởi người dùng khác. Vui lòng đăng ký tên khác.");
+            return View(model);
+        }
+
+        if (await _context.Users.AnyAsync(u => u.Email.ToLower() == pendingReg.Email.ToLower()))
+        {
+            ModelState.AddModelError("", "Email này vừa được sử dụng để tạo tài khoản. Vui lòng dùng email khác.");
+            return View(model);
+        }
+
+        // ĐỐI CHIẾU THÀNH CÔNG -> TẠO BẢN GHI USER TRONG CSDL
         var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
         int roleId = customerRole?.RoleId ?? 2;
 
         var newUser = new User
         {
             UserGuid = Guid.NewGuid(),
-            FullName = model.FullName,
-            Username = model.Username,
-            Email = model.Email,
-            Phone = model.Phone,
-            PasswordHash = HashPassword(model.Password),
+            FullName = pendingReg.FullName,
+            Username = pendingReg.Username,
+            Email = pendingReg.Email,
+            Phone = pendingReg.Phone,
+            PasswordHash = pendingReg.PasswordHash,
             RoleId = roleId,
             CreatedAt = DateTime.Now
         };
@@ -229,10 +352,48 @@ public class AccountController : Controller
         _context.Carts.Add(newCart);
         await _context.SaveChangesAsync();
 
+        // Xóa Session tạm thời
+        HttpContext.Session.Remove("PENDING_REGISTRATION");
+
+        // Đăng nhập tự động
         await SignInUserAsync(newUser, isPersistent: false);
 
-        TempData["SuccessMessage"] = "Đăng ký tài khoản thành công! Chào mừng bạn mua sắm tại cửa hàng.";
+        TempData["SuccessMessage"] = "Đăng ký và xác thực tài khoản thành công! Chào mừng bạn đến với FASHION STORE.";
         return RedirectToAction("Index", "Home");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendRegisterOtp()
+    {
+        var json = HttpContext.Session.GetString("PENDING_REGISTRATION");
+        if (string.IsNullOrEmpty(json))
+        {
+            return Json(new { success = false, message = "Phiên đăng ký đã hết hạn. Vui lòng quay lại trang đăng ký." });
+        }
+
+        var pendingReg = JsonSerializer.Deserialize<PendingRegistrationModel>(json);
+        if (pendingReg == null)
+        {
+            return Json(new { success = false, message = "Không tìm thấy thông tin đăng ký. Vui lòng quay lại trang đăng ký." });
+        }
+
+        // Tạo mã OTP mới & reset hạn 5 phút
+        string newOtp = new Random().Next(100000, 999999).ToString();
+        pendingReg.OtpCode = newOtp;
+        pendingReg.OtpExpiry = DateTime.Now.AddMinutes(5);
+
+        HttpContext.Session.SetString("PENDING_REGISTRATION", JsonSerializer.Serialize(pendingReg));
+
+        try
+        {
+            await _emailService.SendRegistrationOtpEmailAsync(pendingReg.Email, pendingReg.FullName, newOtp);
+            return Json(new { success = true, message = $"Mã OTP mới đã được gửi thành công đến email {pendingReg.Email}!", remainingSeconds = 300 });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Không thể gửi email OTP: {ex.Message}" });
+        }
     }
 
     [HttpGet]

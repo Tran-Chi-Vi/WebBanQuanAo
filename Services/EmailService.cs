@@ -53,6 +53,42 @@ public class EmailService : IEmailService
         return await SendEmailInternalAsync(toEmail, subject, body);
     }
 
+    public async Task<bool> SendRegistrationOtpEmailAsync(string toEmail, string recipientName, string otpCode)
+    {
+        string subject = "[FASHION STORE] - Mã Xác Thực OTP Đăng Ký Tài Khoản";
+        
+        string body = $@"
+            <div style=""font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;"">
+                <div style=""text-align: center; padding-bottom: 20px; border-bottom: 2px solid #e2e8f0;"">
+                    <h2 style=""background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; color: #6366f1; margin: 0; font-size: 24px; font-weight: 800;"">FASHION STORE</h2>
+                    <p style=""color: #64748b; margin: 5px 0 0 0; font-size: 14px;"">Xác nhận tạo tài khoản mua sắm mới</p>
+                </div>
+                
+                <div style=""padding: 30px 10px; text-align: center;"">
+                    <h3 style=""color: #0f172a; margin-top: 0; font-size: 20px;"">XÁC THỰC ĐỊA CHỈ EMAIL CỦA BẠN</h3>
+                    <p style=""color: #334155; line-height: 1.6; font-size: 15px;"">Xin chào <strong>{recipientName}</strong>,</p>
+                    <p style=""color: #334155; line-height: 1.6; font-size: 15px;"">Cảm ơn bạn đã đăng ký tài khoản tại hệ thống <strong>FASHION STORE</strong>.</p>
+                    <p style=""color: #334155; line-height: 1.6; font-size: 15px;"">Để hoàn tất tạo tài khoản và bảo mật hệ thống, vui lòng nhập mã xác thực OTP 6 chữ số dưới đây:</p>
+
+                    <div style=""margin: 25px auto; width: 220px; padding: 16px; background: linear-gradient(135deg, #6366f1, #ec4899); color: white; font-size: 34px; font-weight: 800; letter-spacing: 8px; border-radius: 14px; box-shadow: 0 6px 20px rgba(99,102,241,0.35);"">
+                        {otpCode}
+                    </div>
+
+                    <div style=""background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 12px; margin-top: 20px;"">
+                        <p style=""color: #dc2626; font-size: 13px; font-weight: bold; margin: 0;"">⏱️ Mã OTP có hiệu lực trong vòng 5 phút.</p>
+                        <p style=""color: #7f1d1d; font-size: 12px; margin: 4px 0 0 0;"">Nếu quá 5 phút chưa xác thực, mã sẽ tự động hủy để tránh hacker tạo tài khoản rác.</p>
+                    </div>
+                </div>
+
+                <div style=""border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; color: #94a3b8; font-size: 12px;"">
+                    <p style=""margin: 0;"">Nếu bạn không thực hiện đăng ký tài khoản này, vui lòng bỏ qua email này.</p>
+                    <p style=""margin: 5px 0 0 0;"">© 2026 FASHION STORE. All rights reserved.</p>
+                </div>
+            </div>";
+
+        return await SendEmailInternalAsync(toEmail, subject, body);
+    }
+
     public async Task<bool> SendOrderInvoiceEmailAsync(int orderId)
     {
         var order = await _context.Orders

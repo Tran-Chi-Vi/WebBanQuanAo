@@ -5,6 +5,7 @@ namespace WEBBANQUANAO.Services;
 public interface IEmailService
 {
     Task<bool> SendOtpEmailAsync(string toEmail, string recipientName, string otpCode);
+    Task<bool> SendRegistrationOtpEmailAsync(string toEmail, string recipientName, string otpCode);
     Task<bool> SendOrderInvoiceEmailAsync(int orderId);
     Task<bool> SendOrderCompletedEmailAsync(int orderId, DateTime completedTime);
     Task<bool> SendOrderCancelledEmailAsync(int orderId, DateTime cancelledTime, string reason);

@@ -108,3 +108,24 @@ public class ChangePasswordViewModel
     [DataType(DataType.Password)]
     public string ConfirmNewPassword { get; set; } = string.Empty;
 }
+
+public class VerifyRegistrationOtpViewModel
+{
+    [Required(ErrorMessage = "Vui lòng nhập mã xác thực OTP 6 chữ số")]
+    [StringLength(6, MinimumLength = 6, ErrorMessage = "Mã OTP phải bao gồm đúng 6 chữ số")]
+    [RegularExpression(@"^[0-9]{6}$", ErrorMessage = "Mã OTP chỉ chứa các chữ số từ 0 đến 9")]
+    public string OtpCode { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+}
+
+public class PendingRegistrationModel
+{
+    public string FullName { get; set; } = string.Empty;
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
+    public string OtpCode { get; set; } = string.Empty;
+    public DateTime OtpExpiry { get; set; }
+}
