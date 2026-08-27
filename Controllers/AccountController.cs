@@ -221,6 +221,7 @@ public class AccountController : Controller
         };
 
         HttpContext.Session.SetString("PENDING_REGISTRATION", JsonSerializer.Serialize(pendingReg));
+        Console.WriteLine($"[REGISTRATION OTP] OTP code generated for {model.Email}: {otpCode}");
 
         // Gửi email OTP xác thực
         try
@@ -229,6 +230,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[REGISTRATION OTP EMAIL ERROR] {ex.Message}");
             System.Diagnostics.Debug.WriteLine($"Failed to send registration OTP email: {ex.Message}");
         }
 
@@ -258,14 +260,14 @@ public class AccountController : Controller
             return RedirectToAction("Register");
         }
 
+        int remainingSeconds = (int)Math.Max(0, (pendingReg.OtpExpiry - DateTime.Now).TotalSeconds);
+
         var viewModel = new VerifyRegistrationOtpViewModel
         {
-            Email = pendingReg.Email
+            Email = pendingReg.Email,
+            RemainingSeconds = remainingSeconds,
+            IsExpired = remainingSeconds <= 0
         };
-
-        int remainingSeconds = (int)Math.Max(0, (pendingReg.OtpExpiry - DateTime.Now).TotalSeconds);
-        ViewBag.RemainingSeconds = remainingSeconds;
-        ViewBag.IsExpired = remainingSeconds <= 0;
 
         return View(viewModel);
     }
@@ -288,10 +290,10 @@ public class AccountController : Controller
             return RedirectToAction("Register");
         }
 
-        model.Email = pendingReg.Email;
         int remainingSeconds = (int)Math.Max(0, (pendingReg.OtpExpiry - DateTime.Now).TotalSeconds);
-        ViewBag.RemainingSeconds = remainingSeconds;
-        ViewBag.IsExpired = remainingSeconds <= 0;
+        model.Email = pendingReg.Email;
+        model.RemainingSeconds = remainingSeconds;
+        model.IsExpired = remainingSeconds <= 0;
 
         if (!ModelState.IsValid)
         {
@@ -302,7 +304,7 @@ public class AccountController : Controller
         if (DateTime.Now > pendingReg.OtpExpiry)
         {
             ModelState.AddModelError("OtpCode", "Mã xác thực OTP đã hết hạn (sau 5 phút). Vui lòng nhấn 'Gửi lại mã' để nhận mã xác thực mới.");
-            ViewBag.IsExpired = true;
+            model.IsExpired = true;
             return View(model);
         }
 

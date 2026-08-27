@@ -117,6 +117,10 @@ public class VerifyRegistrationOtpViewModel
     public string OtpCode { get; set; } = string.Empty;
 
     public string Email { get; set; } = string.Empty;
+
+    public int RemainingSeconds { get; set; } = 300;
+
+    public bool IsExpired { get; set; }
 }
 
 public class PendingRegistrationModel

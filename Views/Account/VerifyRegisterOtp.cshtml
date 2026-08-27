@@ -1,8 +1,8 @@
 @model VerifyRegistrationOtpViewModel
 @{
     ViewData["Title"] = "Xác Thực Mã OTP Đăng Ký Tài Khoản";
-    int remainingSeconds = ViewBag.RemainingSeconds ?? 300;
-    bool isExpired = ViewBag.IsExpired ?? false;
+    int remainingSeconds = Model.RemainingSeconds;
+    bool isExpired = Model.IsExpired;
 }
 
 <div class="container my-5">
