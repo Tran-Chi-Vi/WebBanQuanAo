@@ -25,8 +25,8 @@
                     <!-- Top Select All Bar -->
                     <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
                         <div class="form-check m-0 d-flex align-items-center gap-2">
-                            <input type="checkbox" id="selectAllCartMaster" class="form-check-input" checked onchange="toggleSelectAllCart(this.checked)" style="width:20px;height:20px;cursor:pointer;" />
-                            <label for="selectAllCartMaster" class="form-check-label fw-bold text-dark fs-6" style="cursor:pointer;">
+                            <input type="checkbox" id="selectAllCartMaster" class="form-check-input" checked onchange="toggleSelectAllCart(this.checked)" style="width:20px;height:20px;cursor:pointer;" title="Bấm để chọn hoặc bỏ chọn tất cả sản phẩm trong giỏ hàng" aria-label="Chọn tất cả sản phẩm trong giỏ hàng" />
+                            <label for="selectAllCartMaster" class="form-check-label fw-bold text-body fs-6" style="cursor:pointer;">
                                 Chọn Tất Cả (<span id="totalItemCountLabel">@Model.Items.Count</span> Sản Phẩm)
                             </label>
                         </div>
