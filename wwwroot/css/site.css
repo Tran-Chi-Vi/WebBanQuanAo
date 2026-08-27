@@ -2081,3 +2081,8 @@ textarea.form-control:focus {
 .form-range:focus::-webkit-slider-thumb {
   box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.25) !important;
 }
+
+/* Custom Button Focus Outline Polish */
+.btn:focus-visible {
+  box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.3) !important;
+}
