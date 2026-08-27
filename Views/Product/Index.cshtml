@@ -116,7 +116,7 @@
                     <input type="hidden" name="searchQuery" value="@Model.SearchQuery" />
 
                     <label class="small text-muted text-nowrap fw-semibold m-0">Sắp xếp:</label>
-                    <select name="sortBy" class="form-select form-select-sm rounded-3 font-heading fw-semibold" style="min-width:140px;" onchange="this.form.submit()">
+                    <select name="sortBy" class="form-select form-select-sm rounded-3 font-heading fw-semibold" style="min-width:140px;" onchange="this.form.submit()" title="Chọn thứ tự sắp xếp sản phẩm" aria-label="Chọn thứ tự sắp xếp danh sách sản phẩm">
                         <option value="newest" selected="@(Model.SortBy == "newest")">Mới nhất</option>
                         <option value="price_asc" selected="@(Model.SortBy == "price_asc")">Giá tăng dần</option>
                         <option value="price_desc" selected="@(Model.SortBy == "price_desc")">Giá giảm dần</option>
