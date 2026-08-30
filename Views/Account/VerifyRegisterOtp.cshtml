@@ -40,23 +40,23 @@
 
             <div class="mb-4">
                 <label asp-for="OtpCode" class="form-label fw-bold small text-muted text-uppercase text-center d-block" style="letter-spacing:0.05em;">Nhập 6 Chữ Số Mã OTP</label>
-                <input asp-for="OtpCode" id="otpInput" class="form-control form-control-lg text-center rounded-3 fw-bold font-heading shadow-sm fs-2 py-2" placeholder="000000" maxlength="6" autocomplete="one-time-code" autofocus style="letter-spacing: 0.35em; font-family: 'Outfit', monospace;" />
+                <input asp-for="OtpCode" id="otpInput" class="form-control form-control-lg text-center rounded-3 fw-bold font-heading shadow-sm fs-2 py-2" placeholder="000000" maxlength="6" autocomplete="one-time-code" autofocus style="letter-spacing: 0.35em; font-family: 'Outfit', monospace;" aria-label="Nhập mã OTP 6 chữ số xác thực email" title="Nhập 6 chữ số OTP được gửi về Gmail của bạn" />
                 <span asp-validation-for="OtpCode" class="text-danger small d-block text-center mt-1"></span>
             </div>
 
-            <button type="submit" id="submitOtpBtn" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3 rounded-3" @(isExpired ? "disabled" : "")>
+            <button type="submit" id="submitOtpBtn" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3 rounded-3" @(isExpired ? "disabled" : "") title="Xác nhận mã OTP để hoàn tất đăng ký tài khoản">
                 <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN & TẠO TÀI KHOẢN
             </button>
         </form>
 
         <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-2">
-            <a asp-controller="Account" asp-action="Register" class="text-secondary small fw-semibold text-decoration-none d-flex align-items-center gap-1">
+            <a asp-controller="Account" asp-action="Register" class="text-secondary small fw-semibold text-decoration-none d-flex align-items-center gap-1" title="Quay lại trang tạo tài khoản mới">
                 <i class="bi bi-arrow-left"></i> Đăng ký lại
             </a>
 
             <form id="resendOtpForm" class="m-0">
                 @Html.AntiForgeryToken()
-                <button type="button" id="resendOtpBtn" onclick="handleResendOtp()" class="btn btn-link text-primary p-0 small fw-bold text-decoration-none d-flex align-items-center gap-1">
+                <button type="button" id="resendOtpBtn" onclick="handleResendOtp()" class="btn btn-link text-primary p-0 small fw-bold text-decoration-none d-flex align-items-center gap-1" title="Bấm để gửi lại mã xác thực OTP mới về Gmail" aria-label="Gửi lại mã xác thực OTP mới">
                     <i class="bi bi-arrow-clockwise fs-6"></i> Gửi lại mã OTP
                 </button>
             </form>
