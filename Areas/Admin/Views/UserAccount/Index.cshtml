@@ -15,7 +15,7 @@
     {
         <form asp-action="LockSession" method="post">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm">
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold shadow-sm" title="Khóa lại phiên làm việc quản trị bảo mật 2FA" aria-label="Khóa phiên làm việc bảo mật 2FA">
                 <i class="bi bi-lock-fill me-1"></i> Khóa Bảo Mật (2FA)
             </button>
         </form>
