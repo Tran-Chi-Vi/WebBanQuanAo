@@ -147,7 +147,9 @@
                             <input type="number" id="purchaseQuantity" name="quantity"
                                    class="form-control text-center fw-bold px-1 font-monospace"
                                    style="font-size: 1.05rem; height: 48px; border-color: #cbd5e1;"
-                                   value="1" min="1" max="@(firstVariant?.StockQuantity ?? 100)" />
+                                   value="1" min="1" max="@(firstVariant?.StockQuantity ?? 100)"
+                                   title="Nhập số lượng sản phẩm mua"
+                                   aria-label="Số lượng sản phẩm muốn đặt" />
                             <button type="button" class="btn btn-outline-secondary fw-bold px-2.5" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" onclick="changeQty(1)" title="Tăng số lượng" aria-label="Tăng số lượng sản phẩm"><i class="bi bi-plus-lg"></i></button>
                         </div>
 
