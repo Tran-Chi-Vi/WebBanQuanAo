@@ -34,15 +34,15 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="form-check">
-                    <input asp-for="RememberMe" class="form-check-input" />
+                    <input asp-for="RememberMe" class="form-check-input" title="Lưu phiên đăng nhập cho lần truy cập sau" aria-label="Ghi nhớ đăng nhập trên thiết bị này" />
                     <label asp-for="RememberMe" class="form-check-label small text-muted">Ghi nhớ đăng nhập</label>
                 </div>
-                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="small text-primary fw-bold text-decoration-none">
+                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="small text-primary fw-bold text-decoration-none" title="Bấm để khôi phục mật khẩu qua Gmail">
                     <i class="bi bi-key-fill me-1"></i> Quên mật khẩu?
                 </a>
             </div>
 
-            <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3">
+            <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3" title="Bấm để đăng nhập vào tài khoản của bạn" aria-label="Đăng nhập tài khoản FASHION STORE">
                 ĐĂNG NHẬP
             </button>
         </form>
