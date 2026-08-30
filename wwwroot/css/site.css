@@ -2086,3 +2086,10 @@ textarea.form-control:focus {
 .btn:focus-visible {
   box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.3) !important;
 }
+
+/* Accessible Link Focus Visible Polish */
+a:focus-visible {
+  outline: 2.5px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
