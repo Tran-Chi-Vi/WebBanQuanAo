@@ -2093,3 +2093,9 @@ a:focus-visible {
   outline-offset: 2px !important;
   border-radius: 4px !important;
 }
+
+/* Alert Banner Soft Shadow Hover Polish */
+.alert.shadow-sm:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: box-shadow 0.25s ease-in-out;
+}
