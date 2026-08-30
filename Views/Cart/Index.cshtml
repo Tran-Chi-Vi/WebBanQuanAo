@@ -137,14 +137,14 @@
             <!-- Order Summary & Promo Code -->
             <div class="col-lg-4">
                 <div class="card p-4 border-0 shadow-sm rounded-4 bg-body sticky-cart-summary">
-                    <h5 class="fw-bold font-heading mb-3">TỔNG ĐƠN HÀNG</h5>
+                    <h5 class="fw-bold font-heading mb-3 text-body">TỔNG ĐƠN HÀNG</h5>
 
                     <!-- Promo Code Form -->
                     <div class="mb-4">
                         <label class="form-label small fw-bold text-muted">MÃ GIẢM GIÁ (PROMO CODE)</label>
                         <div class="input-group">
                             <input type="text" id="promoCodeInput" class="form-control text-uppercase" placeholder="Nhập mã..." value="@Model.AppliedPromoCode" aria-label="Nhập mã ưu đãi hoặc mã giảm giá" />
-                            <button onclick="applyPromoAjax()" class="btn btn-outline-primary fw-bold" type="button" title="Bấm để áp dụng mã giảm giá">Áp Dụng</button>
+                            <button onclick="applyPromoAjax()" class="btn btn-outline-primary fw-bold" type="button" title="Bấm để áp dụng mã giảm giá" aria-label="Áp dụng mã giảm giá cho giỏ hàng">Áp Dụng</button>
                         </div>
                         @if (!string.IsNullOrEmpty(Model.PromoMessage))
                         {
