@@ -68,19 +68,21 @@
                                         <td class="fw-bold">@item.Price.ToString("N0")đ</td>
                                         <td>
                                             <div class="input-group input-group-sm">
-                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)">-</button>
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)" title="Giảm số lượng" aria-label="Giảm 1 sản phẩm">-</button>
                                                 <input type="number" id="qty-@item.VariantId" 
                                                        class="form-control text-center font-monospace fw-bold px-1" 
                                                        value="@item.Quantity" 
                                                        min="1" 
                                                        max="@item.AvailableStock" 
-                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" />
-                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)">+</button>
+                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" 
+                                                       title="Nhập số lượng sản phẩm mua" 
+                                                       aria-label="Số lượng sản phẩm trong giỏ hàng" />
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)" title="Tăng số lượng" aria-label="Tăng 1 sản phẩm">+</button>
                                             </div>
                                         </td>
                                         <td class="fw-bold text-primary" id="item-total-@item.VariantId">@item.TotalPrice.ToString("N0")đ</td>
                                         <td>
-                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Xóa">
+                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm btn-outline-danger border-0 rounded-circle" title="Xóa" aria-label="Xóa sản phẩm này khỏi giỏ hàng">
                                                 <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </td>
