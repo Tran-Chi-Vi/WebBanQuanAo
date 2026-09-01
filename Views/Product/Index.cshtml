@@ -30,7 +30,7 @@
                     <!-- Category Filter -->
                     <div class="mb-4">
                         <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Danh Mục</label>
-                        <select name="categoryId" class="form-select rounded-3 font-heading small" aria-label="Chọn danh mục sản phẩm">
+                        <select name="categoryId" class="form-select rounded-3 font-heading small" aria-label="Chọn danh mục sản phẩm" title="Lọc sản phẩm theo danh mục thời trang">
                             <option value="">-- Tất cả danh mục --</option>
                             @foreach (var c in Model.Categories.Where(x => x.ParentCategoryId == null))
                             {
@@ -46,7 +46,7 @@
                     <!-- Brand Filter -->
                     <div class="mb-4">
                         <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Thương Hiệu</label>
-                        <select name="brandId" class="form-select rounded-3 font-heading small">
+                        <select name="brandId" class="form-select rounded-3 font-heading small" aria-label="Chọn thương hiệu sản phẩm" title="Lọc sản phẩm theo thương hiệu đối tác">
                             <option value="">-- Tất cả thương hiệu --</option>
                             @foreach (var b in Model.Brands)
                             {
