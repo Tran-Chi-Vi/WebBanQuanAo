@@ -2099,3 +2099,9 @@ a:focus-visible {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   transition: box-shadow 0.25s ease-in-out;
 }
+
+/* Dropdown Item Focus Visible Polish */
+.dropdown-item:focus-visible {
+  background-color: rgba(99, 102, 241, 0.12) !important;
+  outline: 2px solid #6366f1 !important;
+}
