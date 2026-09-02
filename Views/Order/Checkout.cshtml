@@ -140,7 +140,7 @@
             <!-- Right: Order Items & Submit Sticky Panel -->
             <div class="col-lg-5">
                 <div class="card p-4 border-0 shadow-sm rounded-4 bg-body checkout-summary-sticky" style="position: sticky; top: 100px; z-index: 10;">
-                    <h5 class="fw-bold font-heading mb-3">TÓM TẮT ĐƠN HÀNG (@Model.Cart.Items.Sum(i => i.Quantity) SP)</h5>
+                    <h5 class="fw-bold font-heading mb-3 text-body" title="Danh sách các sản phẩm và tổng giá trị đơn hàng">TÓM TẮT ĐƠN HÀNG (@Model.Cart.Items.Sum(i => i.Quantity) SP)</h5>
 
                     <div class="d-flex flex-column gap-3 mb-4 overflow-auto" style="max-height: 280px;">
                         @foreach (var item in Model.Cart.Items)
