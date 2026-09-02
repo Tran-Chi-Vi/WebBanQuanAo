@@ -2105,3 +2105,9 @@ a:focus-visible {
   background-color: rgba(99, 102, 241, 0.12) !important;
   outline: 2px solid #6366f1 !important;
 }
+
+/* Interactive Badge Focus Visible Polish */
+.badge:focus-visible {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 1px !important;
+}
