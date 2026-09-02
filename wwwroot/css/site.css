@@ -2111,3 +2111,10 @@ a:focus-visible {
   outline: 2px solid #6366f1 !important;
   outline-offset: 1px !important;
 }
+
+/* Breadcrumb Link Focus Visible Polish */
+.breadcrumb-item a:focus-visible {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px !important;
+  border-radius: 4px !important;
+}
