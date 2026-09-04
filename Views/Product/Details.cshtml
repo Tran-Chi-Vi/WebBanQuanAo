@@ -16,8 +16,8 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb small">
-            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="text-decoration-none text-muted">@Model.Category?.CategoryName</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted" title="Quay lại trang chủ Fashion Store">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId" class="text-decoration-none text-muted" title="Xem thêm sản phẩm trong danh mục @Model.Category?.CategoryName">@Model.Category?.CategoryName</a></li>
             <li class="breadcrumb-item active fw-semibold text-dark" aria-current="page">@Model.ProductName</li>
         </ol>
     </nav>
