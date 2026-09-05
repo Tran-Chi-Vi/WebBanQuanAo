@@ -77,7 +77,7 @@
                                     <i class="bi bi-x-circle me-1"></i> Hủy Đơn
                                 </a>
                             }
-                            <a asp-controller="Account" asp-action="OrderDetails" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-custom rounded-3 fw-bold">Chi Tiết</a>
+                            <a asp-controller="Account" asp-action="OrderDetails" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-custom rounded-3 fw-bold" title="Xem chi tiết đơn hàng #@o.OrderId" aria-label="Xem chi tiết đơn hàng #@o.OrderId">Chi Tiết</a>
                         </div>
                     </div>
                 </div>
