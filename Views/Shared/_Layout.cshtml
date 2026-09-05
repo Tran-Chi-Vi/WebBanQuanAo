@@ -239,7 +239,7 @@
                         {
                             var userAvatarUrl = User.FindFirst("AvatarUrl")?.Value;
                             <div class="dropdown">
-                                <button class="btn btn-outline-custom d-inline-flex align-items-center gap-2 py-2 px-3 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="max-width:200px;">
+                                <button class="btn btn-outline-custom d-inline-flex align-items-center gap-2 py-2 px-3 shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="max-width:200px;" title="Tài khoản cá nhân của bạn" aria-label="Mở menu quản lý tài khoản cá nhân">
                                     @if (!string.IsNullOrEmpty(userAvatarUrl))
                                     {
                                         <img src="@userAvatarUrl" alt="Avatar" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid #6366f1;" />

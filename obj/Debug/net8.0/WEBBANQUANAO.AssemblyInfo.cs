@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WEBBANQUANAO")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9eeda15425c1757baa92702fceb58d4da9ceb43c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ffe741feb236a4d0b18769d14d9eaaa4f74e128")]
 [assembly: System.Reflection.AssemblyProductAttribute("WEBBANQUANAO")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WEBBANQUANAO")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
