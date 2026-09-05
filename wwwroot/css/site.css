@@ -2132,3 +2132,10 @@ a:focus-visible {
   outline-offset: 2px !important;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25) !important;
 }
+
+/* Table Action Button Focus Visible Polish */
+.table .btn:focus-visible {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
