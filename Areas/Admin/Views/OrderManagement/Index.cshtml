@@ -30,11 +30,11 @@
         </div>
         <div class="col-md-2">
             <label class="form-label small fw-bold">Từ Ngày Đặt</label>
-            <input type="date" name="fromDate" class="form-control rounded-3" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+            <input type="date" name="fromDate" class="form-control rounded-3" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" title="Chọn ngày bắt đầu để lọc đơn hàng" aria-label="Từ ngày đặt đơn hàng" />
         </div>
         <div class="col-md-2">
             <label class="form-label small fw-bold">Đến Ngày Đặt</label>
-            <input type="date" name="toDate" class="form-control rounded-3" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+            <input type="date" name="toDate" class="form-control rounded-3" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" title="Chọn ngày kết thúc để lọc đơn hàng" aria-label="Đến ngày đặt đơn hàng" />
         </div>
         <div class="col-md-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-bold" title="Áp dụng bộ lọc tìm kiếm đơn hàng" aria-label="Lọc đơn hàng theo điều kiện đã chọn"><i class="bi bi-filter me-1"></i> Lọc Đơn Hàng</button>
@@ -86,7 +86,7 @@
                         </td>
                         <td class="fw-bold text-primary">@o.TotalAmount.ToString("N0")đ</td>
                         <td class="text-end pe-3">
-                            <a asp-action="Details" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                            <a asp-action="Details" asp-route-id="@o.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold" title="Xem chi tiết và xử lý đơn hàng #@o.OrderNumber" aria-label="Xem chi tiết đơn hàng #@o.OrderNumber">
                                 <i class="bi bi-eye me-1"></i> Chi Tiết
                             </a>
                         </td>
