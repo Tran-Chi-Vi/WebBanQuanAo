@@ -73,7 +73,9 @@
                             <div class="d-flex gap-2 align-items-center justify-content-end">
                                 <a asp-area="Admin" asp-controller="Promotion" asp-action="Edit" asp-route-id="@p.PromotionId"
                                    class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
-                                   style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                   style="border-radius:8px;font-size:0.82rem;white-space:nowrap;"
+                                   title="Chỉnh sửa chi tiết mã khuyến mãi @p.Code"
+                                   aria-label="Sửa mã khuyến mãi @p.Code">
                                     <i class="bi bi-pencil"></i> Sửa
                                 </a>
                                 <form asp-area="Admin" asp-controller="Promotion" asp-action="Delete" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mã khuyến mãi này?')">
@@ -81,7 +83,9 @@
                                     <input type="hidden" name="id" value="@p.PromotionId" />
                                     <button type="submit"
                                             class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold px-2.5 py-1.5"
-                                            style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                            style="border-radius:8px;font-size:0.82rem;white-space:nowrap;"
+                                            title="Xóa mã khuyến mãi @p.Code khỏi hệ thống"
+                                            aria-label="Xóa mã khuyến mãi @p.Code">
                                         <i class="bi bi-trash"></i> Xóa
                                     </button>
                                 </form>
