@@ -103,7 +103,7 @@
                                     <div style="flex: 1; min-width: 0;">
                                         <div class="d-flex justify-content-between align-items-start gap-2">
                                             <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="fw-bold text-dark text-decoration-none lh-sm mb-1 d-block pe-2" style="font-size: 0.95rem;">@item.ProductName</a>
-                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm text-danger p-0 border-0 flex-shrink-0" title="Xóa">
+                                            <button onclick="removeCartItem(@item.VariantId)" class="btn btn-sm text-danger p-0 border-0 flex-shrink-0" title="Xóa sản phẩm" aria-label="Xóa sản phẩm khỏi giỏ hàng">
                                                 <i class="bi bi-trash-fill fs-5"></i>
                                             </button>
                                         </div>
@@ -116,14 +116,16 @@
                                                 <span class="fw-bold text-primary fs-6" id="item-total-mob-@item.VariantId">@item.TotalPrice.ToString("N0")đ</span>
                                             </div>
                                             <div class="input-group input-group-sm" style="width: 105px;">
-                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)">-</button>
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, -1, @item.AvailableStock)" title="Giảm số lượng" aria-label="Giảm 1 sản phẩm">-</button>
                                                 <input type="number" id="qty-mob-@item.VariantId" 
                                                        class="form-control text-center font-monospace fw-bold px-1" 
                                                        value="@item.Quantity" 
                                                        min="1" 
                                                        max="@item.AvailableStock" 
-                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" />
-                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)">+</button>
+                                                       onchange="handleQtyInputBlur(@item.VariantId, this.value, @item.AvailableStock)" 
+                                                       title="Số lượng sản phẩm" 
+                                                       aria-label="Số lượng sản phẩm trong giỏ hàng" />
+                                                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="adjustCartQty(@item.VariantId, 1, @item.AvailableStock)" title="Tăng số lượng" aria-label="Tăng 1 sản phẩm">+</button>
                                             </div>
                                         </div>
                                     </div>
