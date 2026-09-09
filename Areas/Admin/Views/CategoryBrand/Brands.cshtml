@@ -43,7 +43,7 @@
                             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="DeleteBrand" method="post" onsubmit="return confirm('Xóa thương hiệu này?')">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@b.BrandId" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Xóa</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa thương hiệu @b.BrandName khỏi hệ thống" aria-label="Xóa thương hiệu @b.BrandName"><i class="bi bi-trash"></i> Xóa</button>
                             </form>
                         </td>
                     </tr>
@@ -59,23 +59,23 @@
         <div class="modal-content rounded-4 border-0">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold">Thêm Thương Hiệu Mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng hộp thoại"></button>
             </div>
             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="CreateBrand" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Tên Thương Hiệu (*)</label>
-                        <input type="text" name="brandName" class="form-control rounded-3" placeholder="Ví dụ: Nike, Adidas, Zara..." required />
+                        <input type="text" name="brandName" class="form-control rounded-3" placeholder="Ví dụ: Nike, Adidas, Zara..." required title="Nhập tên thương hiệu thời trang mới" aria-label="Tên thương hiệu mới" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Đường Dẫn Logo (URL)</label>
-                        <input type="text" name="logoUrl" class="form-control rounded-3" placeholder="https://example.com/logo.png" />
+                        <input type="text" name="logoUrl" class="form-control rounded-3" placeholder="https://example.com/logo.png" title="Nhập đường dẫn logo ảnh thương hiệu (tùy chọn)" aria-label="Đường dẫn logo thương hiệu" />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary-gradient">Tạo Thương Hiệu</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" title="Hủy thao tác tạo mới thương hiệu" aria-label="Hủy tạo thương hiệu">Hủy</button>
+                    <button type="submit" class="btn btn-primary-gradient" title="Xác nhận tạo mới thương hiệu thời trang" aria-label="Tạo thương hiệu mới">Tạo Thương Hiệu</button>
                 </div>
             </form>
         </div>
