@@ -317,11 +317,11 @@
                 <div class="reveal">
                     @if (!string.IsNullOrEmpty(b.LogoUrl))
                     {
-                        <img src="@b.LogoUrl" alt="@b.BrandName" style="height:42px;object-fit:contain;filter:grayscale(100%);opacity:0.55;transition:all 0.3s ease;" class="brand-logo" />
+                        <img src="@b.LogoUrl" alt="@b.BrandName" style="height:42px;object-fit:contain;filter:grayscale(100%);opacity:0.55;transition:all 0.3s ease;" class="brand-logo" title="Đối tác thương hiệu @b.BrandName" aria-label="Thương hiệu @b.BrandName" />
                     }
                     else
                     {
-                        <div class="px-4 py-2 rounded-3 fw-bold text-muted" style="border:2px solid #e2e8f0;font-family:'Outfit',sans-serif;letter-spacing:-0.02em;font-size:1.1rem;" title="Thương hiệu @b.BrandName">@b.BrandName</div>
+                        <div class="px-4 py-2 rounded-3 fw-bold text-muted" style="border:2px solid #e2e8f0;font-family:'Outfit',sans-serif;letter-spacing:-0.02em;font-size:1.1rem;" title="Thương hiệu @b.BrandName" aria-label="Thương hiệu @b.BrandName">@b.BrandName</div>
                     }
                 </div>
             }
