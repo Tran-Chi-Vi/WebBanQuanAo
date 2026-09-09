@@ -100,9 +100,9 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Số điện thoại</label>
-                        <input type="text" asp-for="Phone" class="form-control rounded-3" />
+                        <input type="text" asp-for="Phone" class="form-control rounded-3" title="Nhập số điện thoại di động cá nhân" aria-label="Số điện thoại cá nhân" />
                     </div>
-                    <button type="submit" class="btn btn-primary-gradient py-2">Lưu Thay Đổi</button>
+                    <button type="submit" class="btn btn-primary-gradient py-2" title="Lưu thông tin hồ sơ cá nhân" aria-label="Cập nhật thông tin cá nhân">Lưu Thay Đổi</button>
                 </form>
             </div>
 
@@ -116,7 +116,7 @@
                         <label class="form-label fw-bold small">Mật khẩu hiện tại</label>
                         <div class="input-group">
                             <input type="password" id="profileCurrentPasswordInput" name="CurrentPassword" class="form-control rounded-start-3" required />
-                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileCurrentPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileCurrentPasswordInput', this)" title="Hiện/Ẩn mật khẩu hiện tại" aria-label="Bấm để ẩn hoặc hiện mật khẩu hiện tại">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
@@ -125,7 +125,7 @@
                         <label class="form-label fw-bold small">Mật khẩu mới</label>
                         <div class="input-group">
                             <input type="password" id="profileNewPasswordInput" name="NewPassword" class="form-control rounded-start-3" required />
-                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileNewPasswordInput', this)" title="Hiện/Ẩn mật khẩu">
+                            <button class="btn btn-outline-secondary rounded-end-3 px-3" type="button" onclick="togglePasswordVisibility('profileNewPasswordInput', this)" title="Hiện/Ẩn mật khẩu mới" aria-label="Bấm để ẩn hoặc hiện mật khẩu mới">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </div>
