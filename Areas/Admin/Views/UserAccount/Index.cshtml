@@ -46,7 +46,7 @@
                             <input type="password" name="pin" class="form-control form-control-lg bg-light border-start-0 text-center font-monospace fw-bold fs-4" placeholder="••••••" maxlength="10" required autofocus />
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary-gradient btn-lg w-100 fw-bold rounded-3 shadow">
+                    <button type="submit" class="btn btn-primary-gradient btn-lg w-100 fw-bold rounded-3 shadow" title="Xác nhận mã PIN 2FA để mở khóa quản trị người dùng" aria-label="Xác nhận mở khóa 2FA">
                         <i class="bi bi-unlock-fill me-2"></i> XÁC NHẬN MỞ KHÓA
                     </button>
                 </form>
@@ -67,18 +67,18 @@ else
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, username, email, SĐT..." />
+                        <input type="text" name="searchQuery" value="@ViewBag.SearchQuery" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, username, email, SĐT..." title="Nhập họ tên, tên đăng nhập, email hoặc SĐT để tìm kiếm" aria-label="Tìm kiếm tài khoản người dùng" />
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <select name="roleFilter" class="form-select bg-light">
+                    <select name="roleFilter" class="form-select bg-light" title="Lọc tài khoản người dùng theo vai trò hệ thống" aria-label="Lọc theo vai trò">
                         <option value="">-- Tất cả vai trò --</option>
                         <option value="Admin" selected="@(ViewBag.RoleFilter == "Admin")">Quản Trị Viên (Admin)</option>
                         <option value="Customer" selected="@(ViewBag.RoleFilter == "Customer")">Khách Hàng (Customer)</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-filter me-1"></i> Lọc</button>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold" title="Áp dụng bộ lọc tìm kiếm tài khoản người dùng" aria-label="Áp dụng bộ lọc tìm kiếm"><i class="bi bi-filter me-1"></i> Lọc</button>
                 </div>
             </form>
         </div>
