@@ -45,7 +45,9 @@
                                 <input type="hidden" name="id" value="@c.CategoryId" />
                                 <button type="submit"
                                         class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 fw-semibold"
-                                        style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                        style="border-radius:8px;font-size:0.82rem;white-space:nowrap;"
+                                        title="Xóa danh mục @c.CategoryName khỏi hệ thống"
+                                        aria-label="Xóa danh mục @c.CategoryName">
                                     <i class="bi bi-trash"></i> Xóa
                                 </button>
                             </form>
@@ -63,18 +65,18 @@
         <div class="modal-content rounded-4 border-0">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold">Thêm Danh Mục Mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng hộp thoại"></button>
             </div>
             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="CreateCategory" method="post">
                 @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Tên Danh Mục (*)</label>
-                        <input type="text" name="categoryName" class="form-control rounded-3" placeholder="Ví dụ: Áo Sơ Mi" required />
+                        <input type="text" name="categoryName" class="form-control rounded-3" placeholder="Ví dụ: Áo Sơ Mi" required title="Nhập tên danh mục sản phẩm cần tạo" aria-label="Tên danh mục mới" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Danh Mục Cha (Nếu có)</label>
-                        <select name="parentCategoryId" class="form-select rounded-3">
+                        <select name="parentCategoryId" class="form-select rounded-3" title="Chọn danh mục gốc cha cho danh mục này" aria-label="Chọn danh mục cha">
                             <option value="">-- Không có (Danh mục gốc) --</option>
                             @foreach (var p in Model.Where(x => x.ParentCategoryId == null))
                             {
@@ -84,8 +86,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary-gradient">Tạo Danh Mục</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" title="Hủy thao tác tạo mới" aria-label="Hủy tạo danh mục">Hủy</button>
+                    <button type="submit" class="btn btn-primary-gradient" title="Xác nhận tạo mới danh mục sản phẩm" aria-label="Tạo mới danh mục sản phẩm">Tạo Danh Mục</button>
                 </div>
             </form>
         </div>
