@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold font-heading m-0">THÊM SẢN PHẨM MỚI</h4>
-    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" class="btn btn-sm btn-outline-custom"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" class="btn btn-sm btn-outline-custom" title="Quay lại danh sách sản phẩm" aria-label="Quay lại danh sách sản phẩm"><i class="bi bi-arrow-left"></i> Quay lại</a>
 </div>
 
 <div class="card p-4 border-0 shadow-sm rounded-4 bg-white max-w-800 mx-auto" style="max-width: 800px;">
@@ -15,14 +15,14 @@
 
         <div class="mb-3">
             <label asp-for="ProductName" class="form-label fw-bold small">Tên Sản Phẩm (*)</label>
-            <input asp-for="ProductName" class="form-control rounded-3" placeholder="Ví dụ: Áo Sơ Mi Nam Cotton Cao Cấp" required />
+            <input asp-for="ProductName" class="form-control rounded-3" placeholder="Ví dụ: Áo Sơ Mi Nam Cotton Cao Cấp" title="Nhập tên sản phẩm thời trang" aria-label="Tên sản phẩm" required />
             <span asp-validation-for="ProductName" class="text-danger small"></span>
         </div>
 
         <div class="row g-3 mb-3">
             <div class="col-md-6">
                 <label asp-for="CategoryId" class="form-label fw-bold small">Danh Mục (*)</label>
-                <select asp-for="CategoryId" class="form-select rounded-3" required>
+                <select asp-for="CategoryId" class="form-select rounded-3" title="Chọn danh mục sản phẩm" aria-label="Danh mục sản phẩm" required>
                     <option value="">-- Chọn danh mục --</option>
                     @foreach (var c in Model.AvailableCategories)
                     {
@@ -32,7 +32,7 @@
             </div>
             <div class="col-md-6">
                 <label asp-for="BrandId" class="form-label fw-bold small">Thương Hiệu (*)</label>
-                <select asp-for="BrandId" class="form-select rounded-3" required>
+                <select asp-for="BrandId" class="form-select rounded-3" title="Chọn thương hiệu sản phẩm" aria-label="Thương hiệu sản phẩm" required>
                     <option value="">-- Chọn thương hiệu --</option>
                     @foreach (var b in Model.AvailableBrands)
                     {
@@ -45,11 +45,11 @@
         <div class="row g-3 mb-3">
             <div class="col-md-4">
                 <label asp-for="BasePrice" class="form-label fw-bold small">Giá Gốc (VNĐ) (*)</label>
-                <input asp-for="BasePrice" type="number" class="form-control rounded-3" placeholder="250000" required />
+                <input asp-for="BasePrice" type="number" class="form-control rounded-3" placeholder="250000" title="Nhập giá gốc sản phẩm" aria-label="Giá gốc sản phẩm" required />
             </div>
             <div class="col-md-4">
                 <label asp-for="Gender" class="form-label fw-bold small">Giới Tính</label>
-                <select asp-for="Gender" class="form-select rounded-3">
+                <select asp-for="Gender" class="form-select rounded-3" title="Chọn đối tượng giới tính áp dụng" aria-label="Đối tượng giới tính">
                     <option value="0">Nam</option>
                     <option value="1">Nữ</option>
                     <option value="2">Unisex</option>
@@ -57,7 +57,7 @@
             </div>
             <div class="col-md-4">
                 <label asp-for="Status" class="form-label fw-bold small">Trạng Thái</label>
-                <select asp-for="Status" class="form-select rounded-3">
+                <select asp-for="Status" class="form-select rounded-3" title="Chọn trạng thái kinh doanh" aria-label="Trạng thái kinh doanh">
                     <option value="1">Đang kinh doanh (Active)</option>
                     <option value="0">Ngưng kinh doanh (Discontinued)</option>
                 </select>
@@ -66,12 +66,12 @@
 
         <div class="mb-3">
             <label asp-for="MainImageUrl" class="form-label fw-bold small">Đường Dẫn Ảnh Chính (URL Image)</label>
-            <input asp-for="MainImageUrl" class="form-control rounded-3" placeholder="https://example.com/image.jpg" />
+            <input asp-for="MainImageUrl" class="form-control rounded-3" placeholder="https://example.com/image.jpg" title="Nhập URL hình ảnh minh họa sản phẩm" aria-label="Đường dẫn ảnh chính sản phẩm" />
         </div>
 
         <div class="mb-4">
             <label asp-for="Description" class="form-label fw-bold small">Mô Tả Sản Phẩm</label>
-            <textarea asp-for="Description" class="form-control rounded-3" rows="4" placeholder="Nhập mô tả chi tiết..."></textarea>
+            <textarea asp-for="Description" class="form-control rounded-3" rows="4" placeholder="Nhập mô tả chi tiết..." title="Nhập thông tin mô tả chi tiết sản phẩm" aria-label="Mô tả chi tiết sản phẩm"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg" title="Bấm để lưu sản phẩm thời trang mới vào hệ thống" aria-label="Tạo sản phẩm thời trang mới">
