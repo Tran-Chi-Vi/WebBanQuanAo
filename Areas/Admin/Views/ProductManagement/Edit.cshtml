@@ -5,7 +5,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold font-heading m-0">CHỈNH SỬA SẢN PHẨM: @Model.ProductName</h4>
-    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" class="btn btn-sm btn-outline-custom"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Index" class="btn btn-sm btn-outline-custom" title="Quay lại danh sách sản phẩm" aria-label="Quay lại danh sách sản phẩm"><i class="bi bi-arrow-left"></i> Quay lại</a>
 </div>
 
 <div class="row g-4">
@@ -20,13 +20,13 @@
 
                 <div class="mb-3">
                     <label asp-for="ProductName" class="form-label fw-bold small">Tên Sản Phẩm (*)</label>
-                    <input asp-for="ProductName" class="form-control rounded-3" required />
+                    <input asp-for="ProductName" class="form-control rounded-3" title="Nhập tên sản phẩm" aria-label="Tên sản phẩm" required />
                 </div>
 
                 <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label asp-for="CategoryId" class="form-label fw-bold small">Danh Mục</label>
-                        <select asp-for="CategoryId" class="form-select rounded-3">
+                        <select asp-for="CategoryId" class="form-select rounded-3" title="Chọn danh mục sản phẩm" aria-label="Danh mục sản phẩm">
                             @foreach (var c in Model.AvailableCategories)
                             {
                                 <option value="@c.CategoryId">@c.CategoryName</option>
@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-6">
                         <label asp-for="BrandId" class="form-label fw-bold small">Thương Hiệu</label>
-                        <select asp-for="BrandId" class="form-select rounded-3">
+                        <select asp-for="BrandId" class="form-select rounded-3" title="Chọn thương hiệu sản phẩm" aria-label="Thương hiệu sản phẩm">
                             @foreach (var b in Model.AvailableBrands)
                             {
                                 <option value="@b.BrandId">@b.BrandName</option>
@@ -47,11 +47,11 @@
                 <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label asp-for="BasePrice" class="form-label fw-bold small">Giá Gốc</label>
-                        <input asp-for="BasePrice" type="number" class="form-control rounded-3" required />
+                        <input asp-for="BasePrice" type="number" class="form-control rounded-3" title="Nhập giá gốc sản phẩm" aria-label="Giá gốc sản phẩm" required />
                     </div>
                     <div class="col-6">
                         <label asp-for="Status" class="form-label fw-bold small">Trạng Thái</label>
-                        <select asp-for="Status" class="form-select rounded-3">
+                        <select asp-for="Status" class="form-select rounded-3" title="Chọn trạng thái kinh doanh" aria-label="Trạng thái kinh doanh">
                             <option value="1">Active</option>
                             <option value="0">Discontinued</option>
                         </select>
@@ -60,7 +60,7 @@
 
                 <div class="mb-3">
                     <label asp-for="Description" class="form-label fw-bold small">Mô Tả</label>
-                    <textarea asp-for="Description" class="form-control rounded-3" rows="3"></textarea>
+                    <textarea asp-for="Description" class="form-control rounded-3" rows="3" title="Nhập mô tả sản phẩm" aria-label="Mô tả sản phẩm"></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary-gradient py-2" title="Lưu tất cả thay đổi cho sản phẩm này" aria-label="Cập nhật thông tin sản phẩm">Cập Nhật Thông Tin</button>
@@ -75,8 +75,8 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="productId" value="@Model.ProductId" />
                 <div class="input-group">
-                    <input type="text" name="imageUrl" class="form-control" placeholder="Dán URL hình ảnh..." required />
-                    <button type="submit" class="btn btn-outline-primary">+ Thêm Ảnh</button>
+                    <input type="text" name="imageUrl" class="form-control" placeholder="Dán URL hình ảnh..." title="Dán URL hình ảnh bổ sung" aria-label="Đường dẫn ảnh bổ sung" required />
+                    <button type="submit" class="btn btn-outline-primary" title="Thêm ảnh vào bộ sưu tập" aria-label="Thêm ảnh">+ Thêm Ảnh</button>
                 </div>
             </form>
 
@@ -84,11 +84,11 @@
                 @foreach (var img in Model.Images)
                 {
                     <div class="position-relative border rounded-3 overflow-hidden" style="width: 90px; height: 90px;">
-                        <img src="@img.ImageUrl" alt="img" class="w-100 h-100 object-fit-cover" />
+                        <img src="@img.ImageUrl" alt="Sản phẩm" class="w-100 h-100 object-fit-cover" />
                         <form asp-area="Admin" asp-controller="ProductManagement" asp-action="DeleteImage" method="post" class="position-absolute top-0 end-0 m-1">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="imageId" value="@img.ImageId" />
-                            <button type="submit" class="btn btn-danger btn-sm rounded-circle p-0" style="width: 22px; height: 22px;">&times;</button>
+                            <button type="submit" class="btn btn-danger btn-sm rounded-circle p-0" style="width: 22px; height: 22px;" title="Xóa hình ảnh này" aria-label="Xóa ảnh">&times;</button>
                         </form>
                     </div>
                 }
@@ -101,7 +101,7 @@
         <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold font-heading m-0">3. BIẾN THỂ (SIZE / MÀU / TỒN KHO)</h5>
-                <button type="button" class="btn btn-sm btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#addVariantModal">
+                <button type="button" class="btn btn-sm btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#addVariantModal" title="Mở hộp thoại thêm biến thể mới" aria-label="Thêm biến thể mới">
                     + Thêm Biến Thể
                 </button>
             </div>
@@ -131,7 +131,7 @@
                                     <form asp-area="Admin" asp-controller="ProductManagement" asp-action="DeleteVariant" method="post" onsubmit="return confirm('Xóa biến thể này?')">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="variantId" value="@v.VariantId" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Xóa biến thể này" aria-label="Xóa biến thể"><i class="bi bi-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
@@ -149,7 +149,7 @@
         <div class="modal-content rounded-4 border-0">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold">Thêm Biến Thể Mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <form asp-area="Admin" asp-controller="ProductManagement" asp-action="AddVariant" method="post">
                 @Html.AntiForgeryToken()
@@ -158,31 +158,31 @@
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label small fw-bold">Size</label>
-                            <input type="text" name="size" class="form-control rounded-3" placeholder="S, M, L, XL..." required />
+                            <input type="text" name="size" class="form-control rounded-3" placeholder="S, M, L, XL..." title="Nhập kích cỡ" aria-label="Kích cỡ" required />
                         </div>
                         <div class="col-6">
                             <label class="form-label small fw-bold">Màu sắc</label>
-                            <input type="text" name="color" class="form-control rounded-3" placeholder="Đen, Trắng, Xanh..." required />
+                            <input type="text" name="color" class="form-control rounded-3" placeholder="Đen, Trắng, Xanh..." title="Nhập màu sắc" aria-label="Màu sắc" required />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Mã SKU (Duy nhất)</label>
-                        <input type="text" name="sku" class="form-control rounded-3" placeholder="SKU-PROD1-M-BLACK" required />
+                        <input type="text" name="sku" class="form-control rounded-3" placeholder="SKU-PROD1-M-BLACK" title="Nhập mã SKU duy nhất" aria-label="Mã SKU" required />
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label small fw-bold">Giá bán (VNĐ)</label>
-                            <input type="number" name="price" class="form-control rounded-3" value="@Model.BasePrice" required />
+                            <input type="number" name="price" class="form-control rounded-3" value="@Model.BasePrice" title="Nhập giá bán biến thể" aria-label="Giá bán biến thể" required />
                         </div>
                         <div class="col-6">
                             <label class="form-label small fw-bold">Số lượng tồn kho</label>
-                            <input type="number" name="stockQuantity" class="form-control rounded-3" value="50" required />
+                            <input type="number" name="stockQuantity" class="form-control rounded-3" value="50" title="Nhập số lượng tồn kho" aria-label="Số lượng tồn kho" required />
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary-gradient">Thêm Biến Thể</button>
+                    <button type="submit" class="btn btn-primary-gradient" title="Thêm biến thể sản phẩm mới" aria-label="Xác nhận thêm biến thể">Thêm Biến Thể</button>
                 </div>
             </form>
         </div>
