@@ -761,3 +761,14 @@ body.admin-dark-mode table.table {
   color: #f8fafc !important;
 }
 
+/* Accessibility Focus-Visible Outline Polish */
+.admin-body a:focus-visible,
+.admin-body button:focus-visible,
+.admin-body input:focus-visible,
+.admin-body select:focus-visible,
+.admin-body textarea:focus-visible {
+  outline: 2px solid var(--admin-primary) !important;
+  outline-offset: 2px !important;
+}
+
+
