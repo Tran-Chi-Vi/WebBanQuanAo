@@ -5,7 +5,7 @@
 <div class="container my-5 py-3">
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted"><i class="bi bi-house me-1"></i> Trang Chủ</a></li>
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted" title="Về trang chủ Fashion Store" aria-label="Về trang chủ"><i class="bi bi-house me-1"></i> Trang Chủ</a></li>
             <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Hướng Dẫn Chọn Size</li>
         </ol>
     </nav>
@@ -71,12 +71,15 @@
             </div>
         </div>
 
-        <div class="alert alert-info rounded-4 border-0 d-flex align-items-center gap-3 p-4 m-0">
-            <i class="bi bi-info-circle-fill fs-2 text-info flex-shrink-0"></i>
-            <div>
-                <h6 class="fw-bold mb-1">💡 Lời khuyên chọn size từ Chuyên Gia:</h6>
-                <p class="small m-0 text-muted">Nếu chiều cao và cân nặng của bạn thuộc 2 size khác nhau, quý khách nên chọn **Size lớn hơn** để có cảm giác mặc thoải mái hoặc liên hệ hotline <strong class="text-dark">1900 6789</strong> để tư vấn chi tiết.</p>
+        <div class="alert alert-info rounded-4 border-0 d-flex align-items-center justify-content-between flex-wrap gap-3 p-4 m-0">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-info-circle-fill fs-2 text-info flex-shrink-0"></i>
+                <div>
+                    <h6 class="fw-bold mb-1">💡 Lời khuyên chọn size từ Chuyên Gia:</h6>
+                    <p class="small m-0 text-muted">Nếu chiều cao và cân nặng của bạn thuộc 2 size khác nhau, quý khách nên chọn **Size lớn hơn** để có cảm giác mặc thoải mái hoặc liên hệ hotline <strong class="text-dark">1900 6789</strong> để tư vấn chi tiết.</p>
+                </div>
             </div>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-primary-gradient rounded-pill px-3 py-2 fw-bold" title="Khám phá ngay tất cả sản phẩm thời trang" aria-label="Xem sản phẩm ngay"><i class="bi bi-bag-check me-1"></i> Mua Sắm Ngay</a>
         </div>
     </div>
 </div>
