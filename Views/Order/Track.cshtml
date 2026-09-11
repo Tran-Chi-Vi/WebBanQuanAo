@@ -198,7 +198,7 @@
                     <h5 class="fw-bold mb-2"><i class="bi bi-person-check-fill text-warning me-2 fs-4"></i> CHỜ KHÁCH HÀNG XÁC NHẬN NHẬN HÀNG</h5>
                     <p class="small text-dark opacity-75 mb-3">Shipper vừa báo chưa giao thành công lần @Model.DeliveryAttemptCount/3. Nếu bạn là khách hàng mua đơn này, hãy bấm vào nút bên dưới để xác nhận sẵn sàng nhận hàng lần tiếp theo!</p>
                     <div class="col-md-9 mx-auto">
-                        <a href="/Order/CustomerConfirmDelivery/@Model.OrderGuid" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow rounded-3 text-dark fs-6">
+                        <a href="/Order/CustomerConfirmDelivery/@Model.OrderGuid" class="btn btn-warning btn-lg w-100 fw-bold py-3 shadow rounded-3 text-dark fs-6" title="Khách hàng xác nhận sẵn sàng nhận hàng lần tiếp theo" aria-label="Xác nhận nhận hàng">
                             <i class="bi bi-check2-circle me-2 fs-5"></i> 👉 BẤM VÀO ĐÂY ĐỂ XÁC NHẬN NHẬN HÀNG LẦN @(Model.DeliveryAttemptCount + 1)
                         </a>
                     </div>
@@ -235,7 +235,7 @@
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="orderGuid" value="@Model.OrderGuid" />
                             <input type="hidden" name="actionType" value="confirm_success" />
-                            <button type="submit" class="btn-shipper-act btn-shipper-success">
+                            <button type="submit" class="btn-shipper-act btn-shipper-success" title="Xác nhận đã giao hàng thành công tận tay khách hàng" aria-label="Giao hàng thành công">
                                 <i class="bi bi-check-circle-fill fs-5"></i> GIAO THÀNH CÔNG
                             </button>
                         </form>
