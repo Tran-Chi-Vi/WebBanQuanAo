@@ -16,26 +16,26 @@
 
             <div class="mb-3">
                 <label asp-for="FullName" class="form-label fw-bold small">Họ và tên</label>
-                <input asp-for="FullName" class="form-control rounded-3" placeholder="Nguyễn Văn A" />
+                <input asp-for="FullName" class="form-control rounded-3" placeholder="Nguyễn Văn A" title="Nhập họ và tên đầy đủ của bạn" aria-label="Họ và tên" />
                 <span asp-validation-for="FullName" class="text-danger small"></span>
             </div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label asp-for="Username" class="form-label fw-bold small">Tên đăng nhập</label>
-                    <input asp-for="Username" class="form-control rounded-3" placeholder="user123" />
+                    <input asp-for="Username" class="form-control rounded-3" placeholder="user123" title="Nhập tên đăng nhập độc nhất" aria-label="Tên đăng nhập" />
                     <span asp-validation-for="Username" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Phone" class="form-label fw-bold small">Số điện thoại</label>
-                    <input asp-for="Phone" class="form-control rounded-3" placeholder="0901234567" />
+                    <input asp-for="Phone" class="form-control rounded-3" placeholder="0901234567" title="Nhập số điện thoại liên hệ" aria-label="Số điện thoại" />
                     <span asp-validation-for="Phone" class="text-danger small"></span>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label asp-for="Email" class="form-label fw-bold small">Địa chỉ Email</label>
-                <input asp-for="Email" class="form-control rounded-3" placeholder="email@example.com" />
+                <input asp-for="Email" class="form-control rounded-3" placeholder="email@example.com" title="Nhập địa chỉ email chính chủ để nhận mã OTP" aria-label="Địa chỉ email" />
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
