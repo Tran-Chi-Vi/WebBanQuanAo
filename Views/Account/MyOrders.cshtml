@@ -53,10 +53,11 @@
                         @foreach (var detail in o.OrderDetails)
                         {
                             var img = detail.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                            var productName = detail.Variant?.Product?.ProductName ?? "Sản phẩm thời trang";
                             <div class="d-flex align-items-center gap-3">
-                                <img src="@img" alt="product" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                                <img src="@img" alt="@productName" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" title="@productName" />
                                 <div class="flex-grow-1">
-                                    <div class="fw-bold text-dark small">@detail.Variant?.Product?.ProductName</div>
+                                    <div class="fw-bold text-dark small">@productName</div>
                                     <small class="text-muted">Size: @detail.Variant?.Size | Màu: @detail.Variant?.Color | Số lượng: x@(detail.Quantity)</small>
                                 </div>
                                 <div class="fw-bold text-primary small">@((detail.UnitPrice * detail.Quantity).ToString("N0"))đ</div>
