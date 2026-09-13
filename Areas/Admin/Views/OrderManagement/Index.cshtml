@@ -36,8 +36,9 @@
             <label class="form-label small fw-bold">Đến Ngày Đặt</label>
             <input type="date" name="toDate" class="form-control rounded-3" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" title="Chọn ngày kết thúc để lọc đơn hàng" aria-label="Đến ngày đặt đơn hàng" />
         </div>
-        <div class="col-md-2 d-flex align-items-end">
+        <div class="col-md-2 d-flex align-items-end gap-2">
             <button type="submit" class="btn btn-primary-gradient w-100 py-2 fw-bold" title="Áp dụng bộ lọc tìm kiếm đơn hàng" aria-label="Lọc đơn hàng theo điều kiện đã chọn"><i class="bi bi-filter me-1"></i> Lọc Đơn Hàng</button>
+            <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-outline-secondary py-2 fw-bold" title="Bỏ lọc và hiển thị tất cả đơn hàng" aria-label="Xóa bộ lọc đơn hàng"><i class="bi bi-arrow-counterclockwise"></i></a>
         </div>
     </form>
 </div>
