@@ -79,11 +79,11 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-end align-items-center gap-3 mt-4">
-                    <a asp-controller="Account" asp-action="MyOrders" class="btn btn-light rounded-pill fw-bold px-4 py-2.5 border text-nowrap">
+                    <a asp-controller="Account" asp-action="MyOrders" class="btn btn-light rounded-pill fw-bold px-4 py-2.5 border text-nowrap" title="Hủy thao tác và quay lại lịch sử đơn hàng" aria-label="Quay lại lịch sử đơn hàng">
                         <i class="bi bi-arrow-left me-1"></i> Quay Lại
                     </a>
-                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xác nhận hủy đơn hàng này không?')" class="btn btn-danger rounded-pill fw-bold px-4 py-2.5 shadow-sm text-nowrap">
-                        <i class="bi bi-check-circle-fill me-1"></i> Xác Nhận
+                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xác nhận hủy đơn hàng này không?')" class="btn btn-danger rounded-pill fw-bold px-4 py-2.5 shadow-sm text-nowrap" title="Xác nhận hủy đơn hàng này" aria-label="Xác nhận hủy đơn hàng">
+                        <i class="bi bi-check-circle-fill me-1"></i> Xác Nhận Hủy Đơn
                     </button>
                 </div>
             </form>
