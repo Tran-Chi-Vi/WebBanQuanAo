@@ -7,7 +7,7 @@
 }
 
 <div class="mb-4">
-    <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-pill mb-2"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách người dùng</a>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-pill mb-2" title="Quay lại danh sách quản lý người dùng" aria-label="Quay lại danh sách người dùng"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách người dùng</a>
     <h2 class="fw-bold font-heading m-0 text-dark">HỒ SƠ KHÁCH HÀNG: @Model.FullName</h2>
 </div>
 
@@ -118,7 +118,7 @@
                                 <td><span class="badge bg-light text-dark border">@(ord.Payment != null ? "Chuyển Khoản QR" : "COD (Tiền Mặt)")</span></td>
                                 <td class="fw-bold text-success">@ord.TotalAmount.ToString("N0")đ</td>
                                 <td class="text-end pe-4">
-                                    <a asp-controller="OrderManagement" asp-action="Details" asp-route-id="@ord.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <a asp-controller="OrderManagement" asp-action="Details" asp-route-id="@ord.OrderId" class="btn btn-sm btn-outline-primary rounded-pill px-3" title="Xem chi tiết đơn hàng #@ord.OrderNumber" aria-label="Xem chi tiết đơn hàng #@ord.OrderNumber">
                                         Xem Đơn
                                     </a>
                                 </td>
