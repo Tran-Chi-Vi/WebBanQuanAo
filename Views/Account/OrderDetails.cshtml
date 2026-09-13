@@ -27,12 +27,13 @@
                             @foreach (var item in Model.OrderDetails)
                             {
                                 var img = item.Variant?.Product?.Images.FirstOrDefault()?.ImageUrl ?? "/images/no-image.png";
+                                var productName = item.Variant?.Product?.ProductName ?? "Sản phẩm thời trang";
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
-                                            <img src="@img" alt="product" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                                            <img src="@img" alt="@productName" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" title="@productName" />
                                             <div>
-                                                <div class="fw-bold text-dark small">@item.Variant?.Product?.ProductName</div>
+                                                <div class="fw-bold text-dark small">@productName</div>
                                                 <small class="text-muted">Size: @item.Variant?.Size | Màu: @item.Variant?.Color</small>
                                             </div>
                                         </div>
