@@ -40,14 +40,14 @@
                     <span class="text-muted small">Số tài khoản:</span>
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-primary font-monospace" id="accNumber">0359876543</span>
-                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('0359876543')">Copy</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('0359876543')" title="Sao chép số tài khoản ngân hàng" aria-label="Sao chép số tài khoản">Copy</button>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center py-1.5">
                     <span class="text-muted small">Nội dung CK:</span>
                     <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold text-danger font-monospace" id="orderNote">@Model.OrderNumber</span>
-                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('@Model.OrderNumber')">Copy</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 rounded-2" onclick="copyText('@Model.OrderNumber')" title="Sao chép nội dung chuyển khoản" aria-label="Sao chép nội dung chuyển khoản">Copy</button>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
             <form asp-controller="Payment" asp-action="ConfirmPayment" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
-                <button type="submit" class="btn btn-primary-gradient btn-lg w-100 font-heading fw-bold shadow-lg py-3 rounded-3">
+                <button type="submit" class="btn btn-primary-gradient btn-lg w-100 font-heading fw-bold shadow-lg py-3 rounded-3" title="Xác nhận bạn đã chuyển khoản hoàn tất" aria-label="Xác nhận đã chuyển khoản">
                     <i class="bi bi-check-circle-fill me-2"></i> TÔI ĐÃ CHUYỂN KHOẢN HOÀN TẤT
                 </button>
             </form>
@@ -66,7 +66,7 @@
             <form asp-controller="Payment" asp-action="CancelPayment" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
-                <button type="submit" class="btn btn-link text-danger w-100 text-decoration-none small py-2">
+                <button type="submit" class="btn btn-link text-danger w-100 text-decoration-none small py-2" title="Hủy bỏ giao dịch thanh toán" aria-label="Hủy giao dịch thanh toán">
                     <i class="bi bi-x-circle me-1"></i> Hủy giao dịch thanh toán
                 </button>
             </form>
