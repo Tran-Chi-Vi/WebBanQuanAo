@@ -71,11 +71,11 @@
             <form asp-area="Admin" asp-controller="OrderManagement" asp-action="ResendInvoice" method="post" class="d-inline">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
-                <button type="submit" class="btn btn-primary fw-bold shadow-sm px-3.5 py-2 rounded-3" style="font-size:0.88rem;">
+                <button type="submit" class="btn btn-primary fw-bold shadow-sm px-3.5 py-2 rounded-3" style="font-size:0.88rem;" title="Gửi lại email hóa đơn cho khách hàng" aria-label="Gửi lại hóa đơn qua email">
                     Gửi Lại Mail Hóa Đơn
                 </button>
             </form>
-            <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-outline-secondary fw-semibold px-3.5 py-2 rounded-3" style="font-size:0.88rem;">
+            <a href="/sys-admin-management/OrderManagement/Index" class="btn btn-outline-secondary fw-semibold px-3.5 py-2 rounded-3" style="font-size:0.88rem;" title="Quay lại danh sách đơn hàng" aria-label="Quay lại danh sách đơn hàng">
                 Quay Lại
             </a>
         </div>
