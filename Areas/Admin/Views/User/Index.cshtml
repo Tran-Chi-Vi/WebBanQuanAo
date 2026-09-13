@@ -21,14 +21,14 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <select name="roleFilter" class="form-select bg-light">
+                <select name="roleFilter" class="form-select bg-light" title="Chọn vai trò người dùng để lọc" aria-label="Lọc theo vai trò người dùng">
                     <option value="">-- Tất cả vai trò --</option>
                     <option value="Admin" selected="@(ViewBag.RoleFilter == "Admin")">Quản Trị Viên (Admin)</option>
                     <option value="Customer" selected="@(ViewBag.RoleFilter == "Customer")">Khách Hàng (Customer)</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-filter me-1"></i> Lọc</button>
+                <button type="submit" class="btn btn-primary w-100 fw-bold" title="Bấm để lọc danh sách người dùng" aria-label="Lọc danh sách người dùng"><i class="bi bi-filter me-1"></i> Lọc</button>
             </div>
         </form>
     </div>
@@ -91,7 +91,9 @@
                                 <div class="d-flex justify-content-end gap-1 flex-nowrap">
                                     <a asp-action="Details" asp-route-id="@user.UserId"
                                        class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 fw-semibold"
-                                       style="border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                                       style="border-radius:8px;font-size:0.82rem;white-space:nowrap;"
+                                       title="Xem thông tin chi tiết và quản lý bình luận của người dùng @user.FullName"
+                                       aria-label="Xem chi tiết người dùng @user.FullName">
                                         <i class="bi bi-eye"></i> Xem Chi Tiết & Bình Luận
                                     </a>
                                 </div>
