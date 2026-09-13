@@ -157,7 +157,7 @@
                                     {
                                         <span class="position-absolute top-0 start-0 m-3 badge bg-dark text-white rounded-pill fw-semibold" style="font-size:0.72rem;z-index:2;">@p.Gender</span>
                                     }
-                                    <button onclick="toggleFavoriteAjax(@p.ProductId, this)" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center @(isFav ? "active" : "")" style="width:34px;height:34px;z-index:2;" title="Thêm yêu thích">
+                                    <button onclick="toggleFavoriteAjax(@p.ProductId, this)" class="btn btn-sm btn-light rounded-circle shadow-sm position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center @(isFav ? "active" : "")" style="width:34px;height:34px;z-index:2;" title="Thêm vào danh sách yêu thích" aria-label="Thêm @p.ProductName vào yêu thích">
                                         <i class="bi @(isFav ? "bi-heart-fill" : "bi-heart") text-danger" style="@(isFav ? "color:#ec4899;" : "")"></i>
                                     </button>
                                     <a asp-controller="Product" asp-action="Details" asp-route-id="@p.ProductId" class="position-absolute top-0 start-0 w-100 h-100">
@@ -173,7 +173,7 @@
                                         <span class="fw-bold text-indigo font-monospace fs-6" style="color:#6366f1;">@p.BasePrice.ToString("N0")đ</span>
                                         <button type="button" onclick="addToCartAjax(@(firstVar?.VariantId ?? 0), 1, this)"
                                                 class="btn btn-primary-gradient rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                                                style="width:34px;height:34px;padding:0;flex-shrink:0;" title="Thêm vào giỏ hàng">
+                                                style="width:34px;height:34px;padding:0;flex-shrink:0;" title="Thêm sản phẩm này vào giỏ hàng" aria-label="Thêm @p.ProductName vào giỏ hàng">
                                             <i class="bi bi-cart-plus fs-6"></i>
                                         </button>
                                     </div>
