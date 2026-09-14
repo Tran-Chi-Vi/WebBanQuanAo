@@ -85,7 +85,9 @@
             <div class="admin-nav-section">Tổng Quan</div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
-                   href="/sys-admin-management/Dashboard/Index">
+                   href="/sys-admin-management/Dashboard/Index"
+                   title="Xem tổng quan bảng điều khiển quản trị hệ thống"
+                   aria-label="Bảng điều khiển quản trị">
                     <i class="bi bi-grid-1x2-fill nav-icon"></i>
                     <span>Tổng Quan (Dashboard)</span>
                 </a>
