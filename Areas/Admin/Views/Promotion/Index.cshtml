@@ -71,7 +71,7 @@
                                 @(isActive ? "Đang hiệu lực" : "Đã hết hạn")
                             </span>
                         </td>
-                        <td><span class="badge bg-body-tertiary text-body border px-2.5 py-1.5 rounded-pill">@p.Orders.Count lượt</span></td>
+                        <td><span class="badge bg-body-tertiary text-body border px-2.5 py-1.5 rounded-pill" title="Số lượng đơn hàng đã sử dụng mã @p.Code" aria-label="Đã dùng @p.Orders.Count lượt">@p.Orders.Count lượt</span></td>
                         <td>
                             <div class="d-flex gap-2 align-items-center justify-content-end">
                                 <a asp-area="Admin" asp-controller="Promotion" asp-action="Edit" asp-route-id="@p.PromotionId"
