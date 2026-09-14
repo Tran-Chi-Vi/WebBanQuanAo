@@ -88,11 +88,11 @@
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Tên đăng nhập</label>
-                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Username" readonly />
+                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Username" readonly title="Tên đăng nhập tài khoản" aria-label="Tên đăng nhập tài khoản" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small text-muted">Email</label>
-                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Email" readonly />
+                        <input type="text" class="form-control rounded-3 bg-light" value="@Model.Email" readonly title="Địa chỉ email đăng ký tài khoản" aria-label="Địa chỉ email đăng ký" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold small">Họ và tên</label>
