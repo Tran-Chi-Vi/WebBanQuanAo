@@ -83,7 +83,7 @@
                                     _ => "bg-secondary"
                                 };
                             }
-                            <span class="badge @badgeClass rounded-pill">@o.Status</span>
+                            <span class="badge @badgeClass rounded-pill" title="Trạng thái đơn hàng: @o.Status" aria-label="Trạng thái đơn hàng: @o.Status">@o.Status</span>
                         </td>
                         <td class="fw-bold text-primary">@o.TotalAmount.ToString("N0")đ</td>
                         <td class="text-end pe-3">
