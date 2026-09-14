@@ -111,7 +111,7 @@
                     <ul class="navbar-nav mb-2 mb-lg-0 ms-lg-3 gap-lg-1">
                         <!-- Trang Chủ -->
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" href="/">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" href="/" title="Chuyển sang trang chủ cửa hàng" aria-label="Trang chủ cửa hàng">
                                 <i class="bi bi-house-door d-lg-none me-2"></i> Trang Chủ
                             </a>
                         </li>
