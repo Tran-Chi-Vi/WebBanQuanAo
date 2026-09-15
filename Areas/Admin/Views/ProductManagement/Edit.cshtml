@@ -126,7 +126,7 @@
                                 <td>@v.Size</td>
                                 <td>@v.Color</td>
                                 <td class="fw-bold text-primary">@v.Price.ToString("N0")đ</td>
-                                <td><span class="badge @(v.StockQuantity > 0 ? "bg-success" : "bg-danger")">@v.StockQuantity</span></td>
+                                <td><span class="badge @(v.StockQuantity > 0 ? "bg-success" : "bg-danger")" title="Số lượng tồn kho biến thể: @v.StockQuantity" aria-label="Tồn kho @v.StockQuantity sản phẩm">@v.StockQuantity</span></td>
                                 <td>
                                     <form asp-area="Admin" asp-controller="ProductManagement" asp-action="DeleteVariant" method="post" onsubmit="return confirm('Xóa biến thể này?')">
                                         @Html.AntiForgeryToken()
