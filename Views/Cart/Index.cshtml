@@ -98,7 +98,7 @@
                         {
                             <div id="cart-card-@item.VariantId" class="card p-3 border rounded-4 shadow-sm bg-white position-relative">
                                 <div class="d-flex align-items-center gap-3">
-                                    <input type="checkbox" class="form-check-input cart-item-checkbox cart-item-check-mob me-1" data-variant-id="@item.VariantId" data-price="@item.Price" checked onchange="syncAndRecalculateCartSelection(@item.VariantId, this.checked)" style="width:20px;height:20px;cursor:pointer;flex-shrink:0;" />
+                                    <input type="checkbox" class="form-check-input cart-item-checkbox cart-item-check-mob me-1" data-variant-id="@item.VariantId" data-price="@item.Price" checked onchange="syncAndRecalculateCartSelection(@item.VariantId, this.checked)" style="width:20px;height:20px;cursor:pointer;flex-shrink:0;" title="Chọn sản phẩm @item.ProductName để thanh toán" aria-label="Chọn sản phẩm @item.ProductName" />
                                     <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 shadow-sm flex-shrink-0" style="width: 76px; height: 76px; object-fit: cover;" />
                                     <div style="flex: 1; min-width: 0;">
                                         <div class="d-flex justify-content-between align-items-start gap-2">
