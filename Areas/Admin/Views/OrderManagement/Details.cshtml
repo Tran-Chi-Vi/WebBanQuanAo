@@ -45,19 +45,19 @@
                 @switch (Model.Status)
                 {
                     case OrderStatus.Pending:
-                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge">Chờ Xử Lý</span>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge" title="Trạng thái đơn hàng: Chờ Xử Lý" aria-label="Trạng thái đơn hàng: Chờ Xử Lý">Chờ Xử Lý</span>
                         break;
                     case OrderStatus.Shipping:
-                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle order-header-badge">Đang Giao Hàng</span>
+                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle order-header-badge" title="Trạng thái đơn hàng: Đang Giao Hàng" aria-label="Trạng thái đơn hàng: Đang Giao Hàng">Đang Giao Hàng</span>
                         break;
                     case OrderStatus.WaitingForCustomer:
-                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge">Chờ Khách Xác Nhận</span>
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle order-header-badge" title="Trạng thái đơn hàng: Chờ Khách Xác Nhận" aria-label="Trạng thái đơn hàng: Chờ Khách Xác Nhận">Chờ Khách Xác Nhận</span>
                         break;
                     case OrderStatus.Completed:
-                        <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle order-header-badge">Đã Hoàn Thành</span>
+                        <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle order-header-badge" title="Trạng thái đơn hàng: Đã Hoàn Thành" aria-label="Trạng thái đơn hàng: Đã Hoàn Thành">Đã Hoàn Thành</span>
                         break;
                     case OrderStatus.Cancelled:
-                        <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle order-header-badge">Đã Hủy</span>
+                        <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle order-header-badge" title="Trạng thái đơn hàng: Đã Hủy" aria-label="Trạng thái đơn hàng: Đã Hủy">Đã Hủy</span>
                         break;
                 }
             </div>
