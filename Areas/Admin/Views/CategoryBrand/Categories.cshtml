@@ -41,7 +41,7 @@
                                 <span class="text-muted small">Cấp cha</span>
                             }
                         </td>
-                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1.5 rounded-pill">@c.Products.Count SP</span></td>
+                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold px-2.5 py-1.5 rounded-pill" title="Số lượng sản phẩm thuộc danh mục @c.CategoryName" aria-label="Số sản phẩm thuộc danh mục @c.CategoryName">@c.Products.Count SP</span></td>
                         <td>
                             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="DeleteCategory" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
                                 @Html.AntiForgeryToken()
