@@ -37,7 +37,7 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h4 class="fw-bold font-heading m-0 text-body"><i class="bi bi-box-seam-fill text-primary me-2"></i> QUẢN LÝ SẢN PHẨM & TỒN KHO</h4>
-        <small class="text-muted">Tổng số: <strong class="text-body">@ViewBag.TotalItems</strong> sản phẩm trong hệ thống</small>
+        <small class="text-muted" title="Tổng số sản phẩm đang quản lý trong kho" aria-label="Tổng số @ViewBag.TotalItems sản phẩm trong kho">Tổng số: <strong class="text-body">@ViewBag.TotalItems</strong> sản phẩm trong hệ thống</small>
     </div>
     <div class="d-flex gap-2">
         <a asp-area="Admin" asp-controller="ProductManagement" asp-action="Create" class="btn btn-primary shadow-sm fw-bold px-3 py-2 rounded-3" title="Tạo sản phẩm thời trang mới vào kho hàng" aria-label="Thêm sản phẩm mới vào hệ thống">
