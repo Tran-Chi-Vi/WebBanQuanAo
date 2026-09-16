@@ -60,19 +60,19 @@
                         <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing:0.05em;font-size:0.75rem;">Giới Tính</label>
                         <div class="d-flex flex-column gap-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="" id="g_all" checked="@(Model.Gender == null)" />
+                                <input class="form-check-input" type="radio" name="gender" value="" id="g_all" checked="@(Model.Gender == null)" title="Chọn lọc tất cả giới tính" aria-label="Tất cả giới tính" />
                                 <label class="form-check-label small fw-semibold text-dark" for="g_all">Tất cả</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="0" id="g_male" checked="@(Model.Gender == ProductGender.Male)" />
+                                <input class="form-check-input" type="radio" name="gender" value="0" id="g_male" checked="@(Model.Gender == ProductGender.Male)" title="Lọc sản phẩm dành cho Nam" aria-label="Thời trang Nam" />
                                 <label class="form-check-label small fw-semibold text-dark" for="g_male">Nam</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="1" id="g_female" checked="@(Model.Gender == ProductGender.Female)" />
+                                <input class="form-check-input" type="radio" name="gender" value="1" id="g_female" checked="@(Model.Gender == ProductGender.Female)" title="Lọc sản phẩm dành cho Nữ" aria-label="Thời trang Nữ" />
                                 <label class="form-check-label small fw-semibold text-dark" for="g_female">Nữ</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender" value="2" id="g_unisex" checked="@(Model.Gender == ProductGender.Unisex)" />
+                                <input class="form-check-input" type="radio" name="gender" value="2" id="g_unisex" checked="@(Model.Gender == ProductGender.Unisex)" title="Lọc sản phẩm Unisex phong cách" aria-label="Thời trang Unisex" />
                                 <label class="form-check-label small fw-semibold text-dark" for="g_unisex">Unisex</label>
                             </div>
                         </div>
