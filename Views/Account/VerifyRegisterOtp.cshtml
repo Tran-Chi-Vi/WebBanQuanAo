@@ -44,7 +44,7 @@
                 <span asp-validation-for="OtpCode" class="text-danger small d-block text-center mt-1"></span>
             </div>
 
-            <button type="submit" id="submitOtpBtn" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3 rounded-3" @(isExpired ? "disabled" : "") title="Xác nhận mã OTP để hoàn tất đăng ký tài khoản">
+            <button type="submit" id="submitOtpBtn" class="btn btn-primary-gradient btn-lg w-100 py-3 font-heading fw-bold shadow-lg mb-3 rounded-3" @(isExpired ? "disabled" : "") title="Xác nhận mã OTP để hoàn tất đăng ký tài khoản" aria-label="Xác nhận mã OTP và hoàn tất đăng ký tài khoản">
                 <i class="bi bi-check-circle-fill me-2"></i> XÁC NHẬN & TẠO TÀI KHOẢN
             </button>
         </form>
