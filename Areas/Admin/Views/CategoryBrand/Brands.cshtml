@@ -41,7 +41,7 @@
                             }
                         </td>
                         <td class="fw-bold text-dark">@b.BrandName</td>
-                        <td><span class="badge bg-primary" title="Tổng số sản phẩm thuộc thương hiệu @b.BrandName" aria-label="Tổng số sản phẩm thuộc thương hiệu @b.BrandName">@b.Products.Count SP</span></td>
+                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 fw-semibold" title="Tổng số sản phẩm thuộc thương hiệu @b.BrandName" aria-label="Tổng số sản phẩm thuộc thương hiệu @b.BrandName">@b.Products.Count SP</span></td>
                         <td>
                             <form asp-area="Admin" asp-controller="CategoryBrand" asp-action="DeleteBrand" method="post" onsubmit="return confirm('Xóa thương hiệu này?')">
                                 @Html.AntiForgeryToken()
