@@ -68,7 +68,7 @@
 
                 <div class="d-flex justify-content-between small mb-3">
                     <span class="text-muted">Thanh toán:</span>
-                    <span class="fw-bold text-success">@(Model.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Chờ thanh toán")</span>
+                    <span class="fw-bold text-success" title="Trạng thái thanh toán: @(Model.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Chờ thanh toán")" aria-label="Trạng thái thanh toán đơn hàng">@(Model.Payment?.Status == PaymentStatus.Success ? "Đã thanh toán" : "Chờ thanh toán")</span>
                 </div>
 
                 <div class="d-flex justify-content-between fs-5 fw-bold text-dark pt-2 border-top">
