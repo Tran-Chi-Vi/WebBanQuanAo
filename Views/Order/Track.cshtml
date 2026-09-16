@@ -208,7 +208,7 @@
             <!-- Locked State Banner (If Completed or Cancelled) -->
             @if (Model.Status == OrderStatus.Completed || Model.Status == OrderStatus.Cancelled)
             {
-                <div class="p-3.5 rounded-4 mb-4 text-center @(Model.Status == OrderStatus.Completed ? "bg-success-subtle border border-success text-success" : "bg-danger-subtle border border-danger text-danger")">
+                <div class="p-3.5 rounded-4 mb-4 text-center @(Model.Status == OrderStatus.Completed ? "bg-success-subtle border border-success text-success" : "bg-danger-subtle border border-danger text-danger")" title="Trạng thái khóa thao tác của đơn hàng #@Model.OrderNumber" aria-label="Khóa thao tác đơn hàng #@Model.OrderNumber">
                     <div class="fs-5 fw-bold mb-1">
                         @if (Model.Status == OrderStatus.Completed)
                         {
