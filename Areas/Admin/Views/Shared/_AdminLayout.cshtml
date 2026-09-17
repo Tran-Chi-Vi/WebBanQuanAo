@@ -141,7 +141,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserAccount" ? "active" : "")"
-                   href="/sys-admin-management/UserAccount/Index">
+                   href="/sys-admin-management/UserAccount/Index"
+                   title="Chuyển đến trang quản lý bảo mật tài khoản 2FA và mã PIN"
+                   aria-label="Quản lý tài khoản 2FA">
                     <i class="bi bi-shield-lock-fill nav-icon text-warning"></i>
                     <span>Quản Lý Tài Khoản (2FA)</span>
                 </a>
