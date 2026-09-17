@@ -114,7 +114,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "OrderManagement" ? "active" : "")"
-                   href="/sys-admin-management/OrderManagement/Index">
+                   href="/sys-admin-management/OrderManagement/Index"
+                   title="Chuyển đến trang quản lý đơn hàng toàn hệ thống"
+                   aria-label="Quản lý đơn hàng">
                     <i class="bi bi-cart-check-fill nav-icon"></i>
                     <span>Quản Lý Đơn Hàng</span>
                 </a>
