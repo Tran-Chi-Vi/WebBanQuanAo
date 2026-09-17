@@ -159,7 +159,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Analytics" ? "active" : "")"
-                   href="/sys-admin-management/Analytics/Index">
+                   href="/sys-admin-management/Analytics/Index"
+                   title="Xem báo cáo phân tích AI Machine Learning và hành vi truy cập"
+                   aria-label="Báo cáo phân tích AI ML">
                     <i class="bi bi-cpu-fill nav-icon"></i>
                     <span>Phân Tích AI & ML</span>
                 </a>
