@@ -132,7 +132,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")"
-                   href="/sys-admin-management/User/Index">
+                   href="/sys-admin-management/User/Index"
+                   title="Chuyển đến trang quản lý danh sách người dùng và khách hàng VIP"
+                   aria-label="Quản lý người dùng">
                     <i class="bi bi-people-fill nav-icon"></i>
                     <span>Quản Lý Người Dùng</span>
                 </a>
