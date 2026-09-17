@@ -123,7 +123,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Promotion" ? "active" : "")"
-                   href="/sys-admin-management/Promotion/Index">
+                   href="/sys-admin-management/Promotion/Index"
+                   title="Chuyển đến trang quản lý chương trình khuyến mãi và voucher"
+                   aria-label="Quản lý mã khuyến mãi">
                     <i class="bi bi-ticket-perforated-fill nav-icon"></i>
                     <span>Mã Khuyến Mãi</span>
                 </a>
