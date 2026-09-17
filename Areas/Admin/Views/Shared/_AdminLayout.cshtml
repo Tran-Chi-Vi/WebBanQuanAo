@@ -152,7 +152,9 @@
             <div class="admin-nav-section">Phân Tích & AI</div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Apriori" ? "active" : "")"
-                   href="/sys-admin-management/Apriori/Index">
+                   href="/sys-admin-management/Apriori/Index"
+                   title="Quản lý cấu hình và chạy luật kết hợp thuật toán Apriori gợi ý sản phẩm"
+                   aria-label="Thuật toán Apriori">
                     <i class="bi bi-diagram-3-fill nav-icon"></i>
                     <span>Thuật Toán Apriori</span>
                 </a>
