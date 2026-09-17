@@ -105,7 +105,9 @@
             </div>
             <div class="admin-nav-item">
                 <a class="admin-nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "CategoryBrand" ? "active" : "")"
-                   href="/sys-admin-management/CategoryBrand/Categories">
+                   href="/sys-admin-management/CategoryBrand/Categories"
+                   title="Chuyển đến trang quản lý danh mục và thương hiệu thời trang"
+                   aria-label="Danh mục và thương hiệu">
                     <i class="bi bi-tags-fill nav-icon"></i>
                     <span>Danh Mục & Thương Hiệu</span>
                 </a>
