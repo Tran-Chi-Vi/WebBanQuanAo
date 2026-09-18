@@ -110,7 +110,7 @@
             string icon = catIdx < catIcons.Length ? catIcons[catIdx] : "bi-bag";
             catIdx++;
             <div class="col-6 col-sm-4 col-md-3 col-lg-3 reveal">
-                <div class="category-card p-4 rounded-4 bg-white text-center shadow-sm border border-light" onclick="onCategoryCardClick(@cat.CategoryId, 'cat-@cat.CategoryId')" tabindex="0" role="button" aria-label="Xem danh mục @cat.CategoryName" style="cursor:pointer;transition:all 0.3s ease;">
+                <div class="category-card p-4 rounded-4 bg-white text-center shadow-sm border border-light" onclick="onCategoryCardClick(@cat.CategoryId, 'cat-@cat.CategoryId')" tabindex="0" role="button" title="Xem danh mục sản phẩm @cat.CategoryName" aria-label="Xem danh mục @cat.CategoryName" style="cursor:pointer;transition:all 0.3s ease;">
                     <div class="category-card-icon mx-auto mb-3" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#e0e7ff,#f1f5f9);display:flex;align-items:center;justify-content:center;color:#6366f1;font-size:1.6rem;">
                         <i class="bi @icon"></i>
                     </div>
