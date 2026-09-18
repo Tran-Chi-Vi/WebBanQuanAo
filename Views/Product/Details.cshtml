@@ -37,8 +37,8 @@
                     @foreach (var img in Model.Images)
                     {
                         var isMain = img.ImageUrl == mainImage;
-                        <div class="thumbnail-wrapper rounded-3 overflow-hidden border p-0.5 cursor-pointer @(isMain ? "border-primary border-2" : "border-light")" style="width:76px;height:76px;flex-shrink:0;cursor:pointer;transition:all 0.25s ease;" onclick="changeMainImage('@img.ImageUrl', this)">
-                            <img src="@img.ImageUrl" alt="thumb" class="w-100 h-100 object-fit-cover rounded-2" />
+                        <div class="thumbnail-wrapper rounded-3 overflow-hidden border p-0.5 cursor-pointer @(isMain ? "border-primary border-2" : "border-light")" style="width:76px;height:76px;flex-shrink:0;cursor:pointer;transition:all 0.25s ease;" onclick="changeMainImage('@img.ImageUrl', this)" title="Xem góc ảnh chi tiết của sản phẩm @Model.ProductName" aria-label="Hình ảnh thu nhỏ sản phẩm">
+                            <img src="@img.ImageUrl" alt="Góc ảnh sản phẩm @Model.ProductName" class="w-100 h-100 object-fit-cover rounded-2" />
                         </div>
                     }
                 </div>
