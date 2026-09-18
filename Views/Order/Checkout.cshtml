@@ -146,7 +146,7 @@
                         @foreach (var item in Model.Cart.Items)
                         {
                             <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3">
-                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 flex-shrink-0" style="width: 50px; height: 50px; object-fit: cover;" />
+                                <img src="@item.ImageUrl" alt="@item.ProductName" class="rounded-3 flex-shrink-0" style="width: 50px; height: 50px; object-fit: cover;" title="@item.ProductName" aria-label="Sản phẩm @item.ProductName" />
                                 <div class="flex-grow-1" style="min-width: 0;">
                                     <div class="fw-bold text-dark small text-truncate">@item.ProductName</div>
                                     <small class="text-muted d-block">Size: @item.Size | Màu: @item.Color</small>
