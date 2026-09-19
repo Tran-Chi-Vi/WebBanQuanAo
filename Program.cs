@@ -58,7 +58,7 @@ if (string.IsNullOrEmpty(defaultConnStr))
             ?? builder.Configuration["development:port"] 
             ?? builder.Configuration["PostgreSQL:Port"] ?? "5432";
             
-        defaultConnStr = $"Host={pgHost};Port={pgPort};Database={pgDb};Username={pgUser};Password={pgPass};SSL Mode=Require;Trust Server Certificate=true;";
+        defaultConnStr = $"Host={pgHost};Port={pgPort};Database={pgDb};Username={pgUser};Password={pgPass};SSL Mode=Require;Trust Server Certificate=true;Keepalive=30;Tcp Keepalive=true;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=20;Connection Lifetime=300;";
     }
 }
 
@@ -75,7 +75,7 @@ if (defaultConnStr.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
         var host = uri.Host;
         var port = uri.Port > 0 ? uri.Port : 5432;
         var dbName = uri.AbsolutePath.TrimStart('/');
-        defaultConnStr = $"Host={host};Port={port};Database={dbName};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true;";
+        defaultConnStr = $"Host={host};Port={port};Database={dbName};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true;Keepalive=30;Tcp Keepalive=true;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=20;Connection Lifetime=300;";
     }
     catch { }
 }
@@ -86,11 +86,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         defaultConnStr.Contains("Postgres", StringComparison.OrdinalIgnoreCase) || 
         defaultConnStr.Contains("postgres://", StringComparison.OrdinalIgnoreCase))
     {
-        options.UseNpgsql(defaultConnStr);
+        options.UseNpgsql(defaultConnStr, npgsqlOptions =>
+        {
+            npgsqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorCodesToAdd: null);
+            npgsqlOptions.CommandTimeout(30);
+        });
     }
     else
     {
-        options.UseSqlServer(defaultConnStr);
+        options.UseSqlServer(defaultConnStr, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+            sqlOptions.CommandTimeout(30);
+        });
     }
 });
 

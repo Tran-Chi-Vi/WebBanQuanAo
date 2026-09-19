@@ -114,49 +114,60 @@ public class AccountController : Controller
                 email = $"{providerKey ?? Guid.NewGuid().ToString().Substring(0, 8)}@{provider.ToLower()}.fashionstore.vn";
             }
 
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() ||
-                    (provider == "Google" && u.GoogleId == providerKey) ||
-                    (provider == "Facebook" && u.FacebookId == providerKey));
+            User user = null;
+            var strategy = _context.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
+            {
+                user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() ||
+                        (provider == "Google" && u.GoogleId == providerKey) ||
+                        (provider == "Facebook" && u.FacebookId == providerKey));
+
+                if (user == null)
+                {
+                    var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
+                    int roleId = customerRole?.RoleId ?? 2;
+
+                    user = new User
+                    {
+                        UserGuid = Guid.NewGuid(),
+                        Username = $"{provider.ToLower()}_{Guid.NewGuid().ToString().Substring(0, 6)}",
+                        Email = email,
+                        FullName = name,
+                        RoleId = roleId,
+                        GoogleId = provider == "Google" ? providerKey : null,
+                        FacebookId = provider == "Facebook" ? providerKey : null,
+                        AvatarUrl = avatarUrl,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+
+                    try
+                    {
+                        if (!await _context.Carts.AnyAsync(c => c.UserId == user.UserId))
+                        {
+                            _context.Carts.Add(new Cart { UserId = user.UserId });
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    catch { }
+                }
+                else
+                {
+                    if (provider == "Google" && string.IsNullOrEmpty(user.GoogleId)) user.GoogleId = providerKey;
+                    if (provider == "Facebook" && string.IsNullOrEmpty(user.FacebookId)) user.FacebookId = providerKey;
+                    if (!string.IsNullOrEmpty(avatarUrl)) user.AvatarUrl = avatarUrl;
+                    await _context.SaveChangesAsync();
+                }
+            });
 
             if (user == null)
             {
-                var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
-                int roleId = customerRole?.RoleId ?? 2;
-
-                user = new User
-                {
-                    UserGuid = Guid.NewGuid(),
-                    Username = $"{provider.ToLower()}_{Guid.NewGuid().ToString().Substring(0, 6)}",
-                    Email = email,
-                    FullName = name,
-                    RoleId = roleId,
-                    GoogleId = provider == "Google" ? providerKey : null,
-                    FacebookId = provider == "Facebook" ? providerKey : null,
-                    AvatarUrl = avatarUrl,
-                    CreatedAt = DateTime.Now
-                };
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                try
-                {
-                    if (!await _context.Carts.AnyAsync(c => c.UserId == user.UserId))
-                    {
-                        _context.Carts.Add(new Cart { UserId = user.UserId });
-                        await _context.SaveChangesAsync();
-                    }
-                }
-                catch { }
-            }
-            else
-            {
-                if (provider == "Google" && string.IsNullOrEmpty(user.GoogleId)) user.GoogleId = providerKey;
-                if (provider == "Facebook" && string.IsNullOrEmpty(user.FacebookId)) user.FacebookId = providerKey;
-                if (!string.IsNullOrEmpty(avatarUrl)) user.AvatarUrl = avatarUrl;
-                await _context.SaveChangesAsync();
+                TempData["ErrorMessage"] = $"Không thể xác thực thông tin tài khoản qua {provider}.";
+                return RedirectToAction("Login");
             }
 
             await SignInUserAsync(user, isPersistent: true);
